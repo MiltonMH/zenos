@@ -38,8 +38,8 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
         />
       </motion.div>
 
-      {/* Quick Actions - Glass container */}
-      <div className="glass rounded-3xl p-4 flex gap-4">
+      {/* Quick Actions */}
+      <div className="flex gap-4">
         <ActionButton
           icon={Lock}
           label="Unlock"
