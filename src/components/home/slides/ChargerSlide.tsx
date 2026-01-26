@@ -11,56 +11,59 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
   const isLocked = false; // Mock state
 
   return (
-    <div className="h-full flex flex-col items-center justify-center px-6">
-      {/* Connection indicator */}
-      <div className="mb-6">
-        <div className="w-2.5 h-2.5 rounded-full bg-primary status-pulse" />
-      </div>
+    <div className="h-full flex flex-col items-center justify-center px-6 py-8">
+      {/* Glass container for the charger section */}
+      <div className="glass rounded-3xl p-6 border-2 border-white/50 shadow-lg shadow-black/5 flex flex-col items-center">
+        {/* Connection indicator */}
+        <div className="mb-6">
+          <div className="w-2.5 h-2.5 rounded-full bg-primary status-pulse" />
+        </div>
 
-      {/* Charger Box - Product Image */}
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="relative mb-8"
-      >
-        {/* Glow effect behind charger */}
+        {/* Charger Box - Product Image */}
         <motion.div
-          animate={mode === "charging" ? { opacity: [0.2, 0.4, 0.2] } : { opacity: 0.1 }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute inset-0 blur-2xl bg-primary/20 rounded-full scale-110"
-        />
-        
-        {/* Product image */}
-        <img 
-          src={chargerBoxImage} 
-          alt="ZenBox Charger" 
-          className="relative w-48 max-w-[60vw] h-auto drop-shadow-2xl"
-        />
-      </motion.div>
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="relative mb-8"
+        >
+          {/* Glow effect behind charger */}
+          <motion.div
+            animate={mode === "charging" ? { opacity: [0.2, 0.4, 0.2] } : { opacity: 0.1 }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-0 blur-2xl bg-primary/20 rounded-full scale-110"
+          />
+          
+          {/* Product image */}
+          <img 
+            src={chargerBoxImage} 
+            alt="ZenBox Charger" 
+            className="relative w-48 max-w-[60vw] h-auto drop-shadow-2xl"
+          />
+        </motion.div>
 
-      {/* Quick Actions */}
-      <div className="flex gap-4">
-        <ActionButton
-          icon={Lock}
-          label="Unlock"
-          sublabel={isLocked ? "Locked" : "Unlocked"}
-          isActive={!isLocked}
-          onClick={() => {}}
-        />
-        <ActionButton
-          icon={Home}
-          label="Mode"
-          sublabel={mode === "v2h" ? "V2H" : mode === "v2g" ? "V2G" : "Charge"}
-          isActive={mode !== "idle"}
-          onClick={() => onModeChange(mode === "charging" ? "v2h" : "charging")}
-        />
-        <ActionButton
-          icon={Clock}
-          label="Schedule"
-          sublabel="Auto"
-          isActive={true}
-          onClick={() => {}}
-        />
+        {/* Quick Actions */}
+        <div className="flex gap-4">
+          <ActionButton
+            icon={Lock}
+            label="Unlock"
+            sublabel={isLocked ? "Locked" : "Unlocked"}
+            isActive={!isLocked}
+            onClick={() => {}}
+          />
+          <ActionButton
+            icon={Home}
+            label="Mode"
+            sublabel={mode === "v2h" ? "V2H" : mode === "v2g" ? "V2G" : "Charge"}
+            isActive={mode !== "idle"}
+            onClick={() => onModeChange(mode === "charging" ? "v2h" : "charging")}
+          />
+          <ActionButton
+            icon={Clock}
+            label="Schedule"
+            sublabel="Auto"
+            isActive={true}
+            onClick={() => {}}
+          />
+        </div>
       </div>
     </div>
   );
