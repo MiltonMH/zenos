@@ -34,7 +34,7 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
         <img 
           src={chargerBoxImage} 
           alt="ZenBox Charger" 
-          className="relative w-32 h-auto drop-shadow-2xl"
+          className="relative w-40 h-auto drop-shadow-2xl"
         />
       </motion.div>
 
