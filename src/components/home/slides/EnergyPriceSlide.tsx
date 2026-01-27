@@ -1,33 +1,61 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 type Tab = "today" | "tomorrow";
+
+// More realistic hourly price data
+const todayPrices = [
+  { hour: 0, price: 0.32 },
+  { hour: 1, price: 0.28 },
+  { hour: 2, price: 0.25 },
+  { hour: 3, price: 0.22 },
+  { hour: 4, price: 0.20 },
+  { hour: 5, price: 0.24 },
+  { hour: 6, price: 0.45 },
+  { hour: 7, price: 0.68 },
+  { hour: 8, price: 0.82 },
+  { hour: 9, price: 0.75 },
+  { hour: 10, price: 0.62 },
+  { hour: 11, price: 0.55 },
+  { hour: 12, price: 0.58 },
+  { hour: 13, price: 0.52 },
+  { hour: 14, price: 0.48 },
+  { hour: 15, price: 0.55 },
+  { hour: 16, price: 0.72 },
+  { hour: 17, price: 0.95 },
+  { hour: 18, price: 0.88 },
+  { hour: 19, price: 0.65 },
+  { hour: 20, price: 0.52 },
+  { hour: 21, price: 0.45 },
+  { hour: 22, price: 0.38 },
+  { hour: 23, price: 0.32 },
+];
 
 export function EnergyPriceSlide() {
   const [tab, setTab] = useState<Tab>("today");
 
-  // Mock price data for 24 hours
-  const priceData = [
-    { hour: 0, price: 0.45 },
-    { hour: 6, price: 0.65 },
-    { hour: 12, price: 0.80 },
-    { hour: 18, price: 0.40 },
-    { hour: 24, price: 0.35 },
-  ];
-
-  const currentPrice = 0.40;
+  const priceData = todayPrices;
   const currentHour = 18;
+  const currentPrice = priceData.find(p => p.hour === currentHour)?.price || 0;
 
-  // SVG path for the line chart
-  const chartWidth = 240;
-  const chartHeight = 120;
-  const maxPrice = 1.0;
+  // Calculate min/max
+  const minPrice = Math.min(...priceData.map(p => p.price));
+  const maxPrice = Math.max(...priceData.map(p => p.price));
+  const minHour = priceData.find(p => p.price === minPrice)?.hour || 0;
+  const maxHour = priceData.find(p => p.price === maxPrice)?.hour || 0;
+
+  // Chart dimensions
+  const chartWidth = 260;
+  const chartHeight = 100;
   
-  const points = priceData.map((d, i) => ({
-    x: (d.hour / 24) * chartWidth,
-    y: chartHeight - (d.price / maxPrice) * chartHeight,
+  // Create smooth path through all points
+  const points = priceData.map((d) => ({
+    x: (d.hour / 23) * chartWidth,
+    y: chartHeight - ((d.price - minPrice) / (maxPrice - minPrice)) * chartHeight * 0.9 - chartHeight * 0.05,
   }));
 
+  // Smooth curve path
   const pathD = points.reduce((acc, point, i) => {
     if (i === 0) return `M ${point.x} ${point.y}`;
     const prev = points[i - 1];
@@ -36,61 +64,80 @@ export function EnergyPriceSlide() {
   }, "");
 
   // Current price position
-  const currentX = (currentHour / 24) * chartWidth;
-  const currentY = chartHeight - (currentPrice / maxPrice) * chartHeight;
+  const currentPoint = points.find((_, i) => priceData[i].hour === currentHour);
+  const currentX = currentPoint?.x || 0;
+  const currentY = currentPoint?.y || 0;
+
+  const formatHour = (hour: number) => `${hour.toString().padStart(2, '0')}:00`;
 
   return (
-    <div className="h-full flex flex-col items-center px-6 pt-4">
+    <div className="h-full flex flex-col items-center px-4 pt-4">
       {/* Title */}
-      <h2 className="text-xl font-semibold text-foreground mb-4">Energy Price Now</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-3">Elpris idag</h2>
 
       {/* Tab Toggle */}
-      <div className="pill-toggle mb-6">
+      <div className="pill-toggle mb-4">
         <button
           onClick={() => setTab("today")}
           className={`pill-toggle-item ${tab === "today" ? "active" : ""}`}
         >
-          today
+          idag
         </button>
         <button
           onClick={() => setTab("tomorrow")}
           className={`pill-toggle-item ${tab === "tomorrow" ? "active" : ""}`}
         >
-          tomorrow
+          imorgon
         </button>
+      </div>
+
+      {/* Price Summary Cards */}
+      <div className="flex gap-2 w-full max-w-[280px] mb-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex-1 glass-subtle rounded-xl p-3"
+        >
+          <div className="flex items-center gap-1.5 mb-1">
+            <TrendingDown className="w-3.5 h-3.5 text-success" />
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Lägst</span>
+          </div>
+          <div className="text-lg font-bold text-success">{minPrice.toFixed(2)} kr</div>
+          <div className="text-xs text-muted-foreground">kl {formatHour(minHour)}</div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex-1 glass-subtle rounded-xl p-3"
+        >
+          <div className="flex items-center gap-1.5 mb-1">
+            <TrendingUp className="w-3.5 h-3.5 text-destructive" />
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Högst</span>
+          </div>
+          <div className="text-lg font-bold text-destructive">{maxPrice.toFixed(2)} kr</div>
+          <div className="text-xs text-muted-foreground">kl {formatHour(maxHour)}</div>
+        </motion.div>
       </div>
 
       {/* Chart */}
       <div className="flex-1 flex items-center justify-center w-full">
         <div className="relative glass-subtle rounded-2xl p-4 w-full max-w-[300px]">
-          {/* Y-axis labels */}
-          <div className="absolute left-0 top-4 bottom-12 flex flex-col justify-between text-xs text-muted-foreground">
-            <span>1</span>
-            <span>0.8</span>
-            <span>0.6</span>
-            <span>0.4</span>
-            <span>0.2</span>
-            <span>0</span>
-          </div>
-
-          {/* Y-axis unit */}
-          <div className="absolute -left-4 top-1/2 -translate-y-1/2 -rotate-90 text-xs font-medium text-muted-foreground">
-            KR
+          {/* Current price label */}
+          <div className="absolute top-3 right-4 text-right">
+            <div className="text-[10px] text-muted-foreground">Just nu</div>
+            <div className="text-base font-bold text-primary">{currentPrice.toFixed(2)} kr/kWh</div>
           </div>
 
           {/* Chart area */}
-          <div className="ml-6 relative">
-            {/* Unit label */}
-            <div className="absolute top-0 right-0 text-xs text-muted-foreground">
-              SEK / kWh
-            </div>
-
-            <svg width={chartWidth} height={chartHeight + 30} className="overflow-visible">
+          <div className="mt-8">
+            <svg width={chartWidth} height={chartHeight + 25} className="overflow-visible">
               {/* Gradient fill */}
               <defs>
                 <linearGradient id="priceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(173, 50%, 45%)" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="hsl(173, 50%, 45%)" stopOpacity="0" />
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
                 </linearGradient>
               </defs>
 
@@ -104,7 +151,7 @@ export function EnergyPriceSlide() {
               <motion.path
                 d={pathD}
                 fill="none"
-                stroke="hsl(173, 50%, 45%)"
+                stroke="hsl(var(--primary))"
                 strokeWidth="2"
                 strokeLinecap="round"
                 initial={{ pathLength: 0 }}
@@ -112,12 +159,32 @@ export function EnergyPriceSlide() {
                 transition={{ duration: 1, ease: "easeOut" }}
               />
 
+              {/* Min point */}
+              <circle
+                cx={points[minHour]?.x}
+                cy={points[minHour]?.y}
+                r="4"
+                fill="hsl(var(--success))"
+                stroke="white"
+                strokeWidth="2"
+              />
+
+              {/* Max point */}
+              <circle
+                cx={points[maxHour]?.x}
+                cy={points[maxHour]?.y}
+                r="4"
+                fill="hsl(var(--destructive))"
+                stroke="white"
+                strokeWidth="2"
+              />
+
               {/* Current price dot */}
               <motion.circle
                 cx={currentX}
                 cy={currentY}
-                r="5"
-                fill="hsl(173, 50%, 45%)"
+                r="6"
+                fill="hsl(var(--primary))"
                 stroke="white"
                 strokeWidth="2"
                 initial={{ scale: 0 }}
@@ -126,27 +193,13 @@ export function EnergyPriceSlide() {
               />
             </svg>
 
-            {/* Current price tooltip */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="absolute glass rounded-lg px-3 py-1.5 text-xs"
-              style={{
-                right: "10px",
-                top: `${currentY - 40}px`,
-              }}
-            >
-              <div className="font-medium text-foreground">Now</div>
-              <div className="text-primary font-semibold">{currentPrice} SEK</div>
-            </motion.div>
-
             {/* X-axis labels */}
-            <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+            <div className="flex justify-between mt-1 text-[10px] text-muted-foreground">
               <span>00:00</span>
               <span>06:00</span>
               <span>12:00</span>
               <span>18:00</span>
+              <span>24:00</span>
             </div>
           </div>
         </div>
