@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Home, Building2, BatteryCharging } from "lucide-react";
+import { Home, Building2, Car } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
@@ -53,80 +53,6 @@ function useDynamicPower(minPower: number, maxPower: number) {
   return power;
 }
 
-// Animated car with battery indicator
-function AnimatedCar({ color, isCharging }: { color: string; isCharging: boolean }) {
-  return (
-    <div className="relative">
-      {/* Car SVG */}
-      <svg 
-        width="48" 
-        height="48" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {/* Car body */}
-        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2" />
-        <circle cx="7" cy="17" r="2" />
-        <circle cx="17" cy="17" r="2" />
-        
-        {/* Battery inside car */}
-        <rect x="9" y="8" width="6" height="4" rx="0.5" strokeWidth="1" />
-      </svg>
-      
-      {/* Battery fill animation */}
-      {isCharging && (
-        <svg 
-          className="absolute top-0 left-0"
-          width="48" 
-          height="48" 
-          viewBox="0 0 24 24"
-        >
-          <defs>
-            <clipPath id="batteryClip">
-              <rect x="9.5" y="8.5" width="5" height="3" rx="0.3" />
-            </clipPath>
-          </defs>
-          <g clipPath="url(#batteryClip)">
-            <motion.rect
-              x="9.5"
-              y="8.5"
-              width="5"
-              height="3"
-              fill={color}
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: [0.2, 0.4, 0.6, 0.8, 1, 0.2] }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              style={{ originX: 0 }}
-            />
-          </g>
-        </svg>
-      )}
-      
-      {/* Charging bolt indicator */}
-      {isCharging && (
-        <motion.div
-          className="absolute -top-1 -right-1"
-          animate={{ opacity: [1, 0.5, 1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        >
-          <BatteryCharging 
-            className="w-4 h-4" 
-            style={{ color }} 
-          />
-        </motion.div>
-      )}
-    </div>
-  );
-}
-
 export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) {
   const config = modeConfig[mode];
   const power = useDynamicPower(config.minPower, config.maxPower);
@@ -171,7 +97,7 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
               className="p-3 rounded-2xl"
               style={{ backgroundColor: `${config.color}15` }}
             >
-              <AnimatedCar color={config.color} isCharging={false} />
+              <Car className="w-8 h-8" style={{ color: config.color }} />
             </div>
           )}
           <span className="text-xs text-muted-foreground">
@@ -229,7 +155,7 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
             style={{ backgroundColor: `${config.color}15` }}
           >
             {mode === "charging" && (
-              <AnimatedCar color={config.color} isCharging={true} />
+              <Car className="w-8 h-8" style={{ color: config.color }} />
             )}
             {mode === "v2h" && (
               <Home className="w-8 h-8" style={{ color: config.color }} />
