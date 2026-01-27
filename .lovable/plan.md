@@ -1,78 +1,74 @@
 
-# Plan: Volvo-inspirerad pulserande batterinivå-indikator
+
+# Plan: Statisk laddbox vid idle + Dynamisk visualisering vid aktivitet
 
 ## Koncept
-Lägga till ett subtilt pulserande grönt block som bakgrund bakom batterinivå-sektionen. Blocket ska vara positionerat **mellan** texten "Laddar..." (ovan) och "Batterinivå" (under) – alltså omsluta bara själva progress-baren.
+När laddboxen är i **idle-läge** (inget händer) visas den befintliga statiska produktbilden precis som idag. När ett aktivt läge är igång (charging, V2H eller V2G) ersätts bilden med den dynamiska energiflödes-visualiseringen.
 
-## Visuell referens (från Volvo-appen)
+## Logik
 
 ```text
-┌─────────────────────────────────────┐
-│  Batterinivå            Laddar...   │  ← Text ovanför (UTANFÖR blocket)
-├─────────────────────────────────────┤
-│  ╔═══════════════════════════════╗  │
-│  ║   ▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░   ║  │  ← Pulserande grönt block
-│  ╚═══════════════════════════════╝  │     med progress-bar inuti
-├─────────────────────────────────────┤
-│  52%                      ~2h kvar  │  ← Text under (UTANFÖR blocket)
-└─────────────────────────────────────┘
+mode === "idle"     → Statisk laddbox-bild (befintlig design)
+mode === "charging" → Dynamisk: Laddbox → pulser → Bil
+mode === "v2h"      → Dynamisk: Bil → pulser → Hus
+mode === "v2g"      → Dynamisk: Bil → pulser → Elnät
 ```
 
 ## Teknisk implementation
 
-### Fil: `src/components/home/EnergyFlowVisualization.tsx`
+### 1. Ny komponent: `EnergyFlowVisualization.tsx`
+Hanterar de tre aktiva lägena med animerade pulser och ikoner.
 
-**Ändringar i batterinivå-sektionen (rad 173-207):**
-
-1. **Ny wrapper-struktur:**
-   - Flytta ut "Batterinivå" och "Laddar..." texten ovanför det gröna blocket
-   - Flytta ut "52%" och "~2h kvar" texten under det gröna blocket
-
-2. **Skapa det gröna pulserande blocket:**
-   - Omsluter bara progress-baren
-   - Använder `framer-motion` för subtil pulsande animation (opacity/scale)
-   - Rundade hörn med `rounded-xl` för mjuk look
-   - Semi-transparent grön bakgrund som matchar `--energy-charging` färgen
-
-3. **Animations-specifikation:**
-   ```tsx
-   <motion.div
-     animate={{
-       opacity: [0.6, 0.8, 0.6],
-       scale: [1, 1.01, 1],
-     }}
-     transition={{
-       duration: 2.5,
-       repeat: Infinity,
-       ease: "easeInOut",
-     }}
-     className="rounded-xl px-4 py-3"
-     style={{ backgroundColor: `${config.color}25` }}
-   >
-     {/* Progress bar här */}
-   </motion.div>
-   ```
-
-## Slutlig layout
+### 2. Uppdatering av `ChargerSlide.tsx`
+Villkorlig rendering baserat på mode:
 
 ```text
-Batterinivå               Laddar...     ← Vanlig text (ej i blocket)
-
-╭─────────────────────────────────────╮
-│   ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░   │  ← Pulserande grönt block
-╰─────────────────────────────────────╯     med progress-bar inuti
-
-52%                          ~2h kvar     ← Vanlig text (ej i blocket)
+{mode === "idle" ? (
+  // Befintlig statisk laddbox-bild
+  <StaticChargerImage />
+) : (
+  // Ny dynamisk visualisering
+  <EnergyFlowVisualization mode={mode} />
+)}
 ```
 
-## Filer som ändras
+### 3. Uppdatering av lägesknappen
+Cykla genom alla fyra lägen för simulering:
+`idle → charging → v2h → v2g → idle`
+
+### 4. Startläge i Index.tsx
+Ändra standardvärdet från `"charging"` till `"idle"` så att appen startar i viloläge (mer realistiskt).
+
+## Visuell sammanfattning
+
+```text
+┌─────────────────────────────────────────┐
+│              IDLE-LÄGE                  │
+│                                         │
+│         [Statisk laddbox-bild]          │
+│              (som idag)                 │
+│                                         │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│           AKTIVT LÄGE                   │
+│                                         │
+│   [Källa]  ● ● ● →  [Destination]      │
+│            animerade pulser             │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+## Filer som skapas/ändras
 
 | Fil | Åtgärd |
 |-----|--------|
-| `src/components/home/EnergyFlowVisualization.tsx` | Uppdatera batterinivå-sektionen med pulserande bakgrundsblock |
+| `src/components/home/EnergyFlowVisualization.tsx` | Skapa ny |
+| `src/components/home/slides/ChargerSlide.tsx` | Uppdatera med villkorlig rendering |
+| `src/pages/Index.tsx` | Ändra startläge till "idle" |
 
-## Fördelar
-- **Volvo-känsla**: Följer samma designspråk som referensbilden
-- **Subtilt**: Blocket täcker inte för mycket, bara det viktiga
-- **Pulserande**: Ger liv åt laddningsindikatorn utan att vara för distraherande
-- **Konsekvent**: Använder samma gröna färg som resten av laddnings-UI:t
+## Fördelar med denna lösning
+- **Igenkänning**: Kunden ser sin bekanta laddbox när allt är lugnt
+- **Tydlig indikation**: När något händer syns det direkt genom den animerade visualiseringen
+- **Smidig övergång**: Animerad transition mellan statisk och dynamisk vy
+
