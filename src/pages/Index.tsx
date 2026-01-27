@@ -4,6 +4,7 @@ import { HomeHeader } from "@/components/layout/HomeHeader";
 import { AppBottomNav } from "@/components/layout/AppBottomNav";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
 import Profile from "./Profile";
+import Statistics from "./Statistics";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
@@ -14,11 +15,7 @@ export default function Index() {
       case "profile":
         return <Profile />;
       case "statistics":
-        return (
-          <div className="flex-1 flex items-center justify-center">
-            <p className="text-muted-foreground">Statistik kommer snart</p>
-          </div>
-        );
+        return <Statistics />;
       default:
         return (
           <>
