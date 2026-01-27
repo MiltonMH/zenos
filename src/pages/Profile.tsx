@@ -24,7 +24,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col h-full px-3 py-3">
+    <div className="flex flex-col h-full px-3 pt-6 pb-3">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
