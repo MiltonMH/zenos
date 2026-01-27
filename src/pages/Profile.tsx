@@ -24,19 +24,19 @@ export default function Profile() {
   }
 
   return (
-    <div className="flex flex-col h-full px-2 py-4">
+    <div className="flex flex-col h-full px-3 py-3">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-6"
+        className="text-center mb-3"
       >
-        <h1 className="text-2xl font-semibold text-foreground">{mockUser.name}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{mockUser.carModel}</p>
+        <h1 className="text-xl font-semibold text-foreground">{mockUser.name}</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">{mockUser.carModel}</p>
       </motion.div>
 
       {/* Information Cards */}
-      <div className="flex-1 space-y-3 overflow-y-auto scrollbar-hide">
+      <div className="flex-1 space-y-2 overflow-y-auto scrollbar-hide">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,12 +118,11 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="pt-4"
+        className="pt-2"
       >
         <Button
           onClick={() => setIsEditing(true)}
-          className="w-full h-12 text-base font-medium rounded-2xl"
-          size="lg"
+          className="w-full h-10 text-sm font-medium rounded-2xl"
         >
           <Pencil className="w-4 h-4 mr-2" />
           Redigera Profil
