@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Lock, LockOpen, Clock, Home, LucideIcon } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
@@ -8,7 +9,7 @@ interface ChargerSlideProps {
 }
 
 export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
-  const isLocked = false; // Mock state
+  const [isLocked, setIsLocked] = useState(false);
 
   return (
     <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
@@ -48,7 +49,7 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
           label="Lås"
           sublabel={isLocked ? "Låst" : "Olåst"}
           isActive={!isLocked}
-          onClick={() => {}}
+          onClick={() => setIsLocked(!isLocked)}
         />
         <ActionButton
           icon={Home}
