@@ -8,7 +8,7 @@ interface HomeHeaderProps {
 export function HomeHeader({ userName, isOnline }: HomeHeaderProps) {
   return (
     <div className="flex items-center justify-between px-6 py-4">
-      <button className="p-2 text-foreground/80 hover:text-foreground transition-colors">
+      <button className="p-2.5 glass-subtle rounded-2xl text-foreground/80 hover:text-foreground transition-colors">
         <Settings className="w-6 h-6" />
       </button>
 
@@ -16,7 +16,7 @@ export function HomeHeader({ userName, isOnline }: HomeHeaderProps) {
         Hello, {userName}
       </h1>
 
-      <div className={`p-2 ${isOnline ? "text-primary" : "text-foreground/80"}`}>
+      <div className={`p-2.5 glass-subtle rounded-2xl ${isOnline ? "text-primary" : "text-foreground/80"}`}>
         <Wifi className="w-6 h-6" />
       </div>
     </div>
