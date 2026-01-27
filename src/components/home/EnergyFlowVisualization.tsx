@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Car, Home, Zap, Building2 } from "lucide-react";
+import { Home, Building2, BatteryCharging } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
@@ -22,6 +22,80 @@ const modeConfig = {
     label: "Vehicle-to-Grid",
   },
 };
+
+// Animated car with battery indicator
+function AnimatedCar({ color, isCharging }: { color: string; isCharging: boolean }) {
+  return (
+    <div className="relative">
+      {/* Car SVG */}
+      <svg 
+        width="48" 
+        height="48" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* Car body */}
+        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-2-4H8L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2" />
+        <circle cx="7" cy="17" r="2" />
+        <circle cx="17" cy="17" r="2" />
+        
+        {/* Battery inside car */}
+        <rect x="9" y="8" width="6" height="4" rx="0.5" strokeWidth="1" />
+      </svg>
+      
+      {/* Battery fill animation */}
+      {isCharging && (
+        <svg 
+          className="absolute top-0 left-0"
+          width="48" 
+          height="48" 
+          viewBox="0 0 24 24"
+        >
+          <defs>
+            <clipPath id="batteryClip">
+              <rect x="9.5" y="8.5" width="5" height="3" rx="0.3" />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#batteryClip)">
+            <motion.rect
+              x="9.5"
+              y="8.5"
+              width="5"
+              height="3"
+              fill={color}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: [0.2, 0.4, 0.6, 0.8, 1, 0.2] }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              style={{ originX: 0 }}
+            />
+          </g>
+        </svg>
+      )}
+      
+      {/* Charging bolt indicator */}
+      {isCharging && (
+        <motion.div
+          className="absolute -top-1 -right-1"
+          animate={{ opacity: [1, 0.5, 1] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        >
+          <BatteryCharging 
+            className="w-4 h-4" 
+            style={{ color }} 
+          />
+        </motion.div>
+      )}
+    </div>
+  );
+}
 
 export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) {
   const config = modeConfig[mode];
@@ -63,13 +137,10 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
             </div>
           ) : (
             <div 
-              className="p-4 rounded-2xl"
+              className="p-3 rounded-2xl"
               style={{ backgroundColor: `${config.color}15` }}
             >
-              <Car 
-                className="w-8 h-8" 
-                style={{ color: config.color }}
-              />
+              <AnimatedCar color={config.color} isCharging={false} />
             </div>
           )}
           <span className="text-xs text-muted-foreground">
@@ -123,11 +194,11 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="p-4 rounded-2xl"
+            className="p-3 rounded-2xl"
             style={{ backgroundColor: `${config.color}15` }}
           >
             {mode === "charging" && (
-              <Car className="w-8 h-8" style={{ color: config.color }} />
+              <AnimatedCar color={config.color} isCharging={true} />
             )}
             {mode === "v2h" && (
               <Home className="w-8 h-8" style={{ color: config.color }} />
@@ -142,12 +213,48 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
         </motion.div>
       </div>
 
+      {/* Battery level indicator for charging mode */}
+      {mode === "charging" && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 w-full max-w-[200px]"
+        >
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Batterinivå</span>
+            <motion.span
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              Laddar...
+            </motion.span>
+          </div>
+          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{ backgroundColor: config.color }}
+              initial={{ width: "45%" }}
+              animate={{ width: ["45%", "48%", "52%", "55%", "58%", "55%", "52%", "48%", "45%"] }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
+          <div className="flex justify-between text-xs mt-1">
+            <span className="text-muted-foreground">~52%</span>
+            <span className="text-muted-foreground">~2h kvar</span>
+          </div>
+        </motion.div>
+      )}
+
       {/* Power indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="mt-6 text-center"
+        className="mt-4 text-center"
       >
         <span className="text-2xl font-semibold text-foreground">7.2</span>
         <span className="text-muted-foreground ml-1">kW</span>
