@@ -177,29 +177,42 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
           animate={{ opacity: 1, y: 0 }}
           className="mt-4 w-full max-w-[200px]"
         >
-          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+          {/* Text above the pulsing block */}
+          <div className="flex justify-between text-xs text-muted-foreground mb-2">
             <span>Batterinivå</span>
-            <motion.span
-              animate={{ opacity: [1, 0.6, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-primary"
-            >
-              Laddar...
-            </motion.span>
+            <span className="text-primary">Laddar...</span>
           </div>
-          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ backgroundColor: config.color }}
-              initial={{ width: "52%" }}
-              animate={{ width: "54%" }}
-              transition={{
-                duration: 60,
-                ease: "linear",
-              }}
-            />
-          </div>
-          <div className="flex justify-between text-xs mt-1">
+          
+          {/* Pulsing green block with progress bar */}
+          <motion.div
+            animate={{
+              opacity: [0.6, 0.85, 0.6],
+              scale: [1, 1.01, 1],
+            }}
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="rounded-xl px-3 py-2.5"
+            style={{ backgroundColor: `${config.color}25` }}
+          >
+            <div className="h-2 bg-white/30 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ backgroundColor: config.color }}
+                initial={{ width: "52%" }}
+                animate={{ width: "54%" }}
+                transition={{
+                  duration: 60,
+                  ease: "linear",
+                }}
+              />
+            </div>
+          </motion.div>
+          
+          {/* Text below the pulsing block */}
+          <div className="flex justify-between text-xs mt-2">
             <span className="text-muted-foreground">52%</span>
             <span className="text-muted-foreground">~2h kvar</span>
           </div>
