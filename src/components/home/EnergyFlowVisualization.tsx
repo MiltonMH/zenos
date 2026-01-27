@@ -254,8 +254,9 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Batterinivå</span>
             <motion.span
-              animate={{ opacity: [1, 0.5, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={{ opacity: [1, 0.6, 1] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="text-primary"
             >
               Laddar...
             </motion.span>
@@ -264,17 +265,16 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
             <motion.div
               className="h-full rounded-full"
               style={{ backgroundColor: config.color }}
-              initial={{ width: "45%" }}
-              animate={{ width: ["45%", "48%", "52%", "55%", "58%", "55%", "52%", "48%", "45%"] }}
+              initial={{ width: "52%" }}
+              animate={{ width: "54%" }}
               transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut",
+                duration: 60,
+                ease: "linear",
               }}
             />
           </div>
           <div className="flex justify-between text-xs mt-1">
-            <span className="text-muted-foreground">~52%</span>
+            <span className="text-muted-foreground">52%</span>
             <span className="text-muted-foreground">~2h kvar</span>
           </div>
         </motion.div>
