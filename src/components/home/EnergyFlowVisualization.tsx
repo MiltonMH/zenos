@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, Building2, BatteryCharging } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
@@ -12,16 +13,45 @@ const modeConfig = {
   charging: {
     color: "hsl(var(--energy-charging))",
     label: "Laddar",
+    minPower: 4,
+    maxPower: 8,
   },
   v2h: {
     color: "hsl(var(--energy-v2h))",
     label: "Vehicle-to-Home",
+    minPower: 2,
+    maxPower: 4,
   },
   v2g: {
     color: "hsl(var(--energy-v2g))",
     label: "Vehicle-to-Grid",
+    minPower: 2,
+    maxPower: 6,
   },
 };
+
+// Hook for simulating realistic power fluctuation
+function useDynamicPower(minPower: number, maxPower: number) {
+  const midPoint = (minPower + maxPower) / 2;
+  const [power, setPower] = useState(midPoint);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Small random fluctuation around current value for realism
+      setPower((prev) => {
+        const fluctuation = (Math.random() - 0.5) * 0.6; // ±0.3 kW change
+        const newPower = prev + fluctuation;
+        // Keep within bounds with slight bias toward middle
+        const bounded = Math.max(minPower, Math.min(maxPower, newPower));
+        return Math.round(bounded * 10) / 10; // Round to 1 decimal
+      });
+    }, 1500); // Update every 1.5 seconds
+
+    return () => clearInterval(interval);
+  }, [minPower, maxPower]);
+
+  return power;
+}
 
 // Animated car with battery indicator
 function AnimatedCar({ color, isCharging }: { color: string; isCharging: boolean }) {
@@ -99,6 +129,7 @@ function AnimatedCar({ color, isCharging }: { color: string; isCharging: boolean
 
 export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) {
   const config = modeConfig[mode];
+  const power = useDynamicPower(config.minPower, config.maxPower);
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-6">
@@ -256,7 +287,14 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
         transition={{ delay: 0.3 }}
         className="mt-4 text-center"
       >
-        <span className="text-2xl font-semibold text-foreground">7.2</span>
+        <motion.span 
+          key={power}
+          initial={{ opacity: 0.5, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-2xl font-semibold text-foreground"
+        >
+          {power.toFixed(1)}
+        </motion.span>
         <span className="text-muted-foreground ml-1">kW</span>
       </motion.div>
     </div>
