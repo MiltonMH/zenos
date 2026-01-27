@@ -8,7 +8,7 @@ import Statistics from "./Statistics";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
-  const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("charging");
+  const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
 
   const renderContent = () => {
     switch (activeTab) {
