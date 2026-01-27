@@ -79,11 +79,11 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, onClick }: Action
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex flex-col items-center gap-1.5 px-5 py-3 glass-subtle rounded-2xl min-w-[80px]"
+      className="flex flex-col items-center gap-1 px-3 py-2 glass-subtle rounded-xl min-w-[70px]"
     >
-      <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-      <span className="text-sm font-medium text-foreground">{label}</span>
-      <span className="text-xs text-muted-foreground">{sublabel}</span>
+      <Icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="text-xs font-medium text-foreground">{label}</span>
+      <span className="text-[10px] text-muted-foreground">{sublabel}</span>
     </motion.button>
   );
 }
