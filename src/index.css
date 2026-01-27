@@ -101,16 +101,12 @@
 }
 
 @layer components {
-  /* Gradient background - Mint/Teal/Purple subtle */
+  /* Background image */
   .bg-gradient-mesh {
-    background: 
-      linear-gradient(135deg, 
-        hsl(165 50% 85%) 0%, 
-        hsl(170 45% 82%) 25%,
-        hsl(175 40% 83%) 50%,
-        hsl(240 30% 88%) 75%,
-        hsl(270 35% 88%) 100%
-      );
+    background-image: url('/images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   /* Glass morphism effects - Very subtle for light theme */
