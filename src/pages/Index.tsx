@@ -11,7 +11,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-gradient-mesh flex flex-col">
       {/* Main Card Container */}
-      <div className="flex-1 flex flex-col px-4 py-4 pb-28">
+      <div className="flex-1 flex flex-col px-5 pt-2 pb-28">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
