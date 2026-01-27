@@ -77,98 +77,81 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
       </motion.div>
 
       {/* Energy flow visualization */}
-      <div className="flex items-center justify-center gap-4 w-full max-w-xs">
-        {/* Source */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex flex-col items-center gap-2"
-        >
-          {mode === "charging" ? (
-            <div className="relative">
-              <img 
-                src={chargerBoxImage} 
-                alt="ZenBox Charger" 
-                className="w-16 h-auto opacity-80"
-              />
-            </div>
-          ) : (
+      <motion.div
+        animate={{
+          opacity: [0.5, 0.75, 0.5],
+          scale: [1, 1.01, 1],
+        }}
+        transition={{
+          duration: 2.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="rounded-2xl px-6 py-4"
+        style={{ backgroundColor: `${config.color}20` }}
+      >
+        <div className="flex items-center justify-center gap-4 w-full max-w-xs">
+          {/* Source */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col items-center gap-2"
+          >
+            {mode === "charging" ? (
+              <div className="relative">
+                <img 
+                  src={chargerBoxImage} 
+                  alt="ZenBox Charger" 
+                  className="w-16 h-auto opacity-80"
+                />
+              </div>
+            ) : (
+              <div 
+                className="p-3 rounded-2xl"
+                style={{ backgroundColor: `${config.color}15` }}
+              >
+                <Car className="w-8 h-8" style={{ color: config.color }} />
+              </div>
+            )}
+            <span className="text-xs text-muted-foreground">
+              {mode === "charging" ? "Laddbox" : "Bil"}
+            </span>
+          </motion.div>
+
+          {/* Simple arrow/flow indicator */}
+          <div className="flex-1 flex items-center justify-center relative h-8 mx-2">
             <div 
+              className="w-full h-0.5 rounded-full"
+              style={{ backgroundColor: config.color }}
+            />
+          </div>
+
+          {/* Destination */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex flex-col items-center gap-2"
+          >
+            <div
               className="p-3 rounded-2xl"
               style={{ backgroundColor: `${config.color}15` }}
             >
-              <Car className="w-8 h-8" style={{ color: config.color }} />
+              {mode === "charging" && (
+                <Car className="w-8 h-8" style={{ color: config.color }} />
+              )}
+              {mode === "v2h" && (
+                <Home className="w-8 h-8" style={{ color: config.color }} />
+              )}
+              {mode === "v2g" && (
+                <Building2 className="w-8 h-8" style={{ color: config.color }} />
+              )}
             </div>
-          )}
-          <span className="text-xs text-muted-foreground">
-            {mode === "charging" ? "Laddbox" : "Bil"}
-          </span>
-        </motion.div>
-
-        {/* Animated pulses */}
-        <div className="flex-1 flex items-center justify-center relative h-8 mx-2">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="absolute w-3 h-3 rounded-full"
-              style={{ backgroundColor: config.color }}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{
-                x: ["-100%", "200%"],
-                opacity: [0, 1, 1, 0],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: i * 0.4,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-          {/* Track line */}
-          <div 
-            className="absolute inset-x-0 h-0.5 rounded-full opacity-20"
-            style={{ backgroundColor: config.color }}
-          />
-        </div>
-
-        {/* Destination */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex flex-col items-center gap-2"
-        >
-          <motion.div
-            animate={{
-              boxShadow: [
-                `0 0 0 0 ${config.color}00`,
-                `0 0 20px 5px ${config.color}30`,
-                `0 0 0 0 ${config.color}00`,
-              ],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="p-3 rounded-2xl"
-            style={{ backgroundColor: `${config.color}15` }}
-          >
-            {mode === "charging" && (
-              <Car className="w-8 h-8" style={{ color: config.color }} />
-            )}
-            {mode === "v2h" && (
-              <Home className="w-8 h-8" style={{ color: config.color }} />
-            )}
-            {mode === "v2g" && (
-              <Building2 className="w-8 h-8" style={{ color: config.color }} />
-            )}
+            <span className="text-xs text-muted-foreground">
+              {mode === "charging" ? "Bil" : mode === "v2h" ? "Hem" : "Elnät"}
+            </span>
           </motion.div>
-          <span className="text-xs text-muted-foreground">
-            {mode === "charging" ? "Bil" : mode === "v2h" ? "Hem" : "Elnät"}
-          </span>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
       {/* Battery level indicator for charging mode */}
       {mode === "charging" && (
@@ -177,42 +160,23 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
           animate={{ opacity: 1, y: 0 }}
           className="mt-4 w-full max-w-[200px]"
         >
-          {/* Text above the pulsing block */}
-          <div className="flex justify-between text-xs text-muted-foreground mb-2">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Batterinivå</span>
             <span className="text-primary">Laddar...</span>
           </div>
-          
-          {/* Pulsing green block with progress bar */}
-          <motion.div
-            animate={{
-              opacity: [0.6, 0.85, 0.6],
-              scale: [1, 1.01, 1],
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="rounded-xl px-3 py-2.5"
-            style={{ backgroundColor: `${config.color}25` }}
-          >
-            <div className="h-2 bg-white/30 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ backgroundColor: config.color }}
-                initial={{ width: "52%" }}
-                animate={{ width: "54%" }}
-                transition={{
-                  duration: 60,
-                  ease: "linear",
-                }}
-              />
-            </div>
-          </motion.div>
-          
-          {/* Text below the pulsing block */}
-          <div className="flex justify-between text-xs mt-2">
+          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{ backgroundColor: config.color }}
+              initial={{ width: "52%" }}
+              animate={{ width: "54%" }}
+              transition={{
+                duration: 60,
+                ease: "linear",
+              }}
+            />
+          </div>
+          <div className="flex justify-between text-xs mt-1">
             <span className="text-muted-foreground">52%</span>
             <span className="text-muted-foreground">~2h kvar</span>
           </div>
