@@ -11,9 +11,9 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
   const isLocked = false; // Mock state
 
   return (
-    <div className="h-full flex flex-col items-center justify-center px-6 py-8">
+    <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
       {/* Connection indicator */}
-      <div className="mb-4">
+      <div className="mb-2">
         <div className="w-2.5 h-2.5 rounded-full bg-primary status-pulse" />
       </div>
 
@@ -21,7 +21,7 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="relative mb-8"
+        className="relative mb-6"
       >
         {/* Glow effect behind charger */}
         <motion.div
@@ -38,8 +38,11 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
         />
       </motion.div>
 
+      {/* Spacer to push buttons down */}
+      <div className="flex-1" />
+
       {/* Quick Actions */}
-      <div className="flex gap-4">
+      <div className="flex gap-3 w-full justify-center">
         <ActionButton
           icon={Lock}
           label="Unlock"
@@ -79,11 +82,11 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, onClick }: Action
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex flex-col items-center gap-1 px-3 py-2 glass-subtle rounded-xl min-w-[70px]"
+      className="flex flex-col items-center gap-1.5 px-5 py-3 glass rounded-2xl min-w-[85px]"
     >
-      <Icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-      <span className="text-xs font-medium text-foreground">{label}</span>
-      <span className="text-[10px] text-muted-foreground">{sublabel}</span>
+      <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="text-sm font-medium text-foreground">{label}</span>
+      <span className="text-[11px] text-muted-foreground">{sublabel}</span>
     </motion.button>
   );
 }
