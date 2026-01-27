@@ -1,29 +1,34 @@
 
 
-## Plan: Lägg till Safe Area Inset för iPhone-stöd
+# Plan: Förbättra menyns UI/UX
 
-### Bakgrund
-Appen har redan förberedd CSS för safe-area-insets (`safe-top` och `safe-bottom` klasser) och korrekt viewport-inställning i HTML. Vi behöver bara applicera klasserna på rätt komponenter.
+## Mål
+Göra bottenmenyn mer visuellt tilltalande genom rundare hörn och större ikoner.
 
-### Ändringar
+## Ändringar
 
-**1. Uppdatera huvudcontainern i `src/pages/Index.tsx`**
-- Lägg till `safe-top` klass på huvudcontainern så att innehållet automatiskt flyttas ner förbi kameran/notchen
+### 1. Rundare hörn
+- **Yttre container**: Öka från `rounded-[2rem]` till `rounded-[2.5rem]` (40px) för att matcha huvudkortets rundning
+- **Aktiv indikator**: Öka från `rounded-xl` till `rounded-2xl` för mjukare känsla
 
-**2. Uppdatera navigationen i `src/components/layout/AppBottomNav.tsx`**
-- Navigationen har redan `safe-bottom` klass - inga ändringar behövs här
+### 2. Större ikoner
+- **Ikonstorlek**: Öka från `w-5 h-5` (20px) till `w-6 h-6` (24px)
+- **Text**: Behålla `text-xs` för balans, alternativt öka till `text-sm` om det ser bättre ut
 
-### Tekniska detaljer
+### 3. Förbättrad spacing (valfritt)
+- Justera padding för att ge ikonerna mer utrymme med den nya storleken
+
+## Teknisk implementation
+
+**Fil:** `src/components/layout/AppBottomNav.tsx`
 
 ```text
-src/pages/Index.tsx
-├── Rad 14: Lägg till "safe-top" i className
-│   Från: "flex-1 flex flex-col px-5 pt-2 pb-28"
-│   Till: "flex-1 flex flex-col px-5 pt-2 pb-28 safe-top"
+Före:
+- rounded-[2rem] → rounded-[2.5rem]
+- rounded-xl → rounded-2xl  
+- w-5 h-5 → w-6 h-6
 ```
 
-### Resultat
-- Innehållet kommer automatiskt få tillräckligt med padding högst upp på iPhones med notch (iPhone X och senare)
-- Fungerar även på iPad Pro med avrundade hörn
-- Inga visuella förändringar på enheter utan notch
+## Visuellt resultat
+Menyn kommer kännas mer konsekvent med appens övriga design (huvudkortet har redan `rounded-[2.5rem]`) och ikonerna blir tydligare och lättare att trycka på.
 
