@@ -24,7 +24,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-8 safe-bottom"
+      className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-12 safe-bottom"
     >
       <div className="glass rounded-3xl px-4 py-3 border-2 border-white/50 shadow-lg shadow-black/5">
         <div className="flex items-center justify-around">
