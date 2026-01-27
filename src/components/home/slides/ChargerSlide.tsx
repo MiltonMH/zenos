@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Lock, Clock, Home } from "lucide-react";
+import { Lock, LockOpen, Clock, Home, LucideIcon } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
 
 interface ChargerSlideProps {
@@ -44,7 +44,7 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
       {/* Quick Actions */}
       <div className="flex gap-3 w-full justify-center">
         <ActionButton
-          icon={Lock}
+          icon={isLocked ? Lock : LockOpen}
           label="Lås"
           sublabel={isLocked ? "Låst" : "Olåst"}
           isActive={!isLocked}
@@ -70,7 +70,7 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
 }
 
 interface ActionButtonProps {
-  icon: typeof Lock;
+  icon: LucideIcon;
   label: string;
   sublabel: string;
   isActive: boolean;
