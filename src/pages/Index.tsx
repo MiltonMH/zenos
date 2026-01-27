@@ -15,7 +15,7 @@ export default function Index() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex-1 glass-strong rounded-[2rem] flex flex-col overflow-hidden"
+          className="flex-1 glass-strong rounded-[2.5rem] flex flex-col overflow-hidden border-2 border-white/60"
         >
           {/* Header */}
           <HomeHeader userName="Milton" isOnline={true} />
