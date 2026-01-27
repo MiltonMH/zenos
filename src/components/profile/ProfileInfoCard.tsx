@@ -29,9 +29,9 @@ export function ProfileInfoCard({
   action,
 }: ProfileInfoCardProps) {
   return (
-    <GlassCard className="p-4 flex items-center gap-4">
-      <div className="p-3 rounded-xl bg-primary/10">
-        <Icon className="w-5 h-5 text-primary" />
+    <GlassCard className="p-3 flex items-center gap-3">
+      <div className="p-2 rounded-xl bg-primary/10">
+        <Icon className="w-4 h-4 text-primary" />
       </div>
       
       <div className="flex-1 min-w-0">
