@@ -1,34 +1,74 @@
 
 
-# Plan: Förbättra menyns UI/UX
+# Plan: Statisk laddbox vid idle + Dynamisk visualisering vid aktivitet
 
-## Mål
-Göra bottenmenyn mer visuellt tilltalande genom rundare hörn och större ikoner.
+## Koncept
+När laddboxen är i **idle-läge** (inget händer) visas den befintliga statiska produktbilden precis som idag. När ett aktivt läge är igång (charging, V2H eller V2G) ersätts bilden med den dynamiska energiflödes-visualiseringen.
 
-## Ändringar
+## Logik
 
-### 1. Rundare hörn
-- **Yttre container**: Öka från `rounded-[2rem]` till `rounded-[2.5rem]` (40px) för att matcha huvudkortets rundning
-- **Aktiv indikator**: Öka från `rounded-xl` till `rounded-2xl` för mjukare känsla
-
-### 2. Större ikoner
-- **Ikonstorlek**: Öka från `w-5 h-5` (20px) till `w-6 h-6` (24px)
-- **Text**: Behålla `text-xs` för balans, alternativt öka till `text-sm` om det ser bättre ut
-
-### 3. Förbättrad spacing (valfritt)
-- Justera padding för att ge ikonerna mer utrymme med den nya storleken
+```text
+mode === "idle"     → Statisk laddbox-bild (befintlig design)
+mode === "charging" → Dynamisk: Laddbox → pulser → Bil
+mode === "v2h"      → Dynamisk: Bil → pulser → Hus
+mode === "v2g"      → Dynamisk: Bil → pulser → Elnät
+```
 
 ## Teknisk implementation
 
-**Fil:** `src/components/layout/AppBottomNav.tsx`
+### 1. Ny komponent: `EnergyFlowVisualization.tsx`
+Hanterar de tre aktiva lägena med animerade pulser och ikoner.
+
+### 2. Uppdatering av `ChargerSlide.tsx`
+Villkorlig rendering baserat på mode:
 
 ```text
-Före:
-- rounded-[2rem] → rounded-[2.5rem]
-- rounded-xl → rounded-2xl  
-- w-5 h-5 → w-6 h-6
+{mode === "idle" ? (
+  // Befintlig statisk laddbox-bild
+  <StaticChargerImage />
+) : (
+  // Ny dynamisk visualisering
+  <EnergyFlowVisualization mode={mode} />
+)}
 ```
 
-## Visuellt resultat
-Menyn kommer kännas mer konsekvent med appens övriga design (huvudkortet har redan `rounded-[2.5rem]`) och ikonerna blir tydligare och lättare att trycka på.
+### 3. Uppdatering av lägesknappen
+Cykla genom alla fyra lägen för simulering:
+`idle → charging → v2h → v2g → idle`
+
+### 4. Startläge i Index.tsx
+Ändra standardvärdet från `"charging"` till `"idle"` så att appen startar i viloläge (mer realistiskt).
+
+## Visuell sammanfattning
+
+```text
+┌─────────────────────────────────────────┐
+│              IDLE-LÄGE                  │
+│                                         │
+│         [Statisk laddbox-bild]          │
+│              (som idag)                 │
+│                                         │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│           AKTIVT LÄGE                   │
+│                                         │
+│   [Källa]  ● ● ● →  [Destination]      │
+│            animerade pulser             │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+## Filer som skapas/ändras
+
+| Fil | Åtgärd |
+|-----|--------|
+| `src/components/home/EnergyFlowVisualization.tsx` | Skapa ny |
+| `src/components/home/slides/ChargerSlide.tsx` | Uppdatera med villkorlig rendering |
+| `src/pages/Index.tsx` | Ändra startläge till "idle" |
+
+## Fördelar med denna lösning
+- **Igenkänning**: Kunden ser sin bekanta laddbox när allt är lugnt
+- **Tydlig indikation**: När något händer syns det direkt genom den animerade visualiseringen
+- **Smidig övergång**: Animerad transition mellan statisk och dynamisk vy
 
