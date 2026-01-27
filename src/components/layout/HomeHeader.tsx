@@ -13,7 +13,7 @@ export function HomeHeader({ userName, isOnline }: HomeHeaderProps) {
       </button>
 
       <h1 className="text-lg font-semibold text-foreground">
-        Hello, {userName}
+        Hej, {userName}
       </h1>
 
       <div className={`p-2.5 glass-subtle rounded-2xl ${isOnline ? "text-primary" : "text-foreground/80"}`}>

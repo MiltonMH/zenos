@@ -9,9 +9,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: "home", icon: Home, label: "Home" },
-  { id: "statistics", icon: BarChart2, label: "Statistics" },
-  { id: "profile", icon: User, label: "Profile" },
+  { id: "home", icon: Home, label: "Hem" },
+  { id: "statistics", icon: BarChart2, label: "Statistik" },
+  { id: "profile", icon: User, label: "Profil" },
 ];
 
 interface AppBottomNavProps {
