@@ -1,0 +1,330 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Eye, EyeOff, Copy, Check, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { GlassCard } from "@/components/ui/glass-card";
+import { cn } from "@/lib/utils";
+
+interface EditProfileProps {
+  onBack: () => void;
+}
+
+// Mock data
+const mockUserData = {
+  name: "Milton Svensson",
+  email: "milton@example.com",
+  phone: "+46 70 123 45 67",
+  address: "Storgatan 1, 123 45 Stockholm",
+  chargerModel: "Zenion Arc",
+  serialNumber: "ZEN-2024-ABC123",
+  pinCode: "1234",
+  fuse: "20A",
+  gridCompany: "Vattenfall Eldistribution",
+  electricityProvider: "Tibber",
+};
+
+const fuseOptions = ["10A", "16A", "20A", "25A", "32A"];
+
+const gridCompanies = [
+  "Vattenfall Eldistribution",
+  "E.ON Energidistribution",
+  "Ellevio",
+  "Göteborg Energi Nät",
+  "Kraftringen Nät",
+  "Öresundskraft Nät",
+];
+
+const electricityProviders = [
+  "Tibber",
+  "Fortum",
+  "Vattenfall",
+  "E.ON",
+  "GodEl",
+  "Greenely",
+  "Bixia",
+];
+
+export function EditProfile({ onBack }: EditProfileProps) {
+  const [formData, setFormData] = useState(mockUserData);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [showPin, setShowPin] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  const handleCopySerial = () => {
+    navigator.clipboard.writeText(formData.serialNumber);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSave = () => {
+    console.log("Saving:", formData);
+    setHasChanges(false);
+    onBack();
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-2 py-4">
+        <button
+          onClick={onBack}
+          className="p-2 text-foreground/80 hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        
+        <h1 className="text-lg font-semibold text-foreground">Redigera Profil</h1>
+        
+        <Button
+          size="sm"
+          onClick={handleSave}
+          disabled={!hasChanges}
+          className={cn(
+            "text-sm h-8 px-3 rounded-xl",
+            !hasChanges && "opacity-50"
+          )}
+        >
+          Spara
+        </Button>
+      </div>
+
+      {/* Form Sections */}
+      <div className="flex-1 overflow-y-auto scrollbar-hide px-2 pb-4">
+        <Accordion type="single" collapsible defaultValue="personal" className="space-y-3">
+          {/* Personal Information */}
+          <AccordionItem value="personal" className="border-0">
+            <GlassCard className="p-0 overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">Personuppgifter</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-xs text-muted-foreground">Namn</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    className="h-10 rounded-xl bg-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-xs text-muted-foreground">E-post</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    className="h-10 rounded-xl bg-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-xs text-muted-foreground">Telefon</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleChange("phone", e.target.value)}
+                    className="h-10 rounded-xl bg-white/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="address" className="text-xs text-muted-foreground">Adress</Label>
+                  <Textarea
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => handleChange("address", e.target.value)}
+                    className="min-h-[80px] rounded-xl bg-white/50 resize-none"
+                  />
+                </div>
+              </AccordionContent>
+            </GlassCard>
+          </AccordionItem>
+
+          {/* Charger Section */}
+          <AccordionItem value="charger" className="border-0">
+            <GlassCard className="p-0 overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">Laddbox</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Laddboxmodell</Label>
+                  <p className="text-sm text-muted-foreground/70 py-2">{formData.chargerModel}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Serienummer</Label>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-muted-foreground/70 py-2 flex-1">{formData.serialNumber}</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleCopySerial}
+                      className="h-8 w-8 p-0"
+                    >
+                      {copied ? (
+                        <Check className="w-4 h-4 text-success" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Pinkod</Label>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-muted-foreground/70 py-2 flex-1 font-mono">
+                      {showPin ? formData.pinCode : "••••"}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowPin(!showPin)}
+                      className="h-8 w-8 p-0"
+                    >
+                      {showPin ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Säkring på hemmet</Label>
+                  <Select
+                    value={formData.fuse}
+                    onValueChange={(value) => handleChange("fuse", value)}
+                  >
+                    <SelectTrigger className="h-10 rounded-xl bg-white/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
+                      {fuseOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </AccordionContent>
+            </GlassCard>
+          </AccordionItem>
+
+          {/* Electricity Section */}
+          <AccordionItem value="electricity" className="border-0">
+            <GlassCard className="p-0 overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">Elnät + Elhandel</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Elnätsbolag</Label>
+                  <Select
+                    value={formData.gridCompany}
+                    onValueChange={(value) => handleChange("gridCompany", value)}
+                  >
+                    <SelectTrigger className="h-10 rounded-xl bg-white/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
+                      {gridCompanies.map((company) => (
+                        <SelectItem key={company} value={company}>
+                          {company}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Elhandelsbolag</Label>
+                  <Select
+                    value={formData.electricityProvider}
+                    onValueChange={(value) => handleChange("electricityProvider", value)}
+                  >
+                    <SelectTrigger className="h-10 rounded-xl bg-white/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
+                      {electricityProviders.map((provider) => (
+                        <SelectItem key={provider} value={provider}>
+                          {provider}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </AccordionContent>
+            </GlassCard>
+          </AccordionItem>
+
+          {/* Security Section */}
+          <AccordionItem value="security" className="border-0">
+            <GlassCard className="p-0 overflow-hidden">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <span className="text-sm font-medium">Säkerhet</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 space-y-3">
+                <Button
+                  variant="outline"
+                  className="w-full h-10 rounded-xl justify-start"
+                  onClick={() => console.log("Change password")}
+                >
+                  Byt lösenord
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full h-10 rounded-xl justify-start"
+                  onClick={() => console.log("Share charger")}
+                >
+                  Dela laddbox
+                </Button>
+              </AccordionContent>
+            </GlassCard>
+          </AccordionItem>
+        </Accordion>
+      </div>
+
+      {/* Bottom Actions */}
+      <div className="px-2 py-4 space-y-3">
+        <Button
+          onClick={handleSave}
+          disabled={!hasChanges}
+          className="w-full h-12 text-base font-medium rounded-2xl"
+          size="lg"
+        >
+          Spara
+        </Button>
+        <Button
+          variant="ghost"
+          className="w-full h-10 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl"
+          onClick={() => console.log("Logout")}
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Logga ut
+        </Button>
+      </div>
+    </div>
+  );
+}

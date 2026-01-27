@@ -3,10 +3,34 @@ import { motion } from "framer-motion";
 import { HomeHeader } from "@/components/layout/HomeHeader";
 import { AppBottomNav } from "@/components/layout/AppBottomNav";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
+import Profile from "./Profile";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("charging");
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "profile":
+        return <Profile />;
+      case "statistics":
+        return (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-muted-foreground">Statistik kommer snart</p>
+          </div>
+        );
+      default:
+        return (
+          <>
+            <HomeHeader userName="Milton" isOnline={true} />
+            <HomeCarousel 
+              chargingMode={chargingMode} 
+              onModeChange={setChargingMode} 
+            />
+          </>
+        );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-mesh flex flex-col">
@@ -17,14 +41,7 @@ export default function Index() {
           animate={{ opacity: 1, y: 0 }}
           className="flex-1 glass-strong rounded-[2.5rem] flex flex-col overflow-hidden border-2 border-white/60"
         >
-          {/* Header */}
-          <HomeHeader userName="Milton" isOnline={true} />
-
-          {/* Carousel Content */}
-          <HomeCarousel 
-            chargingMode={chargingMode} 
-            onModeChange={setChargingMode} 
-          />
+          {renderContent()}
         </motion.div>
       </div>
 
