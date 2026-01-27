@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-type Period = "D" | "W" | "M" | "Y";
+type Period = "D" | "V" | "M" | "Å";
 
 export function MonthStatsSlide() {
   const [period, setPeriod] = useState<Period>("M");
 
   const stats = {
-    charged: { value: 344, unit: "kW", color: "bg-[hsl(235,60%,60%)]" },
-    v2h: { value: 63, unit: "kW", color: "bg-[hsl(145,55%,55%)]" },
+    charged: { value: 344, unit: "kWh", color: "bg-[hsl(235,60%,60%)]" },
+    v2h: { value: 63, unit: "kWh", color: "bg-[hsl(145,55%,55%)]" },
     spent: { value: 240, unit: "kr", color: "bg-[hsl(15,70%,70%)]" },
   };
 
@@ -20,14 +20,23 @@ export function MonthStatsSlide() {
     spent: (stats.spent.value / maxValue) * 100,
   };
 
+  const getPeriodLabel = () => {
+    switch (period) {
+      case "D": return "Idag";
+      case "V": return "Denna vecka";
+      case "M": return "Denna månad";
+      case "Å": return "Detta år";
+    }
+  };
+
   return (
     <div className="h-full flex flex-col items-center px-6 pt-4">
       {/* Title */}
-      <h2 className="text-xl font-semibold text-foreground mb-4">This Month</h2>
+      <h2 className="text-xl font-semibold text-foreground mb-4">{getPeriodLabel()}</h2>
 
       {/* Period Toggle */}
       <div className="pill-toggle mb-8">
-        {(["D", "W", "M", "Y"] as Period[]).map((p) => (
+        {(["D", "V", "M", "Å"] as Period[]).map((p) => (
           <button
             key={p}
             onClick={() => setPeriod(p)}
@@ -55,7 +64,7 @@ export function MonthStatsSlide() {
       <div className="w-full max-w-[280px] space-y-2 mb-4">
         <StatRow
           color="bg-[hsl(235,60%,60%)]"
-          label="Charged"
+          label="Laddat"
           value={stats.charged.value}
           unit={stats.charged.unit}
         />
@@ -67,7 +76,7 @@ export function MonthStatsSlide() {
         />
         <StatRow
           color="bg-[hsl(15,70%,70%)]"
-          label="Spent"
+          label="Kostnad"
           value={stats.spent.value}
           unit={stats.spent.unit}
         />

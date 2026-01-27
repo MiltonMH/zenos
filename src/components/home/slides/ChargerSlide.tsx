@@ -45,21 +45,21 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
       <div className="flex gap-3 w-full justify-center">
         <ActionButton
           icon={Lock}
-          label="Unlock"
-          sublabel={isLocked ? "Locked" : "Unlocked"}
+          label="Lås"
+          sublabel={isLocked ? "Låst" : "Olåst"}
           isActive={!isLocked}
           onClick={() => {}}
         />
         <ActionButton
           icon={Home}
-          label="Mode"
-          sublabel={mode === "v2h" ? "V2H" : mode === "v2g" ? "V2G" : "Charge"}
+          label="Läge"
+          sublabel={mode === "v2h" ? "V2H" : mode === "v2g" ? "V2G" : "Ladda"}
           isActive={mode !== "idle"}
           onClick={() => onModeChange(mode === "charging" ? "v2h" : "charging")}
         />
         <ActionButton
           icon={Clock}
-          label="Schedule"
+          label="Schema"
           sublabel="Auto"
           isActive={true}
           onClick={() => {}}
