@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-
-type Period = "D" | "V" | "M" | "Å";
+import { getStatsForPeriod, type Period } from "@/lib/statistics-data";
 
 export function MonthStatsSlide() {
   const [period, setPeriod] = useState<Period>("M");
 
+  const periodStats = getStatsForPeriod(period);
+  
   const stats = {
-    charged: { value: 344, unit: "kWh", color: "bg-[hsl(235,60%,60%)]" },
-    v2h: { value: 63, unit: "kWh", color: "bg-[hsl(145,55%,55%)]" },
-    spent: { value: 240, unit: "kr", color: "bg-[hsl(15,70%,70%)]" },
+    charged: { value: periodStats.charged, unit: "kWh", color: "bg-[hsl(235,60%,60%)]" },
+    v2h: { value: periodStats.v2h, unit: "kWh", color: "bg-[hsl(145,55%,55%)]" },
+    spent: { value: periodStats.cost, unit: "kr", color: "bg-[hsl(15,70%,70%)]" },
   };
 
   // Bar heights based on values (normalized)

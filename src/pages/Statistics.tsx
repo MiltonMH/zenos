@@ -10,89 +10,44 @@ import {
   Bar,
   Cell
 } from "recharts";
-import { Zap, TrendingUp, TrendingDown, Clock, Battery, Plug } from "lucide-react";
+import { Zap, TrendingUp, TrendingDown, Battery, Plug } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
-
-type Period = "D" | "V" | "M" | "Å";
-
-// Mock data för olika perioder
-const weeklyData = [
-  { day: "Mån", charged: 12, v2h: 3, cost: 42 },
-  { day: "Tis", charged: 8, v2h: 0, cost: 28 },
-  { day: "Ons", charged: 15, v2h: 5, cost: 52 },
-  { day: "Tor", charged: 0, v2h: 0, cost: 0 },
-  { day: "Fre", charged: 22, v2h: 8, cost: 77 },
-  { day: "Lör", charged: 18, v2h: 4, cost: 63 },
-  { day: "Sön", charged: 10, v2h: 2, cost: 35 },
-];
-
-const monthlyData = [
-  { week: "V1", charged: 65, v2h: 12, cost: 228 },
-  { week: "V2", charged: 82, v2h: 18, cost: 287 },
-  { week: "V3", charged: 71, v2h: 15, cost: 249 },
-  { week: "V4", charged: 126, v2h: 18, cost: 441 },
-];
-
-// Mock laddningshistorik
-const chargingHistory = [
-  {
-    id: 1,
-    date: "Idag",
-    time: "06:30 - 08:15",
-    energy: 24.5,
-    cost: 48.50,
-    type: "charging" as const,
-    priceAvg: 1.98,
-  },
-  {
-    id: 2,
-    date: "Idag",
-    time: "14:00 - 15:30",
-    energy: 8.2,
-    cost: 0,
-    type: "v2h" as const,
-    priceAvg: 2.85,
-  },
-  {
-    id: 3,
-    date: "Igår",
-    time: "22:00 - 06:00",
-    energy: 42.0,
-    cost: 67.20,
-    type: "charging" as const,
-    priceAvg: 1.60,
-  },
-  {
-    id: 4,
-    date: "Igår",
-    time: "17:00 - 19:00",
-    energy: 12.5,
-    cost: 0,
-    type: "v2h" as const,
-    priceAvg: 3.20,
-  },
-  {
-    id: 5,
-    date: "25 jan",
-    time: "23:00 - 05:00",
-    energy: 35.0,
-    cost: 52.50,
-    type: "charging" as const,
-    priceAvg: 1.50,
-  },
-];
+import { 
+  weeklyData, 
+  monthlyData, 
+  yearlyData, 
+  dailyData, 
+  chargingHistory,
+  getStatsForPeriod,
+  type Period 
+} from "@/lib/statistics-data";
 
 export default function Statistics() {
   const [period, setPeriod] = useState<Period>("V");
 
-  const data = period === "V" ? weeklyData : monthlyData;
-  const xKey = period === "V" ? "day" : "week";
+  const getChartData = () => {
+    switch (period) {
+      case "D": return dailyData;
+      case "V": return weeklyData;
+      case "M": return monthlyData;
+      case "Å": return yearlyData;
+    }
+  };
 
-  // Beräkna totaler
-  const totalCharged = data.reduce((sum, d) => sum + d.charged, 0);
-  const totalV2H = data.reduce((sum, d) => sum + d.v2h, 0);
-  const totalCost = data.reduce((sum, d) => sum + d.cost, 0);
-  const avgPrice = totalCost / totalCharged;
+  const getXKey = () => {
+    switch (period) {
+      case "D": return "hour";
+      case "V": return "day";
+      case "M": return "week";
+      case "Å": return "month";
+    }
+  };
+
+  const data = getChartData();
+  const xKey = getXKey();
+
+  const stats = getStatsForPeriod(period);
+  const avgPrice = stats.cost / stats.charged;
 
   const getPeriodLabel = () => {
     switch (period) {
@@ -138,7 +93,7 @@ export default function Statistics() {
                 <Zap className="w-4 h-4 text-primary" />
                 <span className="text-xs text-muted-foreground">Laddat</span>
               </div>
-              <div className="text-xl font-bold text-foreground">{totalCharged} kWh</div>
+              <div className="text-xl font-bold text-foreground">{stats.charged} kWh</div>
             </GlassCard>
           </motion.div>
 
@@ -152,7 +107,7 @@ export default function Statistics() {
                 <Battery className="w-4 h-4 text-success" />
                 <span className="text-xs text-muted-foreground">V2H</span>
               </div>
-              <div className="text-xl font-bold text-foreground">{totalV2H} kWh</div>
+              <div className="text-xl font-bold text-foreground">{stats.v2h} kWh</div>
             </GlassCard>
           </motion.div>
 
@@ -166,7 +121,7 @@ export default function Statistics() {
                 <TrendingDown className="w-4 h-4 text-destructive" />
                 <span className="text-xs text-muted-foreground">Kostnad</span>
               </div>
-              <div className="text-xl font-bold text-foreground">{totalCost} kr</div>
+              <div className="text-xl font-bold text-foreground">{stats.cost} kr</div>
             </GlassCard>
           </motion.div>
 
