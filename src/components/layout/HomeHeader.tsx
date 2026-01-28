@@ -11,17 +11,17 @@ export function HomeHeader({ userName, isOnline, onSettingsClick }: HomeHeaderPr
     <div className="flex items-center justify-between px-6 py-4">
       <button 
         onClick={onSettingsClick}
-        className="p-2.5 glass-subtle rounded-2xl text-foreground/80 hover:text-foreground transition-colors"
+        className="text-foreground/70 hover:text-foreground transition-colors"
       >
-        <Settings className="w-6 h-6" />
+        <Settings className="w-7 h-7" />
       </button>
 
       <h1 className="text-lg font-semibold text-foreground">
         Hej, {userName}
       </h1>
 
-      <div className={`p-2.5 glass-subtle rounded-2xl ${isOnline ? "text-primary" : "text-foreground/80"}`}>
-        <Wifi className="w-6 h-6" />
+      <div className={isOnline ? "text-primary" : "text-foreground/70"}>
+        <Wifi className="w-7 h-7" />
       </div>
     </div>
   );
