@@ -4,10 +4,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
 import { AdvancedSlide } from "./slides/AdvancedSlide";
+import { useHaptics } from "@/hooks/useHaptics";
 
 export function SettingsCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
+  const { lightImpact, selectionChanged } = useHaptics();
   
   // Settings state
   const [v2hEnabled, setV2hEnabled] = useState(false);
@@ -62,12 +64,14 @@ export function SettingsCarousel() {
   const goToSlide = (index: number) => {
     setDirection(index > currentSlide ? 1 : -1);
     setCurrentSlide(index);
+    lightImpact();
   };
 
   const goNext = () => {
     if (currentSlide < slides.length - 1) {
       setDirection(1);
       setCurrentSlide(currentSlide + 1);
+      selectionChanged();
     }
   };
 
@@ -75,6 +79,7 @@ export function SettingsCarousel() {
     if (currentSlide > 0) {
       setDirection(-1);
       setCurrentSlide(currentSlide - 1);
+      selectionChanged();
     }
   };
 
