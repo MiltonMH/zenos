@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargerSlide } from "./slides/ChargerSlide";
 import { MonthStatsSlide } from "./slides/MonthStatsSlide";
 import { EnergyPriceSlide } from "./slides/EnergyPriceSlide";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface HomeCarouselProps {
   chargingMode: "idle" | "charging" | "v2h" | "v2g";
@@ -14,6 +15,7 @@ export function HomeCarousel({ chargingMode, onModeChange }: HomeCarouselProps) 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { lightImpact, selectionChanged } = useHaptics();
   
   const slides = [
     { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} /> },
@@ -24,12 +26,14 @@ export function HomeCarousel({ chargingMode, onModeChange }: HomeCarouselProps) 
   const goToSlide = (index: number) => {
     setDirection(index > currentSlide ? 1 : -1);
     setCurrentSlide(index);
+    lightImpact();
   };
 
   const goNext = () => {
     if (currentSlide < slides.length - 1) {
       setDirection(1);
       setCurrentSlide(currentSlide + 1);
+      selectionChanged();
     }
   };
 
@@ -37,6 +41,7 @@ export function HomeCarousel({ chargingMode, onModeChange }: HomeCarouselProps) 
     if (currentSlide > 0) {
       setDirection(-1);
       setCurrentSlide(currentSlide - 1);
+      selectionChanged();
     }
   };
 
