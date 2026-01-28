@@ -19,7 +19,7 @@ export default function Index() {
       default:
         return (
           <>
-            <HomeHeader userName="Milton" isOnline={true} />
+            <HomeHeader userName="Erik" isOnline={true} />
             <HomeCarousel 
               chargingMode={chargingMode} 
               onModeChange={setChargingMode} 
