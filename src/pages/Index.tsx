@@ -5,12 +5,18 @@ import { AppBottomNav } from "@/components/layout/AppBottomNav";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
 import Profile from "./Profile";
 import Statistics from "./Statistics";
+import Settings from "./Settings";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
+  const [showSettings, setShowSettings] = useState(false);
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
 
   const renderContent = () => {
+    if (showSettings) {
+      return <Settings onBack={() => setShowSettings(false)} />;
+    }
+
     switch (activeTab) {
       case "profile":
         return <Profile />;
@@ -19,7 +25,11 @@ export default function Index() {
       default:
         return (
           <>
-            <HomeHeader userName="Max" isOnline={true} />
+            <HomeHeader 
+              userName="Max" 
+              isOnline={true} 
+              onSettingsClick={() => setShowSettings(true)} 
+            />
             <HomeCarousel 
               chargingMode={chargingMode} 
               onModeChange={setChargingMode} 
@@ -43,7 +53,9 @@ export default function Index() {
       </div>
 
       {/* Bottom Navigation */}
-      <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {!showSettings && (
+        <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      )}
     </div>
   );
 }

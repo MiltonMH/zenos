@@ -3,12 +3,16 @@ import { Settings, Wifi } from "lucide-react";
 interface HomeHeaderProps {
   userName: string;
   isOnline: boolean;
+  onSettingsClick?: () => void;
 }
 
-export function HomeHeader({ userName, isOnline }: HomeHeaderProps) {
+export function HomeHeader({ userName, isOnline, onSettingsClick }: HomeHeaderProps) {
   return (
     <div className="flex items-center justify-between px-6 py-4">
-      <button className="p-2.5 glass-subtle rounded-2xl text-foreground/80 hover:text-foreground transition-colors">
+      <button 
+        onClick={onSettingsClick}
+        className="p-2.5 glass-subtle rounded-2xl text-foreground/80 hover:text-foreground transition-colors"
+      >
         <Settings className="w-6 h-6" />
       </button>
 
