@@ -27,7 +27,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
       className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-12 safe-bottom"
     >
       <div 
-        className="relative rounded-[2.5rem] px-4 py-4 shadow-2xl shadow-black/10 overflow-hidden"
+        className="relative rounded-[3rem] px-4 py-4 shadow-2xl shadow-black/10 overflow-hidden"
         style={{
           background: "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.6) 100%)",
           backdropFilter: "blur(24px) saturate(180%)",
@@ -86,7 +86,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
                 {isActive && (
                   <motion.div
                     layoutId="activeNavTab"
-                    className="absolute inset-0 rounded-2xl overflow-hidden"
+                    className="absolute inset-0 rounded-3xl overflow-hidden"
                     style={{
                       background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%)",
                       boxShadow: "0 4px 15px -3px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,1)",
