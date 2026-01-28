@@ -7,9 +7,9 @@ import { EditProfile } from "./EditProfile";
 
 // Mock user data
 const mockUser = {
-  name: "Erik Lindström",
+  name: "Max Andersson",
   carModel: "Tesla Model Y",
-  email: "milton@example.com",
+  email: "max@example.com",
   isPremium: true,
   chargerModel: "Zenion Arc",
   chargerVersion: "2.1.4",
