@@ -8,7 +8,7 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ userName, isOnline, onSettingsClick }: HomeHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-6 py-4">
+    <div className="flex items-center justify-between px-6 pt-8 pb-4">
       <button 
         onClick={onSettingsClick}
         className="text-foreground/70 hover:text-foreground transition-colors"
