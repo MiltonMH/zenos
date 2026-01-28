@@ -1,74 +1,76 @@
 
 
-# Plan: Statisk laddbox vid idle + Dynamisk visualisering vid aktivitet
+## Haptic Feedback för Karusellnavigering
 
-## Koncept
-När laddboxen är i **idle-läge** (inget händer) visas den befintliga statiska produktbilden precis som idag. När ett aktivt läge är igång (charging, V2H eller V2G) ersätts bilden med den dynamiska energiflödes-visualiseringen.
+### Översikt
+Lägger till haptic feedback (vibration) när användaren swiper mellan sektioner i karusellerna. Detta ger en mer native app-känsla på iOS och Android.
 
-## Logik
+### Vad som händer
+När du swiper mellan slides på hem- eller inställningssidan kommer telefonen ge en lätt "knäpp"-känsla - samma typ av feedback som när du scrollar genom en lista i en native app.
 
-```text
-mode === "idle"     → Statisk laddbox-bild (befintlig design)
-mode === "charging" → Dynamisk: Laddbox → pulser → Bil
-mode === "v2h"      → Dynamisk: Bil → pulser → Hus
-mode === "v2g"      → Dynamisk: Bil → pulser → Elnät
+---
+
+## Teknisk Implementation
+
+### 1. Installera Capacitor Haptics Plugin
+```bash
+npm install @capacitor/haptics
 ```
 
-## Teknisk implementation
+### 2. Skapa en återanvändbar haptics-hook
+**Ny fil: `src/hooks/useHaptics.ts`**
 
-### 1. Ny komponent: `EnergyFlowVisualization.tsx`
-Hanterar de tre aktiva lägena med animerade pulser och ikoner.
+```typescript
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Capacitor } from '@capacitor/core';
 
-### 2. Uppdatering av `ChargerSlide.tsx`
-Villkorlig rendering baserat på mode:
+export function useHaptics() {
+  const isNative = Capacitor.isNativePlatform();
 
-```text
-{mode === "idle" ? (
-  // Befintlig statisk laddbox-bild
-  <StaticChargerImage />
-) : (
-  // Ny dynamisk visualisering
-  <EnergyFlowVisualization mode={mode} />
-)}
+  const lightImpact = async () => {
+    if (isNative) {
+      await Haptics.impact({ style: ImpactStyle.Light });
+    }
+  };
+
+  const selectionChanged = async () => {
+    if (isNative) {
+      await Haptics.selectionChanged();
+    }
+  };
+
+  return { lightImpact, selectionChanged };
+}
 ```
 
-### 3. Uppdatering av lägesknappen
-Cykla genom alla fyra lägen för simulering:
-`idle → charging → v2h → v2g → idle`
+### 3. Integrera i HomeCarousel
+**Fil: `src/components/home/HomeCarousel.tsx`**
 
-### 4. Startläge i Index.tsx
-Ändra standardvärdet från `"charging"` till `"idle"` så att appen startar i viloläge (mer realistiskt).
+- Importera `useHaptics`
+- Anropa `selectionChanged()` när slide ändras via swipe
+- Anropa `lightImpact()` vid tap på dot-indikatorer
 
-## Visuell sammanfattning
+### 4. Integrera i SettingsCarousel
+**Fil: `src/components/settings/SettingsCarousel.tsx`**
 
-```text
-┌─────────────────────────────────────────┐
-│              IDLE-LÄGE                  │
-│                                         │
-│         [Statisk laddbox-bild]          │
-│              (som idag)                 │
-│                                         │
-└─────────────────────────────────────────┘
+- Samma mönster som HomeCarousel
+- Haptic feedback vid swipe och tab-klick
 
-┌─────────────────────────────────────────┐
-│           AKTIVT LÄGE                   │
-│                                         │
-│   [Källa]  ● ● ● →  [Destination]      │
-│            animerade pulser             │
-│                                         │
-└─────────────────────────────────────────┘
-```
+---
 
-## Filer som skapas/ändras
+## Sammanfattning av ändringar
 
-| Fil | Åtgärd |
-|-----|--------|
-| `src/components/home/EnergyFlowVisualization.tsx` | Skapa ny |
-| `src/components/home/slides/ChargerSlide.tsx` | Uppdatera med villkorlig rendering |
-| `src/pages/Index.tsx` | Ändra startläge till "idle" |
+| Fil | Ändring |
+|-----|---------|
+| `package.json` | Lägg till `@capacitor/haptics` |
+| `src/hooks/useHaptics.ts` | Ny hook för haptic feedback |
+| `src/components/home/HomeCarousel.tsx` | Trigga haptics vid navigation |
+| `src/components/settings/SettingsCarousel.tsx` | Trigga haptics vid navigation |
 
-## Fördelar med denna lösning
-- **Igenkänning**: Kunden ser sin bekanta laddbox när allt är lugnt
-- **Tydlig indikation**: När något händer syns det direkt genom den animerade visualiseringen
-- **Smidig övergång**: Animerad transition mellan statisk och dynamisk vy
+---
+
+## Notera
+- Haptic feedback fungerar endast på fysiska enheter (iOS/Android)
+- I webbläsaren/preview ignoreras anropen utan fel
+- Efter implementation, kör `npx cap sync` för att synka plugin till native-projekten
 
