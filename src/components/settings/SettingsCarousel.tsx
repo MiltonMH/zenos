@@ -1,15 +1,11 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
-import { useHaptics } from "@/hooks/useHaptics";
+import { useCarousel } from "@/hooks/useCarousel";
 
 export function SettingsCarousel() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const { lightImpact, selectionChanged } = useHaptics();
-  
   // Settings state
   const [chargeLimit, setChargeLimit] = useState([90]);
   const [v2hEnabled, setV2hEnabled] = useState(false);
@@ -46,65 +42,19 @@ export function SettingsCarousel() {
     },
   ];
 
-  const goToSlide = (index: number) => {
-    setDirection(index > currentSlide ? 1 : -1);
-    setCurrentSlide(index);
-    lightImpact();
-  };
-
-  const goNext = () => {
-    if (currentSlide < slides.length - 1) {
-      setDirection(1);
-      setCurrentSlide(currentSlide + 1);
-      selectionChanged();
-    }
-  };
-
-  const goPrev = () => {
-    if (currentSlide > 0) {
-      setDirection(-1);
-      setCurrentSlide(currentSlide - 1);
-      selectionChanged();
-    }
-  };
-
-  // Touch/swipe handling
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        goNext();
-      } else {
-        goPrev();
-      }
-    }
-  };
-
-  const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-    }),
-  };
+  const {
+    currentSlide,
+    direction,
+    goToSlide,
+    goNext,
+    goPrev,
+    canGoNext,
+    canGoPrev,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    variants,
+  } = useCarousel({ totalSlides: slides.length });
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
@@ -148,7 +98,7 @@ export function SettingsCarousel() {
         </AnimatePresence>
 
         {/* Navigation arrows */}
-        {currentSlide > 0 && (
+        {canGoPrev && (
           <button
             onClick={goPrev}
             className="absolute left-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
@@ -156,7 +106,7 @@ export function SettingsCarousel() {
             <ChevronLeft className="w-5 h-5" />
           </button>
         )}
-        {currentSlide < slides.length - 1 && (
+        {canGoNext && (
           <button
             onClick={goNext}
             className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/50 hover:text-muted-foreground transition-colors"

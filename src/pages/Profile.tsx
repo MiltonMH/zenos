@@ -4,17 +4,7 @@ import { Mail, Crown, Zap, Car, Wrench, Pencil, User } from "lucide-react";
 import { ProfileInfoCard } from "@/components/profile/ProfileInfoCard";
 import { Button } from "@/components/ui/button";
 import { EditProfile } from "./EditProfile";
-
-// Mock user data
-const mockUser = {
-  name: "Max Andersson",
-  carModel: "Tesla Model Y",
-  email: "max@example.com",
-  isPremium: true,
-  chargerModel: "Zenion Arc",
-  chargerVersion: "2.1.4",
-  installer: "ElTech Solutions AB",
-};
+import { mockUser } from "@/lib/mock-data";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -97,8 +87,8 @@ export default function Profile() {
           <ProfileInfoCard
             icon={Zap}
             label="Laddbox"
-            value={mockUser.chargerModel}
-            secondaryValue={`Version ${mockUser.chargerVersion}`}
+            value={mockUser.charger.model}
+            secondaryValue={`Version ${mockUser.charger.version}`}
           />
         </motion.div>
 

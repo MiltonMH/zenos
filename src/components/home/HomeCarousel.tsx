@@ -1,10 +1,9 @@
-import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargerSlide } from "./slides/ChargerSlide";
 import { MonthStatsSlide } from "./slides/MonthStatsSlide";
 import { EnergyPriceSlide } from "./slides/EnergyPriceSlide";
-import { useHaptics } from "@/hooks/useHaptics";
+import { useCarousel } from "@/hooks/useCarousel";
 
 interface HomeCarouselProps {
   chargingMode: "idle" | "charging" | "v2h" | "v2g";
@@ -13,76 +12,25 @@ interface HomeCarouselProps {
 }
 
 export function HomeCarousel({ chargingMode, onModeChange, onScheduleClick }: HomeCarouselProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { lightImpact, selectionChanged } = useHaptics();
-  
   const slides = [
     { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} onScheduleClick={onScheduleClick} /> },
     { id: "stats", component: <MonthStatsSlide /> },
     { id: "price", component: <EnergyPriceSlide /> },
   ];
 
-  const goToSlide = (index: number) => {
-    setDirection(index > currentSlide ? 1 : -1);
-    setCurrentSlide(index);
-    lightImpact();
-  };
-
-  const goNext = () => {
-    if (currentSlide < slides.length - 1) {
-      setDirection(1);
-      setCurrentSlide(currentSlide + 1);
-      selectionChanged();
-    }
-  };
-
-  const goPrev = () => {
-    if (currentSlide > 0) {
-      setDirection(-1);
-      setCurrentSlide(currentSlide - 1);
-      selectionChanged();
-    }
-  };
-
-  // Touch/swipe handling
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        goNext();
-      } else {
-        goPrev();
-      }
-    }
-  };
-
-  const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-    }),
-  };
+  const {
+    currentSlide,
+    direction,
+    goToSlide,
+    goNext,
+    goPrev,
+    canGoNext,
+    canGoPrev,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    variants,
+  } = useCarousel({ totalSlides: slides.length });
 
   return (
     <div className="relative flex-1 flex flex-col">
@@ -103,7 +51,6 @@ export function HomeCarousel({ chargingMode, onModeChange, onScheduleClick }: Ho
 
       {/* Carousel content */}
       <div 
-        ref={containerRef}
         className="flex-1 relative overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -125,7 +72,7 @@ export function HomeCarousel({ chargingMode, onModeChange, onScheduleClick }: Ho
         </AnimatePresence>
 
         {/* Navigation arrows */}
-        {currentSlide > 0 && (
+        {canGoPrev && (
           <button
             onClick={goPrev}
             className="absolute left-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
@@ -133,7 +80,7 @@ export function HomeCarousel({ chargingMode, onModeChange, onScheduleClick }: Ho
             <ChevronLeft className="w-6 h-6" />
           </button>
         )}
-        {currentSlide < slides.length - 1 && (
+        {canGoNext && (
           <button
             onClick={goNext}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
