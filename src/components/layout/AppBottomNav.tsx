@@ -1,15 +1,17 @@
 import { motion } from "framer-motion";
-import { Home, BarChart2, User } from "lucide-react";
+import { BarChart2, User, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ChargerIcon } from "@/components/icons/ChargerIcon";
+import { ComponentType } from "react";
 
 interface NavItem {
   id: string;
-  icon: typeof Home;
+  icon: LucideIcon | ComponentType<{ className?: string }>;
   label: string;
 }
 
 const navItems: NavItem[] = [
-  { id: "home", icon: Home, label: "Hem" },
+  { id: "home", icon: ChargerIcon, label: "Hem" },
   { id: "statistics", icon: BarChart2, label: "Statistik" },
   { id: "profile", icon: User, label: "Profil" },
 ];
