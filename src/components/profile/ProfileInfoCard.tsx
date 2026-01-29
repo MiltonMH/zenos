@@ -1,5 +1,4 @@
 import { LucideIcon } from "lucide-react";
-import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -29,22 +28,22 @@ export function ProfileInfoCard({
   action,
 }: ProfileInfoCardProps) {
   return (
-    <GlassCard className="p-3 flex items-center gap-3">
-      <div className="p-2 rounded-xl bg-primary/10">
-        <Icon className="w-4 h-4 text-primary" />
+    <div className="glass p-3.5 rounded-2xl flex items-center gap-3">
+      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 shrink-0">
+        <Icon className="w-5 h-5 text-primary" />
       </div>
       
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+        <p className="text-xs text-muted-foreground/80 mb-0.5 font-medium">{label}</p>
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-foreground truncate">{value}</p>
+          <p className="text-sm font-semibold text-foreground truncate">{value}</p>
           {badge && (
             <Badge
               className={cn(
-                "text-[10px] px-2 py-0.5",
+                "text-[10px] px-2 py-0.5 font-medium",
                 badge.variant === "premium"
-                  ? "bg-success/20 text-success border-success/30"
-                  : "bg-muted text-muted-foreground border-muted"
+                  ? "bg-success/15 text-success border-success/25"
+                  : "bg-muted/80 text-muted-foreground border-muted"
               )}
               variant="outline"
             >
@@ -53,7 +52,7 @@ export function ProfileInfoCard({
           )}
         </div>
         {secondaryValue && (
-          <p className="text-xs text-muted-foreground mt-0.5">{secondaryValue}</p>
+          <p className="text-[11px] text-muted-foreground/70 mt-0.5">{secondaryValue}</p>
         )}
       </div>
 
@@ -62,11 +61,11 @@ export function ProfileInfoCard({
           size="sm"
           variant={action.variant === "secondary" ? "outline" : "default"}
           onClick={action.onClick}
-          className="shrink-0 text-xs h-8 px-3"
+          className="shrink-0 text-xs h-8 px-3.5 rounded-xl font-medium"
         >
           {action.label}
         </Button>
       )}
-    </GlassCard>
+    </div>
   );
 }
