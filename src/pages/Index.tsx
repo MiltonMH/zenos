@@ -6,13 +6,19 @@ import { HomeCarousel } from "@/components/home/HomeCarousel";
 import Profile from "./Profile";
 import Statistics from "./Statistics";
 import Settings from "./Settings";
+import ChargingSchedule from "./ChargingSchedule";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
   const [showSettings, setShowSettings] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
 
   const renderContent = () => {
+    if (showSchedule) {
+      return <ChargingSchedule onBack={() => setShowSchedule(false)} />;
+    }
+
     if (showSettings) {
       return <Settings onBack={() => setShowSettings(false)} />;
     }
@@ -32,7 +38,8 @@ export default function Index() {
             />
             <HomeCarousel 
               chargingMode={chargingMode} 
-              onModeChange={setChargingMode} 
+              onModeChange={setChargingMode}
+              onScheduleClick={() => setShowSchedule(true)}
             />
           </>
         );
@@ -53,7 +60,7 @@ export default function Index() {
       </div>
 
       {/* Bottom Navigation */}
-      {!showSettings && (
+      {!showSettings && !showSchedule && (
         <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       )}
     </div>
