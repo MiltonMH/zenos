@@ -1,9 +1,8 @@
 import { motion } from "framer-motion";
-import { BatteryCharging, Calendar, Clock } from "lucide-react";
+import { Zap, CheckCircle2 } from "lucide-react";
 import { type ScheduleMode } from "./ScheduleModeSelector";
 import { days, type DayKey } from "./DaySelector";
 import { type IndividualSchedule } from "./IndividualDaySchedule";
-import { cn } from "@/lib/utils";
 
 interface ScheduleSummaryProps {
   mode: ScheduleMode;
@@ -18,71 +17,50 @@ export function ScheduleSummary({
   globalTimeRange,
   individualSchedules,
 }: ScheduleSummaryProps) {
-  const getDayLabel = (key: DayKey) => days.find((d) => d.key === key)?.label || key;
   const getShortLabel = (key: DayKey) => days.find((d) => d.key === key)?.short || key;
 
-  const renderSummary = () => {
+  const renderContent = () => {
     switch (mode) {
       case "days-only":
-        if (selectedDays.length === 0) {
-          return (
-            <p className="text-muted-foreground text-sm">
-              Välj dagar för att schemalägga laddning
-            </p>
-          );
-        }
         return (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-primary" />
-              <span className="text-sm">
-                Laddar: {selectedDays.map(getShortLabel).join(", ")}
-              </span>
-            </div>
+          <div className="text-sm">
+            <span className="text-muted-foreground">Bilen laddas varje </span>
+            <span className="font-semibold text-foreground">
+              {selectedDays.map(getShortLabel).join(", ")}
+            </span>
           </div>
         );
 
       case "days-with-time":
-        if (selectedDays.length === 0) {
-          return (
-            <p className="text-muted-foreground text-sm">
-              Välj dagar och tid för laddning
-            </p>
-          );
-        }
         return (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-primary" />
-              <span className="text-sm">
+          <div className="text-sm space-y-1">
+            <div>
+              <span className="text-muted-foreground">Laddning </span>
+              <span className="font-semibold text-foreground">
                 {selectedDays.map(getShortLabel).join(", ")}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" />
-              <span className="text-sm">
-                kl {globalTimeRange.start}–{globalTimeRange.end}
+            <div>
+              <span className="text-muted-foreground">mellan </span>
+              <span className="font-semibold text-primary">
+                {globalTimeRange.start}
+              </span>
+              <span className="text-muted-foreground"> och </span>
+              <span className="font-semibold text-primary">
+                {globalTimeRange.end}
               </span>
             </div>
           </div>
         );
 
       case "individual-times":
-        if (individualSchedules.length === 0) {
-          return (
-            <p className="text-muted-foreground text-sm">
-              Lägg till dagar med individuella tider
-            </p>
-          );
-        }
         return (
           <div className="space-y-1.5">
             {individualSchedules.map((schedule) => (
-              <div key={schedule.day} className="flex items-center gap-2 text-sm">
-                <BatteryCharging className="w-3.5 h-3.5 text-primary" />
+              <div key={schedule.day} className="flex items-center justify-between text-sm">
                 <span className="font-medium">{getShortLabel(schedule.day)}</span>
-                <span className="text-muted-foreground">
-                  {schedule.start}–{schedule.end}
+                <span className="text-primary font-semibold">
+                  {schedule.start} → {schedule.end}
                 </span>
               </div>
             ))}
@@ -93,14 +71,21 @@ export function ScheduleSummary({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="glass-subtle rounded-xl p-4"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="rounded-xl p-4 bg-success/10 border border-success/30"
     >
-      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-        Sammanfattning
-      </h4>
-      {renderSummary()}
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+          <CheckCircle2 className="w-5 h-5 text-success" />
+        </div>
+        <div className="flex-1">
+          <h4 className="text-sm font-semibold text-foreground mb-1">
+            Redo att spara
+          </h4>
+          {renderContent()}
+        </div>
+      </div>
     </motion.div>
   );
 }
