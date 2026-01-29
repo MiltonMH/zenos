@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { HomeHeader } from "@/components/layout/HomeHeader";
 import { AppBottomNav } from "@/components/layout/AppBottomNav";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
+import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleModal";
 import Profile from "./Profile";
 import Statistics from "./Statistics";
 import Settings from "./Settings";
-import ChargingSchedule from "./ChargingSchedule";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
@@ -15,10 +15,6 @@ export default function Index() {
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
 
   const renderContent = () => {
-    if (showSchedule) {
-      return <ChargingSchedule onBack={() => setShowSchedule(false)} />;
-    }
-
     if (showSettings) {
       return <Settings onBack={() => setShowSettings(false)} />;
     }
@@ -60,9 +56,15 @@ export default function Index() {
       </div>
 
       {/* Bottom Navigation */}
-      {!showSettings && !showSchedule && (
+      {!showSettings && (
         <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       )}
+
+      {/* Schedule Modal */}
+      <ChargingScheduleModal 
+        isOpen={showSchedule} 
+        onClose={() => setShowSchedule(false)} 
+      />
     </div>
   );
 }
