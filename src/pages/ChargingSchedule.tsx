@@ -1,43 +1,25 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, BatteryCharging, Save, Zap, Info } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Zap, Save, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
-import { ScheduleModeSelector, type ScheduleMode } from "@/components/schedule/ScheduleModeSelector";
 import { DaySelector, type DayKey } from "@/components/schedule/DaySelector";
 import { TimeRangePicker } from "@/components/schedule/TimeRangePicker";
-import { IndividualDaySchedule, type IndividualSchedule } from "@/components/schedule/IndividualDaySchedule";
-import { ScheduleSummary } from "@/components/schedule/ScheduleSummary";
 import { toast } from "sonner";
+import { days } from "@/components/schedule/DaySelector";
 
 interface ChargingScheduleProps {
   onBack: () => void;
 }
 
 export default function ChargingSchedule({ onBack }: ChargingScheduleProps) {
-  const [mode, setMode] = useState<ScheduleMode>("days-only");
   const [selectedDays, setSelectedDays] = useState<DayKey[]>([]);
-  const [globalTimeRange, setGlobalTimeRange] = useState({ start: "21:00", end: "06:00" });
-  const [individualSchedules, setIndividualSchedules] = useState<IndividualSchedule[]>([]);
+  const [timeRange, setTimeRange] = useState({ start: "21:00", end: "06:00" });
 
   const handleToggleDay = (day: DayKey) => {
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
-  };
-
-  const handleAddSchedule = (schedule: IndividualSchedule) => {
-    setIndividualSchedules((prev) => [...prev, schedule]);
-  };
-
-  const handleUpdateSchedule = (index: number, schedule: IndividualSchedule) => {
-    setIndividualSchedules((prev) =>
-      prev.map((s, i) => (i === index ? schedule : s))
-    );
-  };
-
-  const handleRemoveSchedule = (index: number) => {
-    setIndividualSchedules((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSave = () => {
@@ -47,23 +29,8 @@ export default function ChargingSchedule({ onBack }: ChargingScheduleProps) {
     onBack();
   };
 
-  const handleModeChange = (newMode: ScheduleMode) => {
-    setMode(newMode);
-    if (newMode === "individual-times") {
-      setSelectedDays([]);
-    } else {
-      setIndividualSchedules([]);
-    }
-  };
-
-  const canSave = 
-    (mode === "individual-times" && individualSchedules.length > 0) ||
-    (mode !== "individual-times" && selectedDays.length > 0);
-
-  const getStepNumber = () => {
-    if (mode === "individual-times") return null;
-    return mode === "days-only" ? 1 : 2;
-  };
+  const canSave = selectedDays.length > 0;
+  const getShortLabel = (key: DayKey) => days.find((d) => d.key === key)?.short || key;
 
   return (
     <div className="flex flex-col h-full">
@@ -88,147 +55,83 @@ export default function ChargingSchedule({ onBack }: ChargingScheduleProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
-        {/* Step 1: Mode Selector */}
+        {/* Step 1: Select Days */}
         <GlassCard variant="subtle" className="p-4">
-          <ScheduleModeSelector mode={mode} onModeChange={handleModeChange} />
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+              1
+            </div>
+            <h3 className="font-semibold">Välj ladddagar</h3>
+          </div>
+          <DaySelector selectedDays={selectedDays} onToggleDay={handleToggleDay} />
         </GlassCard>
 
-        {/* Mode-specific content */}
-        <AnimatePresence mode="wait">
-          {mode === "days-only" && (
-            <motion.div
-              key="days-only"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <GlassCard variant="subtle" className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
-                    1
-                  </div>
-                  <h3 className="font-semibold">Välj ladddagar</h3>
-                </div>
-                
-                <DaySelector selectedDays={selectedDays} onToggleDay={handleToggleDay} />
-                
-                {/* Info box */}
-                <div className="mt-4 p-3 rounded-lg bg-primary/10 flex gap-2">
-                  <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-foreground/80">
-                    Med detta läge laddar bilen hela natten på valda dagar. Perfekt om du har fast elpris.
-                  </p>
-                </div>
-              </GlassCard>
-            </motion.div>
-          )}
+        {/* Step 2: Select Time */}
+        <motion.div
+          initial={{ opacity: 0.5 }}
+          animate={{ opacity: selectedDays.length > 0 ? 1 : 0.5 }}
+        >
+          <GlassCard variant="subtle" className="p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                selectedDays.length > 0 
+                  ? "bg-primary text-primary-foreground" 
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                2
+              </div>
+              <h3 className={`font-semibold ${selectedDays.length === 0 && "text-muted-foreground"}`}>
+                Välj laddtid
+              </h3>
+            </div>
+            
+            <TimeRangePicker
+              startTime={timeRange.start}
+              endTime={timeRange.end}
+              onStartTimeChange={(time) => setTimeRange((prev) => ({ ...prev, start: time }))}
+              onEndTimeChange={(time) => setTimeRange((prev) => ({ ...prev, end: time }))}
+            />
+          </GlassCard>
+        </motion.div>
 
-          {mode === "days-with-time" && (
-            <motion.div
-              key="days-with-time"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
-              {/* Step 1: Days */}
-              <GlassCard variant="subtle" className="p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
-                    1
-                  </div>
-                  <h3 className="font-semibold">Välj ladddagar</h3>
-                </div>
-                <DaySelector selectedDays={selectedDays} onToggleDay={handleToggleDay} />
-              </GlassCard>
-
-              {/* Step 2: Time (only show if days selected) */}
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ 
-                  opacity: selectedDays.length > 0 ? 1 : 0.5,
-                  height: "auto"
-                }}
-              >
-                <GlassCard variant="subtle" className="p-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      selectedDays.length > 0 
-                        ? "bg-primary text-primary-foreground" 
-                        : "bg-muted text-muted-foreground"
-                    }`}>
-                      2
-                    </div>
-                    <h3 className={`font-semibold ${selectedDays.length === 0 && "text-muted-foreground"}`}>
-                      Välj laddtid
-                    </h3>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <p className="text-xs text-muted-foreground">
-                      Bilen laddas mellan dessa tider på alla valda dagar
-                    </p>
-                    <TimeRangePicker
-                      startTime={globalTimeRange.start}
-                      endTime={globalTimeRange.end}
-                      onStartTimeChange={(time) =>
-                        setGlobalTimeRange((prev) => ({ ...prev, start: time }))
-                      }
-                      onEndTimeChange={(time) =>
-                        setGlobalTimeRange((prev) => ({ ...prev, end: time }))
-                      }
-                    />
-                  </div>
-                </GlassCard>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {mode === "individual-times" && (
-            <motion.div
-              key="individual-times"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <GlassCard variant="subtle" className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Settings2Icon className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold">Skapa ditt schema</h3>
-                </div>
-                
-                <p className="text-xs text-muted-foreground mb-4">
-                  Lägg till dagar och ställ in unik laddtid för varje dag. 
-                  Perfekt om du har olika rutiner på vardagar och helger.
-                </p>
-                
-                <IndividualDaySchedule
-                  schedules={individualSchedules}
-                  onAddSchedule={handleAddSchedule}
-                  onUpdateSchedule={handleUpdateSchedule}
-                  onRemoveSchedule={handleRemoveSchedule}
-                />
-              </GlassCard>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Summary - only show when there's something to summarize */}
+        {/* Summary */}
         {canSave && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl p-4 bg-success/10 border border-success/30"
           >
-            <ScheduleSummary
-              mode={mode}
-              selectedDays={selectedDays}
-              globalTimeRange={globalTimeRange}
-              individualSchedules={individualSchedules}
-            />
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+                <Zap className="w-4 h-4 text-success" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-1">
+                  Redo att spara
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Bilen laddas{" "}
+                  <span className="font-semibold text-foreground">
+                    {selectedDays.map(getShortLabel).join(", ")}
+                  </span>{" "}
+                  mellan{" "}
+                  <span className="font-semibold text-primary">{timeRange.start}</span>
+                  {" "}och{" "}
+                  <span className="font-semibold text-primary">{timeRange.end}</span>
+                </p>
+              </div>
+            </div>
           </motion.div>
+        )}
+
+        {/* Info */}
+        {!canSave && (
+          <div className="p-3 rounded-lg bg-primary/10 flex gap-2">
+            <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-foreground/80">
+              Välj minst en dag för att schemalägga laddning. Bilen laddar automatiskt mellan de tider du väljer.
+            </p>
+          </div>
         )}
       </div>
 
@@ -245,28 +148,5 @@ export default function ChargingSchedule({ onBack }: ChargingScheduleProps) {
         </Button>
       </div>
     </div>
-  );
-}
-
-// Simple Settings2 icon component to avoid import issues
-function Settings2Icon({ className }: { className?: string }) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M20 7h-9" />
-      <path d="M14 17H5" />
-      <circle cx="17" cy="17" r="3" />
-      <circle cx="7" cy="7" r="3" />
-    </svg>
   );
 }
