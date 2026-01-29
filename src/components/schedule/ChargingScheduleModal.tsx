@@ -41,14 +41,15 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
           />
           
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-md"
-          >
+          {/* Modal Container */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="w-full max-w-md"
+            >
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 overflow-hidden">
               {/* Header */}
               <div className="flex items-center justify-between p-4 pb-2">
@@ -106,6 +107,7 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
               </div>
             </div>
           </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>
