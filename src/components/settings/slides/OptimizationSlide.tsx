@@ -34,54 +34,7 @@ export function OptimizationSlide({
       <h2 className="text-base font-semibold text-foreground text-center mb-4">V2H & V2G</h2>
       
       <div className="space-y-3">
-        {/* V2H Toggle */}
-        <div className="glass-subtle rounded-2xl p-3">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-xl shrink-0">
-                <Home className="w-4 h-4 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-medium text-foreground text-sm leading-tight">V2H - Hemmet</h3>
-                <p className="text-[11px] text-muted-foreground">Ladda ur till hemmet</p>
-              </div>
-            </div>
-            <Switch checked={v2hEnabled} onCheckedChange={onV2hChange} />
-          </div>
-        </div>
-
-        {/* V2G Toggle */}
-        <div className="glass-subtle rounded-2xl p-3">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-yellow-500/20 rounded-xl shrink-0">
-                <Coins className="w-4 h-4 text-yellow-600" />
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-medium text-foreground text-sm leading-tight">V2G - Elnätet</h3>
-                  <Badge className="bg-primary/20 text-primary border-0 text-[10px] px-1.5 py-0">PRO</Badge>
-                </div>
-                <p className="text-[11px] text-muted-foreground">Sälj och tjäna pengar</p>
-              </div>
-            </div>
-            <Switch checked={v2gEnabled} onCheckedChange={onV2gChange} />
-          </div>
-        </div>
-
-        {/* Warning */}
-        {showWarning && (
-          <div className="bg-yellow-500/15 border border-yellow-500/30 rounded-2xl p-2.5">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">⚠️</span>
-              <p className="text-[11px] text-yellow-700 dark:text-yellow-400">
-                V2H och V2G avstängda. Bilen laddar bara.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Discharge Limit */}
+        {/* Discharge Limit - TOP */}
         <div className="glass-subtle rounded-2xl p-3 space-y-2">
           <h3 className="font-medium text-foreground text-xs">Max urladdning</h3>
           <Slider
@@ -133,7 +86,7 @@ export function OptimizationSlide({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1">
                 <span className="font-medium text-xs text-foreground">Balanserad</span>
-                <Badge className="bg-green-500/20 text-green-600 border-0 text-[9px] px-1 py-0">REC</Badge>
+                <Badge className="bg-success/20 text-success border-0 text-[9px] px-1 py-0">REC</Badge>
               </div>
               <p className="text-[10px] text-muted-foreground truncate">Bra ekonomi • Skyddar batteriet</p>
             </div>
@@ -149,13 +102,60 @@ export function OptimizationSlide({
             )}
           >
             <RadioGroupItem value="protection" id="protection" className="shrink-0" />
-            <Shield className="w-4 h-4 text-blue-500 shrink-0" />
+            <Shield className="w-4 h-4 text-primary shrink-0" />
             <div className="flex-1 min-w-0">
               <span className="font-medium text-xs text-foreground">Batteriskydd</span>
               <p className="text-[10px] text-muted-foreground truncate">Längsta liv • Mindre V2X</p>
             </div>
           </Label>
         </RadioGroup>
+
+        {/* Warning */}
+        {showWarning && (
+          <div className="bg-warning/15 border border-warning/30 rounded-2xl p-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">⚠️</span>
+              <p className="text-[11px] text-warning-foreground">
+                V2H och V2G avstängda. Bilen laddar bara.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* V2H Toggle - BOTTOM */}
+        <div className="glass-subtle rounded-2xl p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/20 rounded-xl shrink-0">
+                <Home className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-medium text-foreground text-sm leading-tight">V2H - Hemmet</h3>
+                <p className="text-[11px] text-muted-foreground">Ladda ur till hemmet</p>
+              </div>
+            </div>
+            <Switch checked={v2hEnabled} onCheckedChange={onV2hChange} />
+          </div>
+        </div>
+
+        {/* V2G Toggle - BOTTOM */}
+        <div className="glass-subtle rounded-2xl p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-accent/30 rounded-xl shrink-0">
+                <Coins className="w-4 h-4 text-accent-foreground" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-medium text-foreground text-sm leading-tight">V2G - Elnätet</h3>
+                  <Badge className="bg-primary/20 text-primary border-0 text-[10px] px-1.5 py-0">PRO</Badge>
+                </div>
+                <p className="text-[11px] text-muted-foreground">Sälj och tjäna pengar</p>
+              </div>
+            </div>
+            <Switch checked={v2gEnabled} onCheckedChange={onV2gChange} />
+          </div>
+        </div>
       </div>
     </div>
   );
