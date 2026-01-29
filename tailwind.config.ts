@@ -86,6 +86,9 @@ export default {
           "3": "hsl(var(--chart-3))",
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
+          charged: "hsl(var(--chart-charged))",
+          v2h: "hsl(var(--chart-v2h))",
+          spent: "hsl(var(--chart-spent))",
         },
       },
       borderRadius: {

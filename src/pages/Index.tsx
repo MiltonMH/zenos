@@ -7,6 +7,7 @@ import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleMod
 import Profile from "./Profile";
 import Statistics from "./Statistics";
 import Settings from "./Settings";
+import { mockUser } from "@/lib/mock-data";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
@@ -28,7 +29,7 @@ export default function Index() {
         return (
           <>
             <HomeHeader 
-              userName="Max" 
+              userName={mockUser.firstName} 
               isOnline={true} 
               onSettingsClick={() => setShowSettings(true)} 
             />
