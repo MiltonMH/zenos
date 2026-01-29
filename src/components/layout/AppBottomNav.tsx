@@ -1,18 +1,15 @@
 import { motion } from "framer-motion";
-import { BarChart2, User, LucideIcon } from "lucide-react";
+import { Home, BarChart2, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ChargerIcon } from "@/components/icons/ChargerIcon";
-import { ComponentType } from "react";
 
 interface NavItem {
   id: string;
-  icon: LucideIcon | ComponentType<{ className?: string; isActive?: boolean }>;
+  icon: typeof Home;
   label: string;
-  isCustomIcon?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { id: "home", icon: ChargerIcon, label: "Hem", isCustomIcon: true },
+  { id: "home", icon: Home, label: "Hem" },
   { id: "statistics", icon: BarChart2, label: "Statistik" },
   { id: "profile", icon: User, label: "Profil" },
 ];
@@ -118,22 +115,12 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
                     />
                   </motion.div>
                 )}
-                {item.isCustomIcon ? (
-                  <Icon
-                    className={cn(
-                      "relative z-10 transition-colors duration-300",
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    )}
-                    isActive={isActive}
-                  />
-                ) : (
-                  <Icon
-                    className={cn(
-                      "w-6 h-6 relative z-10 transition-colors duration-300",
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    )}
-                  />
-                )}
+                <Icon
+                  className={cn(
+                    "w-6 h-6 relative z-10 transition-colors duration-300",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+                />
                 <span
                   className={cn(
                     "text-xs relative z-10 transition-colors duration-300",
