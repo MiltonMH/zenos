@@ -9,16 +9,17 @@ import { useHaptics } from "@/hooks/useHaptics";
 interface HomeCarouselProps {
   chargingMode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
+  onScheduleClick?: () => void;
 }
 
-export function HomeCarousel({ chargingMode, onModeChange }: HomeCarouselProps) {
+export function HomeCarousel({ chargingMode, onModeChange, onScheduleClick }: HomeCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const { lightImpact, selectionChanged } = useHaptics();
   
   const slides = [
-    { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} /> },
+    { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} onScheduleClick={onScheduleClick} /> },
     { id: "stats", component: <MonthStatsSlide /> },
     { id: "price", component: <EnergyPriceSlide /> },
   ];

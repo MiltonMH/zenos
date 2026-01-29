@@ -7,9 +7,10 @@ import { EnergyFlowVisualization } from "../EnergyFlowVisualization";
 interface ChargerSlideProps {
   mode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
+  onScheduleClick?: () => void;
 }
 
-export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
+export function ChargerSlide({ mode, onModeChange, onScheduleClick }: ChargerSlideProps) {
   const [isLocked, setIsLocked] = useState(false);
 
   // Cycle through all modes for simulation
@@ -92,7 +93,7 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
           label="Schema"
           sublabel="Auto"
           isActive={true}
-          onClick={() => {}}
+          onClick={onScheduleClick || (() => {})}
         />
       </div>
     </div>
