@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
-import { AdvancedSlide } from "./slides/AdvancedSlide";
 import { useHaptics } from "@/hooks/useHaptics";
 
 export function SettingsCarousel() {
@@ -12,50 +11,36 @@ export function SettingsCarousel() {
   const { lightImpact, selectionChanged } = useHaptics();
   
   // Settings state
+  const [chargeLimit, setChargeLimit] = useState([90]);
   const [v2hEnabled, setV2hEnabled] = useState(false);
   const [v2gEnabled, setV2gEnabled] = useState(false);
   const [dischargeLimit, setDischargeLimit] = useState([50]);
   const [optimizationMode, setOptimizationMode] = useState("balanced");
-  const [minV2gBattery, setMinV2gBattery] = useState("70");
-  const [conflictPriority, setConflictPriority] = useState("ai");
-  const [timeRestriction, setTimeRestriction] = useState("always");
   
   const slides = [
     { 
       id: "status", 
-      label: "Status",
+      label: "Laddning",
       component: (
         <StatusSlide 
-          v2hEnabled={v2hEnabled}
-          v2gEnabled={v2gEnabled}
-          onV2hChange={setV2hEnabled}
-          onV2gChange={setV2gEnabled}
+          chargeLimit={chargeLimit}
+          onChargeLimitChange={setChargeLimit}
         />
       )
     },
     { 
-      id: "optimization", 
-      label: "AI",
+      id: "v2x", 
+      label: "V2X",
       component: (
         <OptimizationSlide 
+          v2hEnabled={v2hEnabled}
+          v2gEnabled={v2gEnabled}
           dischargeLimit={dischargeLimit}
           optimizationMode={optimizationMode}
+          onV2hChange={setV2hEnabled}
+          onV2gChange={setV2gEnabled}
           onDischargeLimitChange={setDischargeLimit}
           onOptimizationModeChange={setOptimizationMode}
-        />
-      )
-    },
-    { 
-      id: "advanced", 
-      label: "Avancerat",
-      component: (
-        <AdvancedSlide 
-          minV2gBattery={minV2gBattery}
-          conflictPriority={conflictPriority}
-          timeRestriction={timeRestriction}
-          onMinV2gBatteryChange={setMinV2gBattery}
-          onConflictPriorityChange={setConflictPriority}
-          onTimeRestrictionChange={setTimeRestriction}
         />
       )
     },
