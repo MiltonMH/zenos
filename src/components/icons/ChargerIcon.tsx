@@ -10,7 +10,7 @@ export function ChargerIcon({ className }: ChargerIconProps) {
       viewBox="0 0 31 47" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("w-6 h-6", className)}
+      className={cn("w-7 h-7", className)}
     >
       <rect 
         x="2.63727" 
