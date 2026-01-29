@@ -6,12 +6,13 @@ import { ComponentType } from "react";
 
 interface NavItem {
   id: string;
-  icon: LucideIcon | ComponentType<{ className?: string }>;
+  icon: LucideIcon | ComponentType<{ className?: string; isActive?: boolean }>;
   label: string;
+  isCustomIcon?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { id: "home", icon: ChargerIcon, label: "Hem" },
+  { id: "home", icon: ChargerIcon, label: "Hem", isCustomIcon: true },
   { id: "statistics", icon: BarChart2, label: "Statistik" },
   { id: "profile", icon: User, label: "Profil" },
 ];
@@ -117,12 +118,22 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
                     />
                   </motion.div>
                 )}
-                <Icon
-                  className={cn(
-                    "w-6 h-6 relative z-10 transition-colors duration-300",
-                    isActive ? "text-primary" : "text-muted-foreground"
-                  )}
-                />
+                {item.isCustomIcon ? (
+                  <Icon
+                    className={cn(
+                      "relative z-10 transition-colors duration-300",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )}
+                    isActive={isActive}
+                  />
+                ) : (
+                  <Icon
+                    className={cn(
+                      "w-6 h-6 relative z-10 transition-colors duration-300",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )}
+                  />
+                )}
                 <span
                   className={cn(
                     "text-xs relative z-10 transition-colors duration-300",
