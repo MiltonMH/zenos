@@ -212,7 +212,7 @@
   }
 
   .safe-top {
-    padding-top: max(0.5rem, env(safe-area-inset-top, 3rem));
+    padding-top: max(0.5rem, env(safe-area-inset-top, 3.75rem));
   }
 
   /* Touch scroll snap for carousel */
