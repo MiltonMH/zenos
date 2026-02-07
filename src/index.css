@@ -206,13 +206,13 @@
     scrollbar-width: none;
   }
 
-  /* Safe area padding for mobile */
+  /* Safe area padding for mobile - with fallbacks for non-native contexts */
   .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 1.5rem));
   }
 
   .safe-top {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(0.5rem, env(safe-area-inset-top, 3rem));
   }
 
   /* Touch scroll snap for carousel */
