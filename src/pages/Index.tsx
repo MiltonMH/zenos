@@ -8,16 +8,25 @@ import Profile from "./Profile";
 import Statistics from "./Statistics";
 import Settings from "./Settings";
 import { mockUser } from "@/lib/mock-data";
+import { useBackground } from "@/hooks/useBackground";
+import { cn } from "@/lib/utils";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
   const [showSettings, setShowSettings] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
+  const { selected, setSelected, current } = useBackground();
 
   const renderContent = () => {
     if (showSettings) {
-      return <Settings onBack={() => setShowSettings(false)} />;
+      return (
+        <Settings 
+          onBack={() => setShowSettings(false)}
+          selectedBackground={selected}
+          onBackgroundChange={setSelected}
+        />
+      );
     }
 
     switch (activeTab) {
@@ -44,7 +53,7 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-mesh flex flex-col">
+    <div className={cn("min-h-screen flex flex-col", current.style)}>
       {/* Main Card Container */}
       <div className="flex-1 flex flex-col px-5 pt-2 pb-36 safe-top">
         <motion.div
