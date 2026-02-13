@@ -20,18 +20,12 @@ export default function Index() {
 
   const renderContent = () => {
     if (showSettings) {
-      return (
-        <Settings 
-          onBack={() => setShowSettings(false)}
-          selectedBackground={selected}
-          onBackgroundChange={setSelected}
-        />
-      );
+      return <Settings onBack={() => setShowSettings(false)} />;
     }
 
     switch (activeTab) {
       case "profile":
-        return <Profile />;
+        return <Profile selectedBackground={selected} onBackgroundChange={setSelected} />;
       case "statistics":
         return <Statistics />;
       default:

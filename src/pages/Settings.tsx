@@ -1,14 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import { SettingsCarousel } from "@/components/settings/SettingsCarousel";
-import { type BackgroundOption } from "@/hooks/useBackground";
 
 interface SettingsProps {
   onBack: () => void;
-  selectedBackground: BackgroundOption;
-  onBackgroundChange: (bg: BackgroundOption) => void;
 }
 
-export default function Settings({ onBack, selectedBackground, onBackgroundChange }: SettingsProps) {
+export default function Settings({ onBack }: SettingsProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -24,10 +21,7 @@ export default function Settings({ onBack, selectedBackground, onBackgroundChang
       </div>
 
       {/* Carousel Content */}
-      <SettingsCarousel 
-        selectedBackground={selectedBackground}
-        onBackgroundChange={onBackgroundChange}
-      />
+      <SettingsCarousel />
     </div>
   );
 }

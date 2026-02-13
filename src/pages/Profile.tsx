@@ -4,7 +4,9 @@ import { Mail, Crown, Zap, Car, Wrench, Pencil, User } from "lucide-react";
 import { ProfileInfoCard } from "@/components/profile/ProfileInfoCard";
 import { Button } from "@/components/ui/button";
 import { EditProfile } from "./EditProfile";
+import { BackgroundCarousel } from "@/components/profile/BackgroundCarousel";
 import { mockUser } from "@/lib/mock-data";
+import { type BackgroundOption } from "@/hooks/useBackground";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,7 +28,12 @@ const itemVariants = {
   },
 };
 
-export default function Profile() {
+interface ProfileProps {
+  selectedBackground: BackgroundOption;
+  onBackgroundChange: (bg: BackgroundOption) => void;
+}
+
+export default function Profile({ selectedBackground, onBackgroundChange }: ProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   if (isEditing) {
@@ -110,6 +117,14 @@ export default function Profile() {
               onClick: () => console.log("Contact installer"),
               variant: "secondary",
             }}
+          />
+        </motion.div>
+
+        {/* Background Picker */}
+        <motion.div variants={itemVariants}>
+          <BackgroundCarousel
+            selected={selectedBackground}
+            onSelect={onBackgroundChange}
           />
         </motion.div>
       </motion.div>
