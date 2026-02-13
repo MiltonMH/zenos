@@ -3,16 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
-import { AppearanceSlide } from "./slides/AppearanceSlide";
 import { useCarousel } from "@/hooks/useCarousel";
-import { type BackgroundOption } from "@/hooks/useBackground";
 
-interface SettingsCarouselProps {
-  selectedBackground: BackgroundOption;
-  onBackgroundChange: (bg: BackgroundOption) => void;
-}
-
-export function SettingsCarousel({ selectedBackground, onBackgroundChange }: SettingsCarouselProps) {
+export function SettingsCarousel() {
   // Settings state
   const [chargeLimit, setChargeLimit] = useState([90]);
   const [v2hEnabled, setV2hEnabled] = useState(false);
@@ -44,16 +37,6 @@ export function SettingsCarousel({ selectedBackground, onBackgroundChange }: Set
           onV2gChange={setV2gEnabled}
           onDischargeLimitChange={setDischargeLimit}
           onOptimizationModeChange={setOptimizationMode}
-        />
-      )
-    },
-    {
-      id: "appearance",
-      label: "Utseende",
-      component: (
-        <AppearanceSlide
-          selectedBackground={selectedBackground}
-          onBackgroundChange={onBackgroundChange}
         />
       )
     },
