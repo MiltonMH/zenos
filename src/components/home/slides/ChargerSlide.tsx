@@ -113,11 +113,18 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, onClick }: Action
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex flex-col items-center gap-1.5 px-5 py-3 glass rounded-2xl min-w-[85px]"
+      className="relative flex flex-col items-center gap-1.5 px-5 py-3 rounded-2xl min-w-[85px] overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.55) 100%)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        border: "1.5px solid rgba(255,255,255,0.6)",
+        boxShadow: "0 4px 20px -4px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
+      }}
     >
-      <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-      <span className="text-sm font-medium text-foreground">{label}</span>
-      <span className="text-[11px] text-muted-foreground">{sublabel}</span>
+      <Icon className={`w-5 h-5 relative z-10 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="text-sm font-medium text-foreground relative z-10">{label}</span>
+      <span className="text-[11px] text-muted-foreground relative z-10">{sublabel}</span>
     </motion.button>
   );
 }
