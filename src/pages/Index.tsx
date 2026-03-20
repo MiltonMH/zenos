@@ -47,7 +47,14 @@ export default function Index() {
   };
 
   return (
-    <div className={cn("min-h-screen flex flex-col", current.style)}>
+    <div
+      className={cn("min-h-screen flex flex-col", current.style)}
+      style={current.image ? {
+        backgroundImage: `url(${current.image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      } : undefined}
+    >
       {/* Main Card Container */}
       <div className="flex-1 flex flex-col px-5 pt-2 pb-36 safe-top">
         <motion.div

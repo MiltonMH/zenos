@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
+import bgColorful from "@/assets/bg-colorful.png";
+import bgAurora from "@/assets/bg-aurora.png";
+import bgMint from "@/assets/bg-mint.png";
 
-export type BackgroundOption = "default" | "black" | "white";
+export type BackgroundOption = "default" | "black" | "white" | "colorful" | "aurora" | "mint";
 
 export interface BackgroundConfig {
   id: BackgroundOption;
   label: string;
-  style: string; // CSS class or inline style identifier
-  preview: string; // Preview color/gradient for the selector
+  style: string;
+  preview: string;
+  image?: string;
 }
 
 export const backgrounds: BackgroundConfig[] = [
@@ -27,6 +31,27 @@ export const backgrounds: BackgroundConfig[] = [
     label: "Ljus",
     style: "bg-white",
     preview: "bg-white",
+  },
+  {
+    id: "colorful",
+    label: "Färgrik",
+    style: "",
+    preview: "",
+    image: bgColorful,
+  },
+  {
+    id: "aurora",
+    label: "Aurora",
+    style: "",
+    preview: "",
+    image: bgAurora,
+  },
+  {
+    id: "mint",
+    label: "Mint",
+    style: "",
+    preview: "",
+    image: bgMint,
   },
 ];
 
