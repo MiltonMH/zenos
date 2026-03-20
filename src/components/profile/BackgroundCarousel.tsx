@@ -65,7 +65,11 @@ export function BackgroundCarousel({ selected, onSelect }: BackgroundCarouselPro
                 : "border-white/30"
             )}
           >
-            <div className={cn("absolute inset-0 rounded-2xl", bg.preview)} />
+            {bg.image ? (
+              <img src={bg.image} alt={bg.label} className="absolute inset-0 w-full h-full object-cover rounded-2xl" />
+            ) : (
+              <div className={cn("absolute inset-0 rounded-2xl", bg.preview)} />
+            )}
             {selected === bg.id && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
