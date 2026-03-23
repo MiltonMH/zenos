@@ -31,16 +31,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick }: ChargerSli
   };
 
   return (
-    <div
-      className="h-full flex flex-col items-center px-6 pt-4 pb-8 rounded-[2.5rem] overflow-hidden relative"
-      style={{
-        background: "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.6) 100%)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        WebkitBackdropFilter: "blur(24px) saturate(180%)",
-        border: "1.5px solid rgba(255,255,255,0.7)",
-        boxShadow: "0 8px 40px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -1px 0 rgba(255,255,255,0.3)",
-      }}
-    >
+    <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
       {/* Connection indicator */}
       <div className="mb-2">
         <div className={`w-2.5 h-2.5 rounded-full ${mode === "idle" ? "bg-muted-foreground" : "bg-primary status-pulse"}`} />
