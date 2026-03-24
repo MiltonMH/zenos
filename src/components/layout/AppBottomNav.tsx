@@ -26,7 +26,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
       animate={{ y: 0 }}
       className="fixed bottom-4 left-0 right-0 z-50 px-6 pb-12 safe-bottom"
     >
-      <div className="glass-strong rounded-[2.5rem] px-4 py-4 border-2 border-white/60 shadow-xl shadow-black/5">
+      <div className="glass-strong rounded-[2.5rem] px-4 py-4 shadow-xl shadow-black/5">
         <div className="flex items-center justify-around">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
@@ -41,7 +41,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
                 {isActive && (
                   <motion.div
                     layoutId="activeNavTab"
-                    className="absolute inset-0 bg-white/80 rounded-2xl shadow-sm"
+                    className="absolute inset-0 bg-white/40 rounded-2xl shadow-sm"
                     transition={{ type: "spring", duration: 0.4 }}
                   />
                 )}
