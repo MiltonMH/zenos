@@ -8,16 +8,16 @@ export function MonthStatsSlide() {
   const periodStats = getStatsForPeriod(period);
   
   const stats = {
-    charged: { value: periodStats.charged, unit: "kWh", color: "bg-[hsl(235,60%,60%)]" },
-    v2h: { value: periodStats.v2h, unit: "kWh", color: "bg-[hsl(145,55%,55%)]" },
-    spent: { value: periodStats.cost, unit: "kr", color: "bg-[hsl(15,70%,70%)]" },
+    charged: { value: periodStats.charged, unit: "kWh", colorClass: "bg-chart-charged" },
+    v2h: { value: periodStats.v2h, unit: "kWh", colorClass: "bg-chart-v2h" },
+    spent: { value: periodStats.cost, unit: "kr", colorClass: "bg-chart-spent" },
   };
 
   // Bar heights based on values (normalized)
   const maxValue = Math.max(stats.charged.value, stats.v2h.value * 2, stats.spent.value);
   const barHeights = {
     charged: (stats.charged.value / maxValue) * 100,
-    v2h: (stats.v2h.value * 2 / maxValue) * 100, // Scale up V2H for visual
+    v2h: (stats.v2h.value * 2 / maxValue) * 100,
     spent: (stats.spent.value / maxValue) * 100,
   };
 
@@ -53,7 +53,7 @@ export function MonthStatsSlide() {
         {Object.entries(barHeights).map(([key, height], index) => (
           <motion.div
             key={key}
-            className={`w-10 rounded-full ${stats[key as keyof typeof stats].color}`}
+            className={`w-10 rounded-full ${stats[key as keyof typeof stats].colorClass}`}
             initial={{ height: 0 }}
             animate={{ height: `${height}%` }}
             transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
@@ -64,19 +64,19 @@ export function MonthStatsSlide() {
       {/* Stats Labels */}
       <div className="w-full max-w-[280px] space-y-2 mb-4">
         <StatRow
-          color="bg-[hsl(235,60%,60%)]"
+          colorClass="bg-chart-charged"
           label="Laddat"
           value={stats.charged.value}
           unit={stats.charged.unit}
         />
         <StatRow
-          color="bg-[hsl(145,55%,55%)]"
+          colorClass="bg-chart-v2h"
           label="V2H"
           value={stats.v2h.value}
           unit={stats.v2h.unit}
         />
         <StatRow
-          color="bg-[hsl(15,70%,70%)]"
+          colorClass="bg-chart-spent"
           label="Kostnad"
           value={stats.spent.value}
           unit={stats.spent.unit}
@@ -87,16 +87,16 @@ export function MonthStatsSlide() {
 }
 
 interface StatRowProps {
-  color: string;
+  colorClass: string;
   label: string;
   value: number;
   unit: string;
 }
 
-function StatRow({ color, label, value, unit }: StatRowProps) {
+function StatRow({ colorClass, label, value, unit }: StatRowProps) {
   return (
     <div className="flex items-center gap-3 glass-subtle rounded-full px-4 py-2">
-      <div className={`w-3 h-3 rounded-full ${color}`} />
+      <div className={`w-3 h-3 rounded-full ${colorClass}`} />
       <span className="flex-1 text-sm font-medium text-foreground">{label}</span>
       <span className="text-sm font-semibold text-foreground">
         {value} {unit}

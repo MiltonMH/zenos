@@ -20,48 +20,25 @@ import {
 } from "@/components/ui/accordion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { cn } from "@/lib/utils";
+import { mockUser, fuseOptions, gridCompanies, electricityProviders } from "@/lib/mock-data";
 
 interface EditProfileProps {
   onBack: () => void;
 }
 
-// Mock data
-const mockUserData = {
-  name: "Milton Svensson",
-  email: "milton@example.com",
-  phone: "+46 70 123 45 67",
-  address: "Storgatan 1, 123 45 Stockholm",
-  chargerModel: "Zenion Arc",
-  serialNumber: "ZEN-2024-ABC123",
-  pinCode: "1234",
-  fuse: "20A",
-  gridCompany: "Vattenfall Eldistribution",
-  electricityProvider: "Tibber",
-};
-
-const fuseOptions = ["10A", "16A", "20A", "25A", "32A"];
-
-const gridCompanies = [
-  "Vattenfall Eldistribution",
-  "E.ON Energidistribution",
-  "Ellevio",
-  "Göteborg Energi Nät",
-  "Kraftringen Nät",
-  "Öresundskraft Nät",
-];
-
-const electricityProviders = [
-  "Tibber",
-  "Fortum",
-  "Vattenfall",
-  "E.ON",
-  "GodEl",
-  "Greenely",
-  "Bixia",
-];
-
 export function EditProfile({ onBack }: EditProfileProps) {
-  const [formData, setFormData] = useState(mockUserData);
+  const [formData, setFormData] = useState({
+    name: mockUser.name,
+    email: mockUser.email,
+    phone: mockUser.phone,
+    address: mockUser.address,
+    chargerModel: mockUser.charger.model,
+    serialNumber: mockUser.charger.serialNumber,
+    pinCode: mockUser.charger.pinCode,
+    fuse: mockUser.fuse,
+    gridCompany: mockUser.gridCompany,
+    electricityProvider: mockUser.electricityProvider,
+  });
   const [hasChanges, setHasChanges] = useState(false);
   const [showPin, setShowPin] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -96,17 +73,7 @@ export function EditProfile({ onBack }: EditProfileProps) {
         
         <h1 className="text-lg font-semibold text-foreground">Redigera Profil</h1>
         
-        <Button
-          size="sm"
-          onClick={handleSave}
-          disabled={!hasChanges}
-          className={cn(
-            "text-sm h-8 px-3 rounded-xl",
-            !hasChanges && "opacity-50"
-          )}
-        >
-          Spara
-        </Button>
+        <div className="w-10" /> {/* Spacer for centering */}
       </div>
 
       {/* Form Sections */}

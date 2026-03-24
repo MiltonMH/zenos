@@ -4,55 +4,43 @@ import { HomeHeader } from "@/components/layout/HomeHeader";
 import { AppBottomNav } from "@/components/layout/AppBottomNav";
 import { HomeBatteryWater } from "@/components/home/HomeBatteryWater";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
+import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleModal";
 import Profile from "./Profile";
 import Statistics from "./Statistics";
+import Settings from "./Settings";
+import { mockUser } from "@/lib/mock-data";
+import { useBackground } from "@/hooks/useBackground";
+import { cn } from "@/lib/utils";
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
+  const [showSettings, setShowSettings] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
-  const [batteryLevel, setBatteryLevel] = useState(50);
-
-  const handleBatteryLevelChange = (nextLevel: number) => {
-    setBatteryLevel(Math.max(0, Math.min(100, nextLevel)));
-  };
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setBatteryLevel((currentLevel) => {
-        if (chargingMode === "charging") {
-          return currentLevel;
-        }
-
-        if (chargingMode === "v2h") {
-          return Math.max(8, currentLevel - 0.18);
-        }
-
-        if (chargingMode === "v2g") {
-          return Math.max(8, currentLevel - 0.22);
-        }
-
-        return currentLevel;
-      });
-    }, 1400);
-
-    return () => window.clearInterval(interval);
-  }, [chargingMode]);
+  const { selected, setSelected, current } = useBackground();
 
   const renderContent = () => {
+    if (showSettings) {
+      return <Settings onBack={() => setShowSettings(false)} />;
+    }
+
     switch (activeTab) {
       case "profile":
-        return <Profile />;
+        return <Profile selectedBackground={selected} onBackgroundChange={setSelected} />;
       case "statistics":
         return <Statistics />;
       default:
         return (
           <>
-            <HomeHeader userName="Milton" isOnline={true} />
-            <HomeCarousel
-              batteryLevel={batteryLevel}
-              chargingMode={chargingMode}
+            <HomeHeader 
+              userName={mockUser.firstName} 
+              isOnline={true} 
+              onSettingsClick={() => setShowSettings(true)} 
+            />
+            <HomeCarousel 
+              chargingMode={chargingMode} 
               onModeChange={setChargingMode}
-              onBatteryLevelChange={handleBatteryLevelChange}
+              onScheduleClick={() => setShowSchedule(true)}
             />
           </>
         );
@@ -60,7 +48,14 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-mesh flex flex-col pt-10">
+    <div
+      className={cn("min-h-screen flex flex-col", current.style)}
+      style={current.image ? {
+        backgroundImage: `url(${current.image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      } : undefined}
+    >
       {/* Main Card Container */}
       <div className="flex-1 flex flex-col px-5 pt-2 pb-36 safe-top">
         <motion.div
@@ -76,7 +71,15 @@ export default function Index() {
       </div>
 
       {/* Bottom Navigation */}
-      <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {!showSettings && (
+        <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      )}
+
+      {/* Schedule Modal */}
+      <ChargingScheduleModal 
+        isOpen={showSchedule} 
+        onClose={() => setShowSchedule(false)} 
+      />
     </div>
   );
 }

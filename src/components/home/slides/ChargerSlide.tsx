@@ -8,10 +8,10 @@ interface ChargerSlideProps {
   batteryLevel: number;
   mode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
-  onBatteryLevelChange: (level: number) => void;
+  onScheduleClick?: () => void;
 }
 
-export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelChange }: ChargerSlideProps) {
+export function ChargerSlide({ mode, onModeChange, onScheduleClick }: ChargerSlideProps) {
   const [isLocked, setIsLocked] = useState(false);
 
   // Cycle through all modes for simulation
@@ -122,7 +122,7 @@ export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelC
           label="Schema"
           sublabel="Auto"
           isActive={true}
-          onClick={() => {}}
+          onClick={onScheduleClick || (() => {})}
         />
       </div>
     </div>
@@ -139,14 +139,14 @@ interface ActionButtonProps {
 
 function ActionButton({ icon: Icon, label, sublabel, isActive, onClick }: ActionButtonProps) {
   return (
-    <motion.button
+     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="relative z-10 flex flex-col items-center gap-1.5 w-[90px] h-[100px] px-5 py-3 glass rounded-2xl"
+      className="relative flex flex-col items-center gap-1.5 px-5 py-3 rounded-2xl min-w-[85px] bg-white/30 border border-white/40"
     >
-      <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-      <span className="text-sm font-medium text-foreground">{label}</span>
-      <span className="text-[11px] text-muted-foreground">{sublabel}</span>
+      <Icon className={`w-5 h-5 relative z-10 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="text-sm font-medium text-foreground relative z-10">{label}</span>
+      <span className="text-[11px] text-muted-foreground relative z-10">{sublabel}</span>
     </motion.button>
   );
 }
