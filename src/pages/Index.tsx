@@ -20,9 +20,9 @@ export default function Index() {
         return (
           <>
             <HomeHeader userName="Milton" isOnline={true} />
-            <HomeCarousel 
-              chargingMode={chargingMode} 
-              onModeChange={setChargingMode} 
+            <HomeCarousel
+              chargingMode={chargingMode}
+              onModeChange={setChargingMode}
             />
           </>
         );
@@ -30,7 +30,7 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-mesh flex flex-col">
+    <div className="min-h-screen bg-gradient-mesh flex flex-col pt-10">
       {/* Main Card Container */}
       <div className="flex-1 flex flex-col px-5 pt-2 pb-36 safe-top">
         <motion.div

@@ -49,11 +49,11 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
             >
               {/* Glow effect behind charger */}
               <div className="absolute inset-0 blur-2xl bg-primary/10 rounded-full scale-110" />
-              
+
               {/* Product image */}
-              <img 
-                src={chargerBoxImage} 
-                alt="ZenBox Charger" 
+              <img
+                src={chargerBoxImage}
+                alt="ZenBox Charger"
                 className="relative w-36 max-w-[50vw] h-auto drop-shadow-2xl"
               />
             </motion.div>
@@ -72,12 +72,12 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
       </div>
 
       {/* Quick Actions */}
-      <div className="flex gap-3 w-full justify-center mt-4">
+      <div className="flex gap-5 w-full justify-center mt-4">
         <ActionButton
           icon={isLocked ? Lock : LockOpen}
           label="Lås"
           sublabel={isLocked ? "Låst" : "Olåst"}
-          isActive={!isLocked}
+          isActive={isLocked}
           onClick={() => setIsLocked(!isLocked)}
         />
         <ActionButton
@@ -112,7 +112,7 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, onClick }: Action
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex flex-col items-center gap-1.5 px-5 py-3 glass rounded-2xl min-w-[85px]"
+      className="flex flex-col items-center gap-1.5 w-[90px] h-[100px] px-5 py-3 glass rounded-2xl"
     >
       <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
       <span className="text-sm font-medium text-foreground">{label}</span>
