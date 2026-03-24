@@ -5,11 +5,12 @@ import chargerBoxImage from "@/assets/charger-box.png";
 import { EnergyFlowVisualization } from "../EnergyFlowVisualization";
 
 interface ChargerSlideProps {
+  batteryLevel: number;
   mode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
 }
 
-export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
+export function ChargerSlide({ batteryLevel, mode, onModeChange }: ChargerSlideProps) {
   const [isLocked, setIsLocked] = useState(false);
 
   // Cycle through all modes for simulation
@@ -31,13 +32,16 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
 
   return (
     <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
-      {/* Connection indicator */}
-      <div className="mb-2">
-        <div className={`w-2.5 h-2.5 rounded-full ${mode === "idle" ? "bg-muted-foreground" : "bg-primary status-pulse"}`} />
+      <div className="relative z-10 mb-5 flex items-center gap-2 text-foreground/95">
+        <div className={`h-4 w-4 rounded-full ${mode === "idle" ? "bg-primary/65" : "bg-primary status-pulse"}`} />
+        <span className="text-[2rem] font-semibold leading-none">{Math.round(batteryLevel)}%</span>
+        {mode === "charging" && (
+          <span className="ml-1 text-sm font-medium text-primary/90">Laddar</span>
+        )}
       </div>
 
       {/* Content area - either static image or dynamic visualization */}
-      <div className="flex-1 flex items-center justify-center w-full">
+      <div className="relative z-10 flex-1 flex items-center justify-center w-full overflow-hidden rounded-[2rem]">
         <AnimatePresence mode="wait">
           {mode === "idle" ? (
             <motion.div
@@ -65,14 +69,14 @@ export function ChargerSlide({ mode, onModeChange }: ChargerSlideProps) {
               exit={{ opacity: 0, scale: 0.9 }}
               className="w-full h-full"
             >
-              <EnergyFlowVisualization mode={mode} />
+              <EnergyFlowVisualization batteryLevel={batteryLevel} mode={mode} />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
       {/* Quick Actions */}
-      <div className="flex gap-5 w-full justify-center mt-4">
+      <div className="relative z-10 flex gap-5 w-full justify-center mt-4">
         <ActionButton
           icon={isLocked ? Lock : LockOpen}
           label="Lås"
@@ -112,7 +116,7 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, onClick }: Action
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex flex-col items-center gap-1.5 w-[90px] h-[100px] px-5 py-3 glass rounded-2xl"
+      className="relative z-10 flex flex-col items-center gap-1.5 w-[90px] h-[100px] px-5 py-3 glass rounded-2xl"
     >
       <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
       <span className="text-sm font-medium text-foreground">{label}</span>
