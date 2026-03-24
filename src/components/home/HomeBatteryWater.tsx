@@ -99,10 +99,8 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
           </clipPath>
           <linearGradient id={chargeGradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={innerFillColor} stopOpacity="0" />
-            <stop offset="18%" stopColor={innerFillColor} stopOpacity="0" />
-            <stop offset="35%" stopColor={innerFillColor} stopOpacity="0.06" />
-            <stop offset="68%" stopColor={innerFillColor} stopOpacity="0.26" />
-            <stop offset="100%" stopColor={innerFillColor} stopOpacity="0.72" />
+            <stop offset="62%" stopColor={innerFillColor} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={innerFillColor} stopOpacity="0.68" />
           </linearGradient>
         </defs>
 
