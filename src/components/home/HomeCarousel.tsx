@@ -6,7 +6,6 @@ import { EnergyPriceSlide } from "./slides/EnergyPriceSlide";
 import { useCarousel } from "@/hooks/useCarousel";
 
 interface HomeCarouselProps {
-  batteryLevel: number;
   chargingMode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
   onScheduleClick?: () => void;

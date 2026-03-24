@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { HomeHeader } from "@/components/layout/HomeHeader";
 import { AppBottomNav } from "@/components/layout/AppBottomNav";
-import { HomeBatteryWater } from "@/components/home/HomeBatteryWater";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
 import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleModal";
 import Profile from "./Profile";
@@ -61,11 +60,8 @@ export default function Index() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative isolate flex-1 glass-strong glass-strong-no-top-stroke rounded-[2.5rem] flex flex-col overflow-hidden"
+          className="flex-1 glass-strong rounded-[2.5rem] flex flex-col overflow-hidden border-2 border-white/60"
         >
-          {activeTab === "home" && chargingMode !== "idle" && (
-            <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />
-          )}
           {renderContent()}
         </motion.div>
       </div>

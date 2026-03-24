@@ -24,7 +24,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className="fixed bottom-4 left-0 right-0 z-50 px-6 pb-12 safe-bottom"
+      className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-12 safe-bottom"
     >
       <div 
         className="relative rounded-[3rem] px-4 py-4 shadow-2xl shadow-black/10 overflow-hidden"
@@ -81,7 +81,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
               <button
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
-                className="relative flex w-24 flex-col items-center gap-1 py-2 transition-all"
+                className="relative flex flex-col items-center gap-1 px-6 py-2 transition-all"
               >
                 {isActive && (
                   <motion.div
