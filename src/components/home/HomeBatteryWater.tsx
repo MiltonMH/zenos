@@ -46,6 +46,7 @@ function createWaveLinePath(level: number, amplitude: number, variant: 0 | 1 | 2
 
 export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) {
   const waveClipId = useId().replace(/:/g, "");
+  const chargeGradientId = `charge-fill-${waveClipId}`;
   const level = clampLevel(batteryLevel);
   const surfaceY = 100 - level;
   const isCharging = mode === "charging";
@@ -72,6 +73,9 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   const fillColor = isDischarging
     ? "hsl(var(--energy-v2g) / 0.2)"
     : "hsl(var(--primary) / 0.2)";
+  const innerFillColor = isDischarging
+    ? "hsl(var(--energy-v2g) / 0.55)"
+    : "hsl(var(--primary) / 0.55)";
   const glowColor = isDischarging ? "hsl(var(--energy-v2g) / 0.1)" : "hsl(var(--primary) / 0.12)";
 
   return (
@@ -93,6 +97,13 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
               transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
             />
           </clipPath>
+          <linearGradient id={chargeGradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={innerFillColor} stopOpacity="0" />
+            <stop offset="18%" stopColor={innerFillColor} stopOpacity="0" />
+            <stop offset="35%" stopColor={innerFillColor} stopOpacity="0.06" />
+            <stop offset="68%" stopColor={innerFillColor} stopOpacity="0.26" />
+            <stop offset="100%" stopColor={innerFillColor} stopOpacity="0.72" />
+          </linearGradient>
         </defs>
 
         <motion.path
@@ -120,8 +131,7 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
             y={chargeFillStart}
             width="100"
             height="0"
-            fill="hsl(var(--primary) / 0.55)"
-            opacity="0.72"
+            fill={`url(#${chargeGradientId})`}
           >
             <animate
               attributeName="y"

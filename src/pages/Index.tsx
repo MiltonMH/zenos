@@ -12,6 +12,10 @@ export default function Index() {
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
   const [batteryLevel, setBatteryLevel] = useState(50);
 
+  const handleBatteryLevelChange = (nextLevel: number) => {
+    setBatteryLevel(Math.max(0, Math.min(100, nextLevel)));
+  };
+
   useEffect(() => {
     const interval = window.setInterval(() => {
       setBatteryLevel((currentLevel) => {
@@ -48,6 +52,7 @@ export default function Index() {
               batteryLevel={batteryLevel}
               chargingMode={chargingMode}
               onModeChange={setChargingMode}
+              onBatteryLevelChange={handleBatteryLevelChange}
             />
           </>
         );
@@ -63,7 +68,7 @@ export default function Index() {
           animate={{ opacity: 1, y: 0 }}
           className="relative isolate flex-1 glass-strong glass-strong-no-top-stroke rounded-[2.5rem] flex flex-col overflow-hidden"
         >
-          {activeTab === "home" && (
+          {activeTab === "home" && chargingMode !== "idle" && (
             <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />
           )}
           {renderContent()}

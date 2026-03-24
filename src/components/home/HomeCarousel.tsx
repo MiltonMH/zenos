@@ -9,15 +9,26 @@ interface HomeCarouselProps {
   batteryLevel: number;
   chargingMode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
+  onBatteryLevelChange: (level: number) => void;
 }
 
-export function HomeCarousel({ batteryLevel, chargingMode, onModeChange }: HomeCarouselProps) {
+export function HomeCarousel({ batteryLevel, chargingMode, onModeChange, onBatteryLevelChange }: HomeCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const slides = [
-    { id: "charger", component: <ChargerSlide batteryLevel={batteryLevel} mode={chargingMode} onModeChange={onModeChange} /> },
+    {
+      id: "charger",
+      component: (
+        <ChargerSlide
+          batteryLevel={batteryLevel}
+          mode={chargingMode}
+          onModeChange={onModeChange}
+          onBatteryLevelChange={onBatteryLevelChange}
+        />
+      ),
+    },
     { id: "stats", component: <MonthStatsSlide /> },
     { id: "price", component: <EnergyPriceSlide /> },
   ];

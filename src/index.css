@@ -82,6 +82,10 @@
     --chart-3: 15 70% 70%;
     --chart-4: 235 60% 60%;
     --chart-5: 270 50% 65%;
+
+    /* TEST HSL TEST */
+    --water-main: 173 66% 34%;
+    --water-secondary: 173 86% 12%;
   }
 }
 
