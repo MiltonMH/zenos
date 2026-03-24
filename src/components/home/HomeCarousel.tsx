@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargerSlide } from "./slides/ChargerSlide";
@@ -14,7 +14,7 @@ export function HomeCarousel({ chargingMode, onModeChange }: HomeCarouselProps) 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const slides = [
     { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} /> },
     { id: "stats", component: <MonthStatsSlide /> },
@@ -42,20 +42,37 @@ export function HomeCarousel({ chargingMode, onModeChange }: HomeCarouselProps) 
 
   // Touch/swipe handling
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const touchEndX = useRef(0);
+  const touchEndY = useRef(0);
+  const hasTouchMoved = useRef(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    // Initialize end points so taps don't get treated like swipes.
+    touchEndX.current = touchStartX.current;
+    touchEndY.current = touchStartY.current;
+    hasTouchMoved.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
+    touchEndY.current = e.touches[0].clientY;
+    hasTouchMoved.current = true;
   };
 
   const handleTouchEnd = () => {
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
+    if (!hasTouchMoved.current) {
+      return;
+    }
+
+    const diffX = touchStartX.current - touchEndX.current;
+    const diffY = touchStartY.current - touchEndY.current;
+    const isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+
+    if (isHorizontalSwipe && Math.abs(diffX) > 50) {
+      if (diffX > 0) {
         goNext();
       } else {
         goPrev();
@@ -96,7 +113,7 @@ export function HomeCarousel({ chargingMode, onModeChange }: HomeCarouselProps) 
       </div>
 
       {/* Carousel content */}
-      <div 
+      <div
         ref={containerRef}
         className="flex-1 relative overflow-hidden"
         onTouchStart={handleTouchStart}
