@@ -82,10 +82,6 @@
     --chart-3: 15 70% 70%;
     --chart-4: 235 60% 60%;
     --chart-5: 270 50% 65%;
-
-    /* TEST HSL TEST */
-    --water-main: 173 66% 34%;
-    --water-secondary: 173 86% 12%;
   }
 }
 
@@ -115,30 +111,24 @@
 
   /* Glass morphism effects - Enhanced for light theme */
   .glass {
-    @apply bg-white/10 backdrop-blur-2xl;
-    box-shadow:
+    @apply bg-white/70 backdrop-blur-2xl border border-white/50;
+    box-shadow: 
       0 8px 40px rgba(0, 0, 0, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.4);
   }
 
   .glass-strong {
-    @apply bg-white/35 backdrop-blur-3xl;
-    box-shadow:
+    @apply bg-white/85 backdrop-blur-3xl border border-white/60;
+    box-shadow: 
       0 12px 50px rgba(0, 0, 0, 0.06),
-      inset 0 2px 0 rgba(255, 255, 255, 0.45),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
-  }
-
-  .glass-strong-no-top-stroke {
-    box-shadow:
-      0 12px 50px rgba(0, 0, 0, 0.06),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+      inset 0 2px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.5);
   }
 
   .glass-subtle {
-    @apply bg-white/15 backdrop-blur-lg;
-    box-shadow:
+    @apply bg-white/40 backdrop-blur-lg border border-white/30;
+    box-shadow: 
       0 2px 20px rgba(0, 0, 0, 0.02),
       inset 0 1px 0 rgba(255, 255, 255, 0.4);
   }
@@ -146,11 +136,11 @@
   /* Inner card - darker glass for charger box */
   .glass-dark {
     @apply backdrop-blur-xl border border-black/5;
-    background: linear-gradient(145deg,
-      hsl(220 15% 18%) 0%,
+    background: linear-gradient(145deg, 
+      hsl(220 15% 18%) 0%, 
       hsl(220 20% 12%) 100%
     );
-    box-shadow:
+    box-shadow: 
       0 8px 32px rgba(0, 0, 0, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
@@ -210,7 +200,7 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-
+  
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
