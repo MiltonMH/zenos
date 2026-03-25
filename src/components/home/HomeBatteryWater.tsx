@@ -5,7 +5,7 @@ interface HomeBatteryWaterProps {
   mode: "idle" | "charging" | "v2h" | "v2g";
 }
 
-const clampLevel = (level: number) => Math.max(6, Math.min(100, level));
+const clampLevel = (level: number) => Math.max(0, Math.min(100, level));
 
 export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) {
   if (mode !== "charging") {
@@ -13,9 +13,11 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   }
 
   const level = clampLevel(batteryLevel);
-  const fillHeight = level;
+  const fillHeight = 50;
   const chargedWidth = level;
   const chargeFillWidth = chargedWidth;
+  const cornerFadeMask =
+    "radial-gradient(145% 145% at 50% 50%, rgba(0,0,0,1) 20%, rgba(0,0,0,0.72) 78%, rgba(0,0,0,0) 100%)";
   const fillColor = "hsl(var(--primary) / 0.2)";
   const unchargedColor = "rgba(255, 255, 255, 0.68)";
   const chargedColor = "hsl(var(--primary) / 0.34)";
@@ -23,7 +25,10 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   const particleColor = "hsl(var(--primary) / 0.5)";
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+    <div
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      style={{ WebkitMaskImage: cornerFadeMask, maskImage: cornerFadeMask }}
+    >
       <motion.svg
         className="absolute inset-0 h-full w-full"
         viewBox="0 0 100 100"
