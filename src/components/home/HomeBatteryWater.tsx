@@ -15,6 +15,8 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
 
   const chargedLayerId = useId().replace(/:/g, "");
   const sweepLayerId = `${chargedLayerId}-sweep`;
+  const bottomFadeId = `${chargedLayerId}-bottom-fade`;
+  const bottomMaskId = `${chargedLayerId}-bottom-mask`;
   const level = clampLevel(batteryLevel);
   const fillHeight = 50;
   const chargedWidth = level;
@@ -25,7 +27,6 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   const unchargedColor = "rgba(255, 255, 255, 0.9)";
   const chargedColor = "hsl(var(--primary) / 0.34)";
   const sweepColor = "hsl(var(--primary) / 0.5)";
-  const particleColor = "hsl(var(--primary) / 0.5)";
 
   return (
     <div
@@ -47,6 +48,15 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
             <stop offset="92%" stopColor="rgba(255, 255, 255, 0.95)" />
             <stop offset="100%" stopColor={unchargedColor} />
           </linearGradient>
+          <linearGradient id={bottomFadeId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="rgba(255, 255, 255, 1)" />
+            <stop offset="62%" stopColor="rgba(255, 255, 255, 1)" />
+            <stop offset="86%" stopColor="rgba(255, 255, 255, 0.55)" />
+            <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
+          </linearGradient>
+          <mask id={bottomMaskId}>
+            <rect x="0" y="0" width="100" height={fillHeight} fill={`url(#${bottomFadeId})`} />
+          </mask>
           <filter id={`${chargedLayerId}-blur`} x="-10%" y="-10%" width="120%" height="120%">
             <feGaussianBlur stdDeviation="0.8" />
           </filter>
@@ -60,72 +70,52 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
           </filter>
         </defs>
 
-        <rect
-          x="0"
-          y="0"
-          width="100"
-          height={fillHeight}
-          fill={fillColor}
-        />
-
-        <rect
-          x="0"
-          y="0"
-          width="100"
-          height={fillHeight}
-          fill={unchargedColor}
-        />
-
-        <rect
-          x="0"
-          y="0"
-          width={chargedWidth}
-          height={fillHeight}
-          fill={`url(#${chargedLayerId})`}
-          filter={`url(#${chargedLayerId}-blur)`}
-        />
-
-        <rect
-          x="0"
-          y="0"
-          width="0"
-          height={fillHeight}
-          fill={`url(#${sweepLayerId})`}
-          filter={`url(#${sweepLayerId}-blur)`}
-        >
-          <animate
-            attributeName="width"
-            values={`0;${chargeFillWidth}`}
-            dur="5s"
-            repeatCount="indefinite"
-            calcMode="spline"
-            keySplines="0 0 0.2 1"
+        <g mask={`url(#${bottomMaskId})`}>
+          <rect
+            x="0"
+            y="0"
+            width="100"
+            height={fillHeight}
+            fill={fillColor}
           />
-        </rect>
+
+          <rect
+            x="0"
+            y="0"
+            width="100"
+            height={fillHeight}
+            fill={unchargedColor}
+          />
+
+          <rect
+            x="0"
+            y="0"
+            width={chargedWidth}
+            height={fillHeight}
+            fill={`url(#${chargedLayerId})`}
+            filter={`url(#${chargedLayerId}-blur)`}
+          />
+
+          <rect
+            x="0"
+            y="0"
+            width="0"
+            height={fillHeight}
+            fill={`url(#${sweepLayerId})`}
+            filter={`url(#${sweepLayerId}-blur)`}
+          >
+            <animate
+              attributeName="width"
+              values={`0;${chargeFillWidth}`}
+              dur="5s"
+              repeatCount="indefinite"
+              calcMode="spline"
+              keySplines="0 0 0.2 1"
+            />
+          </rect>
+        </g>
       </motion.svg>
 
-      <div className="absolute inset-y-0 left-0" style={{ width: `${chargedWidth}%` }}>
-        <>
-          <motion.div
-            className="absolute left-[18%] top-[12%] h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: particleColor }}
-            animate={{ x: [0, 28, 54], opacity: [0, 0.7, 0] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: "easeOut" }}
-          />
-          <motion.div
-            className="absolute left-[62%] top-[18%] h-2 w-2 rounded-full"
-            style={{ backgroundColor: particleColor }}
-            animate={{ x: [0, 24, 48], opacity: [0, 0.5, 0] }}
-            transition={{ duration: 2.1, repeat: Infinity, ease: "easeOut", delay: 0.7 }}
-          />
-          <motion.div
-            className="absolute left-[78%] top-[9%] h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: particleColor }}
-            animate={{ x: [0, 18, 36], opacity: [0, 0.55, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay: 1.1 }}
-          />
-        </>
-      </div>
     </div>
   );
 }
