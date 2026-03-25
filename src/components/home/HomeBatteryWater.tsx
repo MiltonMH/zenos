@@ -71,6 +71,14 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
             calcMode="spline"
             keySplines="0 0 0.2 1"
           />
+          <animate
+            attributeName="fill-opacity"
+            values="0.9;0.12"
+            dur="5s"
+            repeatCount="indefinite"
+            calcMode="spline"
+            keySplines="0 0 0.2 1"
+          />
         </rect>
       </motion.svg>
 
