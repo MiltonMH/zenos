@@ -46,7 +46,7 @@ export default function Settings({ onBack }: SettingsProps) {
         transition={{ delay: 0.05 }}
         className="mb-3 rounded-[2rem] border border-white/45 bg-gradient-to-br from-white/40 via-white/20 to-[#d8deff]/45 p-5 shadow-[0_10px_30px_-20px_rgba(20,30,60,0.55)]"
       >
-        <p className="text-center text-2xl font-semibold tracking-wide text-foreground/90">V2H - Max Charge</p>
+        <p className="text-center text-xl tracking-wide text-foreground/90">V2H - Max Charge</p>
         <div className="mt-7 px-2">
           <div className="relative h-8 rounded-full border border-white/70 bg-white/55 shadow-inner">
             <div
@@ -84,7 +84,7 @@ export default function Settings({ onBack }: SettingsProps) {
         <div className="flex items-center justify-between border-b border-white/40 px-5 py-4">
           <div className="flex items-center gap-4">
             <Leaf className="h-7 w-7 text-white" />
-            <span className="text-xl font-medium text-foreground/90">Eco / Smart function</span>
+            <span className="text-m font-medium text-foreground/90">Eco / Smart function</span>
           </div>
           <Switch checked={ecoModeEnabled} onCheckedChange={setEcoModeEnabled} />
         </div>
@@ -92,7 +92,7 @@ export default function Settings({ onBack }: SettingsProps) {
         <div className="flex items-center justify-between border-b border-white/40 px-5 py-4">
           <div className="flex items-center gap-4">
             <Cable className="h-7 w-7 text-white" />
-            <span className="text-xl font-medium text-foreground/90">V2G - Vehicle To Grid</span>
+            <span className="text-m font-medium text-foreground/90">V2G - Vehicle To Grid</span>
           </div>
           <Switch checked={v2gEnabled} onCheckedChange={setV2gEnabled} />
         </div>
@@ -100,7 +100,7 @@ export default function Settings({ onBack }: SettingsProps) {
         <div className="flex items-center justify-between border-b border-white/40 px-5 py-4">
           <div className="flex items-center gap-4">
             <Sun className="h-7 w-7 text-white" />
-            <span className="text-xl font-medium text-foreground/90">Indicator Light</span>
+            <span className="text-m font-medium text-foreground/90">Indicator Light</span>
           </div>
           <div className="rounded-full border border-white/55 bg-white/35 px-3 py-1 text-sm font-medium text-foreground/70">
             Status
@@ -110,7 +110,7 @@ export default function Settings({ onBack }: SettingsProps) {
         <div className="flex items-center justify-between border-b border-white/40 px-5 py-4">
           <div className="flex items-center gap-4">
             <Power className="h-7 w-7 text-white" />
-            <span className="text-xl font-medium text-foreground/90">Restart charger</span>
+            <span className="text-m font-medium text-foreground/90">Restart charger</span>
           </div>
           <div className="text-right text-xs text-foreground/55">
             <p>Last restart:</p>
@@ -123,12 +123,12 @@ export default function Settings({ onBack }: SettingsProps) {
           className="flex w-full items-center gap-4 border-b border-white/40 px-5 py-4 text-left"
         >
           <Headphones className="h-7 w-7 text-white" />
-          <span className="text-xl font-medium text-foreground/90">Support</span>
+          <span className="text-m font-medium text-foreground/90">Support</span>
         </button>
 
         <button type="button" className="flex w-full items-center gap-4 px-5 py-4 text-left">
           <Info className="h-7 w-7 text-white" />
-          <span className="text-xl font-medium text-foreground/90">About</span>
+          <span className="text-m font-medium text-foreground/90">About</span>
         </button>
       </motion.div>
     </div>

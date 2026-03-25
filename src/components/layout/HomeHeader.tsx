@@ -1,12 +1,14 @@
+import { ReactNode } from "react";
 import { Settings, Wifi } from "lucide-react";
 
 interface HomeHeaderProps {
   userName: string;
   isOnline: boolean;
   onSettingsClick?: () => void;
+  centerContent?: ReactNode;
 }
 
-export function HomeHeader({ userName, isOnline, onSettingsClick }: HomeHeaderProps) {
+export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent }: HomeHeaderProps) {
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <button
@@ -18,9 +20,13 @@ export function HomeHeader({ userName, isOnline, onSettingsClick }: HomeHeaderPr
         <Settings className="w-6 h-6" />
       </button>
 
-      <h1 className="text-lg font-semibold text-foreground">
-        Hej, {userName}
-      </h1>
+      <div className="flex min-w-0 flex-1 items-center justify-center px-4">
+        {centerContent ?? (
+          <h1 className="text-lg font-semibold text-foreground">
+            Hej, {userName}
+          </h1>
+        )}
+      </div>
 
       <div className={`p-2.5 glass-subtle rounded-2xl ${isOnline ? "text-primary" : "text-foreground/80"}`}>
         <Wifi className="w-6 h-6" />

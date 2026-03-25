@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -12,14 +12,14 @@ import {
 } from "recharts";
 import { Zap, TrendingUp, TrendingDown, Battery, Plug } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
-import { 
-  weeklyData, 
-  monthlyData, 
-  yearlyData, 
-  dailyData, 
+import {
+  weeklyData,
+  monthlyData,
+  yearlyData,
+  dailyData,
   chargingHistory,
   getStatsForPeriod,
-  type Period 
+  type Period
 } from "@/lib/statistics-data";
 
 export default function Statistics() {
@@ -161,15 +161,15 @@ export default function Statistics() {
                       <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis 
-                    dataKey={xKey} 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey={xKey}
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                     unit=" kWh"
                   />
@@ -214,23 +214,23 @@ export default function Statistics() {
             <div className="h-[100px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                  <XAxis 
-                    dataKey={xKey} 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey={xKey}
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                     unit=" kr"
                   />
                   <Bar dataKey="cost" radius={[4, 4, 0, 0]}>
                     {data.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.cost > 60 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'} 
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.cost > 60 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'}
                         fillOpacity={0.8}
                       />
                     ))}
@@ -267,7 +267,7 @@ export default function Statistics() {
                       <Battery className="w-4 h-4 text-success" />
                     )}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-foreground">{session.date}</span>

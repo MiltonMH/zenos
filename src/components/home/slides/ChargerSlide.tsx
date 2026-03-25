@@ -48,9 +48,9 @@ export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelC
   };
 
   return (
-    <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
+    <div className="relative h-full flex flex-col items-center px-6 pt-4 pb-8">
       {mode !== "idle" && (
-        <div className="relative z-10 mb-5 flex items-center gap-2 text-foreground/95">
+        <div className="absolute left-6 top-0 z-10 flex justify-start">
           <button
             type="button"
             onClick={handleSetBatteryLevel}
@@ -58,8 +58,15 @@ export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelC
           >
             Set %
           </button>
-          <div className="h-4 w-4 rounded-full bg-primary status-pulse" />
-          <span className="text-[2rem] font-semibold leading-none">{Math.round(batteryLevel)}%</span>
+        </div>
+      )}
+
+      {mode !== "idle" && (
+        <div className="relative z-10 mb-5 mt-6 flex min-h-[4.5rem] w-full items-start justify-center text-foreground/95">
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-[2rem] font-semibold leading-none">{Math.round(batteryLevel)}%</span>
+            <div className="h-3 w-3 rounded-full bg-primary status-pulse" />
+          </div>
         </div>
       )}
 

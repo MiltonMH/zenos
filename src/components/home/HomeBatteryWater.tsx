@@ -14,8 +14,11 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
 
   const level = clampLevel(batteryLevel);
   const fillHeight = level;
-  const chargeFillWidth = 100;
+  const chargedWidth = level;
+  const chargeFillWidth = chargedWidth;
   const fillColor = "hsl(var(--primary) / 0.2)";
+  const unchargedColor = "rgba(255, 255, 255, 0.68)";
+  const chargedColor = "hsl(var(--primary) / 0.34)";
   const sweepColor = "hsl(var(--primary) / 0.5)";
   const particleColor = "hsl(var(--primary) / 0.5)";
 
@@ -40,6 +43,22 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
         <rect
           x="0"
           y="0"
+          width="100"
+          height={fillHeight}
+          fill={unchargedColor}
+        />
+
+        <rect
+          x="0"
+          y="0"
+          width={chargedWidth}
+          height={fillHeight}
+          fill={chargedColor}
+        />
+
+        <rect
+          x="0"
+          y="0"
           width="0"
           height={fillHeight}
           fill={sweepColor}
@@ -55,7 +74,7 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
         </rect>
       </motion.svg>
 
-      <div className="absolute inset-0">
+      <div className="absolute inset-y-0 left-0" style={{ width: `${chargedWidth}%` }}>
         <>
           <motion.div
             className="absolute left-[18%] top-[12%] h-2.5 w-2.5 rounded-full"

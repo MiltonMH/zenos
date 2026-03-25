@@ -8,10 +8,31 @@ import Profile from "./Profile";
 import Settings from "./Settings";
 import Statistics from "./Statistics";
 
+function SlideIndicators({ currentSlide, onChange }: { currentSlide: "charger" | "stats" | "price"; onChange: (slide: "charger" | "stats" | "price") => void }) {
+  const slides = ["charger", "stats", "price"] as const;
+
+  return (
+    <div className="flex items-center justify-center gap-2">
+      {slides.map((slide) => (
+        <button
+          key={slide}
+          type="button"
+          onClick={() => onChange(slide)}
+          className={`h-2 rounded-full transition-all duration-300 ${
+            currentSlide === slide ? "w-3 bg-primary" : "w-2 bg-primary/30"
+          }`}
+          aria-label={`Visa ${slide}`}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
   const [batteryLevel, setBatteryLevel] = useState(50);
+  const [activeHomeSlide, setActiveHomeSlide] = useState<"charger" | "stats" | "price">("charger");
 
   const handleBatteryLevelChange = (nextLevel: number) => {
     setBatteryLevel(Math.max(0, Math.min(100, nextLevel)));
@@ -54,12 +75,18 @@ export default function Index() {
               userName="Milton"
               isOnline={true}
               onSettingsClick={() => setActiveTab("settings")}
+              centerContent={
+                <SlideIndicators currentSlide={activeHomeSlide} onChange={setActiveHomeSlide} />
+              }
             />
             <HomeCarousel
+              userName="Milton"
               batteryLevel={batteryLevel}
               chargingMode={chargingMode}
               onModeChange={setChargingMode}
               onBatteryLevelChange={handleBatteryLevelChange}
+              activeSlide={activeHomeSlide}
+              onSlideChange={setActiveHomeSlide}
             />
           </>
         );
@@ -75,7 +102,7 @@ export default function Index() {
           animate={{ opacity: 1, y: 0 }}
           className="relative isolate flex-1 glass-strong glass-strong-no-top-stroke rounded-[2.5rem] flex flex-col overflow-hidden"
         >
-          {activeTab === "home" && chargingMode === "charging" && (
+          {activeTab === "home" && activeHomeSlide === "charger" && chargingMode === "charging" && (
             <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />
           )}
           <div className="relative z-10 flex-1 flex flex-col">

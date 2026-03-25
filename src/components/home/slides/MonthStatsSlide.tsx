@@ -6,7 +6,7 @@ export function MonthStatsSlide() {
   const [period, setPeriod] = useState<Period>("M");
 
   const periodStats = getStatsForPeriod(period);
-  
+
   const stats = {
     charged: { value: periodStats.charged, unit: "kWh", color: "bg-[hsl(235,60%,60%)]" },
     v2h: { value: periodStats.v2h, unit: "kWh", color: "bg-[hsl(145,55%,55%)]" },

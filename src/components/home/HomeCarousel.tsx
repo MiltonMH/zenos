@@ -1,18 +1,24 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargerSlide } from "./slides/ChargerSlide";
 import { MonthStatsSlide } from "./slides/MonthStatsSlide";
 import { EnergyPriceSlide } from "./slides/EnergyPriceSlide";
 
+const slideIds = ["charger", "stats", "price"] as const;
+type SlideId = typeof slideIds[number];
+
 interface HomeCarouselProps {
+  userName: string;
   batteryLevel: number;
   chargingMode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
   onBatteryLevelChange: (level: number) => void;
+  activeSlide?: SlideId;
+  onSlideChange?: (slideId: SlideId) => void;
 }
 
-export function HomeCarousel({ batteryLevel, chargingMode, onModeChange, onBatteryLevelChange }: HomeCarouselProps) {
+export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChange, onBatteryLevelChange, activeSlide, onSlideChange }: HomeCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,24 +37,42 @@ export function HomeCarousel({ batteryLevel, chargingMode, onModeChange, onBatte
     },
     { id: "stats", component: <MonthStatsSlide /> },
     { id: "price", component: <EnergyPriceSlide /> },
-  ];
+  ] as const;
+
+  useEffect(() => {
+    if (!activeSlide) {
+      return;
+    }
+
+    const nextIndex = slideIds.indexOf(activeSlide);
+
+    if (nextIndex !== -1 && nextIndex !== currentSlide) {
+      setDirection(nextIndex > currentSlide ? 1 : -1);
+      setCurrentSlide(nextIndex);
+    }
+  }, [activeSlide, currentSlide]);
+
+  const setSlide = (index: number) => {
+    setCurrentSlide(index);
+    onSlideChange?.(slides[index].id);
+  };
 
   const goToSlide = (index: number) => {
     setDirection(index > currentSlide ? 1 : -1);
-    setCurrentSlide(index);
+    setSlide(index);
   };
 
   const goNext = () => {
     if (currentSlide < slides.length - 1) {
       setDirection(1);
-      setCurrentSlide(currentSlide + 1);
+      setSlide(currentSlide + 1);
     }
   };
 
   const goPrev = () => {
     if (currentSlide > 0) {
       setDirection(-1);
-      setCurrentSlide(currentSlide - 1);
+      setSlide(currentSlide - 1);
     }
   };
 
@@ -109,19 +133,10 @@ export function HomeCarousel({ batteryLevel, chargingMode, onModeChange, onBatte
 
   return (
     <div className="relative flex-1 flex flex-col">
-      {/* Dot indicators */}
-      <div className="flex justify-center gap-2 mb-4">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentSlide
-                ? "bg-primary w-3"
-                : "bg-primary/30"
-            }`}
-          />
-        ))}
+      <div className="mb-4 flex justify-center">
+        <h1 className="text-lg font-semibold text-foreground">
+          Hej, {userName}
+        </h1>
       </div>
 
       {/* Carousel content */}
