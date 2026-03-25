@@ -20,6 +20,7 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   const level = clampLevel(batteryLevel);
   const fillHeight = 50;
   const chargedWidth = level;
+  const isFullyCharged = chargedWidth >= 100;
   const chargeFillWidth = chargedWidth;
   const cornerFadeMask =
     "radial-gradient(145% 145% at 50% 50%, rgba(0,0,0,1) 20%, rgba(0,0,0,0.72) 78%, rgba(0,0,0,0) 100%)";
@@ -92,27 +93,29 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
             y="0"
             width={chargedWidth}
             height={fillHeight}
-            fill={`url(#${chargedLayerId})`}
-            filter={`url(#${chargedLayerId}-blur)`}
+            fill={isFullyCharged ? chargedColor : `url(#${chargedLayerId})`}
+            filter={isFullyCharged ? undefined : `url(#${chargedLayerId}-blur)`}
           />
 
-          <rect
-            x="0"
-            y="0"
-            width="0"
-            height={fillHeight}
-            fill={`url(#${sweepLayerId})`}
-            filter={`url(#${sweepLayerId}-blur)`}
-          >
-            <animate
-              attributeName="width"
-              values={`0;${chargeFillWidth}`}
-              dur="5s"
-              repeatCount="indefinite"
-              calcMode="spline"
-              keySplines="0 0 0.2 1"
-            />
-          </rect>
+          {!isFullyCharged && (
+            <rect
+              x="0"
+              y="0"
+              width="0"
+              height={fillHeight}
+              fill={`url(#${sweepLayerId})`}
+              filter={`url(#${sweepLayerId}-blur)`}
+            >
+              <animate
+                attributeName="width"
+                values={`0;${chargeFillWidth}`}
+                dur="5s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keySplines="0 0 0.2 1"
+              />
+            </rect>
+          )}
         </g>
       </motion.svg>
 
