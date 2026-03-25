@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { motion } from "framer-motion";
 
 interface HomeBatteryWaterProps {
@@ -12,6 +13,8 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
     return null;
   }
 
+  const chargedLayerId = useId().replace(/:/g, "");
+  const sweepLayerId = `${chargedLayerId}-sweep`;
   const level = clampLevel(batteryLevel);
   const fillHeight = 50;
   const chargedWidth = level;
@@ -19,7 +22,7 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   const cornerFadeMask =
     "radial-gradient(145% 145% at 50% 50%, rgba(0,0,0,1) 20%, rgba(0,0,0,0.72) 78%, rgba(0,0,0,0) 100%)";
   const fillColor = "hsl(var(--primary) / 0.2)";
-  const unchargedColor = "rgba(255, 255, 255, 0.68)";
+  const unchargedColor = "rgba(255, 255, 255, 0.9)";
   const chargedColor = "hsl(var(--primary) / 0.34)";
   const sweepColor = "hsl(var(--primary) / 0.5)";
   const particleColor = "hsl(var(--primary) / 0.5)";
@@ -37,6 +40,26 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
         animate={{ opacity: 1 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
       >
+        <defs>
+          <linearGradient id={chargedLayerId} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={chargedColor} />
+            <stop offset="76%" stopColor={chargedColor} />
+            <stop offset="92%" stopColor="rgba(255, 255, 255, 0.95)" />
+            <stop offset="100%" stopColor={unchargedColor} />
+          </linearGradient>
+          <filter id={`${chargedLayerId}-blur`} x="-10%" y="-10%" width="120%" height="120%">
+            <feGaussianBlur stdDeviation="0.8" />
+          </filter>
+          <linearGradient id={sweepLayerId} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={sweepColor} stopOpacity="0.95" />
+            <stop offset="72%" stopColor={sweepColor} stopOpacity="0.6" />
+            <stop offset="100%" stopColor={sweepColor} stopOpacity="0" />
+          </linearGradient>
+          <filter id={`${sweepLayerId}-blur`} x="-10%" y="-10%" width="120%" height="120%">
+            <feGaussianBlur stdDeviation="0.9" />
+          </filter>
+        </defs>
+
         <rect
           x="0"
           y="0"
@@ -58,7 +81,8 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
           y="0"
           width={chargedWidth}
           height={fillHeight}
-          fill={chargedColor}
+          fill={`url(#${chargedLayerId})`}
+          filter={`url(#${chargedLayerId}-blur)`}
         />
 
         <rect
@@ -66,19 +90,12 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
           y="0"
           width="0"
           height={fillHeight}
-          fill={sweepColor}
+          fill={`url(#${sweepLayerId})`}
+          filter={`url(#${sweepLayerId}-blur)`}
         >
           <animate
             attributeName="width"
             values={`0;${chargeFillWidth}`}
-            dur="5s"
-            repeatCount="indefinite"
-            calcMode="spline"
-            keySplines="0 0 0.2 1"
-          />
-          <animate
-            attributeName="fill-opacity"
-            values="0.9;0.12"
             dur="5s"
             repeatCount="indefinite"
             calcMode="spline"
