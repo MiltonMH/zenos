@@ -24,6 +24,7 @@ import {
 
 export default function Statistics() {
   const [period, setPeriod] = useState<Period>("V");
+  const periods: Period[] = ["D", "V", "M", "Å"];
 
   const getChartData = () => {
     switch (period) {
@@ -67,14 +68,21 @@ export default function Statistics() {
 
       {/* Period Toggle */}
       <div className="flex justify-center px-4 mb-4">
-        <div className="pill-toggle">
-          {(["D", "V", "M", "Å"] as Period[]).map((p) => (
+        <div className="pill-toggle relative w-full max-w-[240px]">
+          {periods.map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`pill-toggle-item ${period === p ? "active" : ""}`}
+              className={`pill-toggle-item relative z-10 flex-1 ${period === p ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
-              {p}
+              {period === p && (
+                <motion.span
+                  layoutId="statistics-period-indicator"
+                  className="absolute inset-0 rounded-full bg-white shadow-sm"
+                  transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
+                />
+              )}
+              <span className="relative z-10">{p}</span>
             </button>
           ))}
         </div>

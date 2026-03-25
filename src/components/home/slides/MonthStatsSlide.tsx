@@ -4,6 +4,7 @@ import { getStatsForPeriod, type Period } from "@/lib/statistics-data";
 
 export function MonthStatsSlide() {
   const [period, setPeriod] = useState<Period>("M");
+  const periods: Period[] = ["D", "V", "M", "Å"];
 
   const periodStats = getStatsForPeriod(period);
 
@@ -37,13 +38,20 @@ export function MonthStatsSlide() {
 
       {/* Period Toggle */}
       <div className="pill-toggle mb-8">
-        {(["D", "V", "M", "Å"] as Period[]).map((p) => (
+        {periods.map((p) => (
           <button
             key={p}
             onClick={() => setPeriod(p)}
-            className={`pill-toggle-item ${period === p ? "active" : ""}`}
+            className={`pill-toggle-item relative ${period === p ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
           >
-            {p}
+            {period === p && (
+              <motion.span
+                layoutId="month-stats-period-indicator"
+                className="absolute inset-0 rounded-full bg-white shadow-sm"
+                transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
+              />
+            )}
+            <span className="relative z-10">{p}</span>
           </button>
         ))}
       </div>
