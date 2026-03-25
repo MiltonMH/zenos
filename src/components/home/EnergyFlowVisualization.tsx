@@ -112,31 +112,8 @@ export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisual
           </span>
         </motion.div>
 
-        {/* Animated pulses */}
+        {/* Spacer between source and destination */}
         <div className="flex-1 flex items-center justify-center relative h-8 mx-2">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="absolute w-3 h-3 rounded-full"
-              style={{ backgroundColor: config.color }}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{
-                x: ["-100%", "200%"],
-                opacity: [0, 1, 1, 0],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: i * 0.4,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-          {/* Track line */}
-          <div
-            className="absolute inset-x-0 h-0.5 rounded-full opacity-20"
-            style={{ backgroundColor: config.color }}
-          />
         </div>
 
         {/* Destination */}

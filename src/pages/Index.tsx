@@ -5,6 +5,7 @@ import { AppBottomNav } from "@/components/layout/AppBottomNav";
 import { HomeBatteryWater } from "@/components/home/HomeBatteryWater";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
 import Profile from "./Profile";
+import Settings from "./Settings";
 import Statistics from "./Statistics";
 
 export default function Index() {
@@ -44,10 +45,16 @@ export default function Index() {
         return <Profile />;
       case "statistics":
         return <Statistics />;
+      case "settings":
+        return <Settings onBack={() => setActiveTab("home")} />;
       default:
         return (
           <>
-            <HomeHeader userName="Milton" isOnline={true} />
+            <HomeHeader
+              userName="Milton"
+              isOnline={true}
+              onSettingsClick={() => setActiveTab("settings")}
+            />
             <HomeCarousel
               batteryLevel={batteryLevel}
               chargingMode={chargingMode}
@@ -68,10 +75,12 @@ export default function Index() {
           animate={{ opacity: 1, y: 0 }}
           className="relative isolate flex-1 glass-strong glass-strong-no-top-stroke rounded-[2.5rem] flex flex-col overflow-hidden"
         >
-          {activeTab === "home" && chargingMode !== "idle" && (
+          {activeTab === "home" && chargingMode === "charging" && (
             <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />
           )}
-          {renderContent()}
+          <div className="relative z-10 flex-1 flex flex-col">
+            {renderContent()}
+          </div>
         </motion.div>
       </div>
 
