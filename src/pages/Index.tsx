@@ -119,7 +119,7 @@ export default function Index() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative isolate flex-1 glass-strong glass-strong-no-top-stroke rounded-[2.5rem] border-[1px] border-white flex flex-col overflow-hidden"
+          className="relative isolate flex-1 glass-main flex flex-col overflow-hidden"
         >
           {activeTab === "home" && activeHomeSlide === "charger" && chargingMode === "charging" && (
             <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />

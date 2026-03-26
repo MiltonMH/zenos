@@ -26,14 +26,8 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
       animate={{ y: 0 }}
       className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-12 safe-bottom"
     >
-      <div 
-        className="relative rounded-[3rem] px-4 py-4 shadow-2xl shadow-black/10 overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.6) 100%)",
-          backdropFilter: "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: "blur(24px) saturate(180%)",
-          border: "1.5px solid rgba(255,255,255,0.7)",
-        }}
+      <div
+        className="relative glass-main"
       >
         {/* Animated gradient blob background */}
         <motion.div
@@ -54,7 +48,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
             ease: "easeInOut",
           }}
         />
-        
+
         {/* Subtle shimmer effect */}
         <motion.div
           className="absolute inset-0 pointer-events-none opacity-30"
@@ -81,18 +75,19 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
               <button
                 key={item.id}
                 onClick={() => onTabChange(item.id)}
-                className="relative flex flex-col items-center gap-1 px-6 py-2 transition-all"
+                className="relative flex w-24 flex-col items-center gap-1 py-2 transition-all"
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeNavTab"
-                    className="absolute inset-0 rounded-3xl overflow-hidden"
+                    className="absolute inset-0 rounded-3xl overflow-hidden backdrop-blur-md"
                     style={{
-                      background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%)",
-                      boxShadow: "0 4px 15px -3px rgba(0,0,0,0.1), inset 0 1px 2px rgba(255,255,255,1)",
+                      background: "linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 100%)",
+                      boxShadow: "0 4px 15px -3px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.5)",
+                      border: "1px solid rgba(255,255,255,0.3)",
                     }}
-                    transition={{ 
-                      type: "spring", 
+                    transition={{
+                      type: "spring",
                       stiffness: 300,
                       damping: 25,
                       mass: 0.8,

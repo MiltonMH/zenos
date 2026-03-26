@@ -24,7 +24,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const slides = [
-    { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} onScheduleClick={onScheduleClick} /> },
+    { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} onScheduleClick={onScheduleClick} batteryLevel={batteryLevel} onBatteryLevelChange={onBatteryLevelChange} /> },
     { id: "stats", component: <MonthStatsSlide /> },
     { id: "price", component: <EnergyPriceSlide /> },
   ] as const;

@@ -10,7 +10,7 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent }: HomeHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-6 py-4">
+    <div className="relative flex items-center justify-between px-6 py-4">
       <button
         type="button"
         onClick={onSettingsClick}
@@ -20,7 +20,17 @@ export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent 
         <Settings className="w-6 h-6" />
       </button>
 
-      <div className="flex min-w-0 flex-1 items-center justify-center px-4">
+      <div className="pointer-events-none absolute inset-x-0 flex items-center justify-center px-20">
+        <div className="pointer-events-auto">
+          {centerContent ?? (
+            <h1 className="text-lg font-semibold text-foreground">
+              Hej, {userName}
+            </h1>
+          )}
+        </div>
+      </div>
+
+      <div className="flex min-w-0 flex-1 items-center justify-center px-4 opacity-0" aria-hidden="true">
         {centerContent ?? (
           <h1 className="text-lg font-semibold text-foreground">
             Hej, {userName}

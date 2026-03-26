@@ -8,6 +8,7 @@ type ActiveMode = "charging" | "v2h" | "v2g";
 
 interface EnergyFlowVisualizationProps {
   mode: ActiveMode;
+  batteryLevel?: number;
 }
 
 const modeConfig = {
@@ -54,29 +55,12 @@ function useDynamicPower(minPower: number, maxPower: number) {
   return power;
 }
 
-export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) {
+export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisualizationProps) {
   const config = modeConfig[mode];
   const power = useDynamicPower(config.minPower, config.maxPower);
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-6">
-      {/* Mode label */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
-      >
-        <span
-          className="text-sm font-medium px-3 py-1 rounded-full"
-          style={{
-            backgroundColor: `${config.color}20`,
-            color: config.color
-          }}
-        >
-          {config.label}
-        </span>
-      </motion.div>
-
       {/* Energy flow visualization */}
       <div className={`flex items-center gap-4 w-full ${mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}
@@ -176,42 +160,6 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
           )}
         </motion.div>
       </div>
-
-      {/* Battery level indicator for charging mode */}
-      {mode === "charging" && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 w-full max-w-[200px]"
-        >
-          <div className="flex justify-between text-xs text-muted-foreground mb-1">
-            <span>Batterinivå</span>
-            <motion.span
-              animate={{ opacity: [1, 0.6, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="text-primary"
-            >
-              Laddar...
-            </motion.span>
-          </div>
-          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ backgroundColor: config.color }}
-              initial={{ width: "52%" }}
-              animate={{ width: "54%" }}
-              transition={{
-                duration: 60,
-                ease: "linear",
-              }}
-            />
-          </div>
-          <div className="flex justify-between text-xs mt-1">
-            <span className="text-muted-foreground">52%</span>
-            <span className="text-muted-foreground">~2h kvar</span>
-          </div>
-        </motion.div>
-      )}
 
       {/* Power indicator */}
       <motion.div
