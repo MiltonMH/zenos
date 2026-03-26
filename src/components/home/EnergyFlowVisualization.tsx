@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, Building2, Car } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
+import chargingCarImage from "@/assets/EX30-cutout.png";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
 
@@ -84,7 +85,7 @@ export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisual
 
       {/* Energy flow visualization */}
       {showFlowDetails && (
-      <div className="flex items-center justify-center gap-4 w-full max-w-xs">
+      <div className={`flex items-center gap-4 w-full ${mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -120,26 +121,30 @@ export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisual
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex flex-col items-center gap-2"
+          className={`flex flex-col gap-2 ${mode === "charging" ? "items-end ml-auto" : "items-center"}`}
         >
           <motion.div
-            animate={{
+            animate={mode === "charging" ? undefined : {
               boxShadow: [
                 `0 0 0 0 ${config.color}00`,
                 `0 0 20px 5px ${config.color}30`,
                 `0 0 0 0 ${config.color}00`,
               ],
             }}
-            transition={{
+            transition={mode === "charging" ? undefined : {
               duration: 2,
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="p-3 rounded-2xl"
-            style={{ backgroundColor: `${config.color}15` }}
+            className={mode === "charging" ? "relative w-32 overflow-hidden" : "p-3 rounded-2xl"}
+            style={mode === "charging" ? undefined : { backgroundColor: `${config.color}15` }}
           >
             {mode === "charging" && (
-              <Car className="w-8 h-8" style={{ color: config.color }} />
+              <img
+                src={chargingCarImage}
+                alt="Volvo EX30"
+                className="w-64 h-auto pr-0 max-w-none opacity-100"
+              />
             )}
             {mode === "v2h" && (
               <Home className="w-8 h-8" style={{ color: config.color }} />
@@ -148,9 +153,11 @@ export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisual
               <Building2 className="w-8 h-8" style={{ color: config.color }} />
             )}
           </motion.div>
-          <span className="text-xs text-muted-foreground">
-            {mode === "charging" ? "Bil" : mode === "v2h" ? "Hem" : "Elnät"}
-          </span>
+          {mode !== "charging" && (
+            <span className="text-xs text-muted-foreground">
+              {mode === "v2h" ? "Hem" : "Elnät"}
+            </span>
+          )}
         </motion.div>
       </div>
       )}
