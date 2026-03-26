@@ -7,7 +7,6 @@ import chargingCarImage from "@/assets/EX30-cutout.png";
 type ActiveMode = "charging" | "v2h" | "v2g";
 
 interface EnergyFlowVisualizationProps {
-  batteryLevel: number;
   mode: ActiveMode;
 }
 
@@ -55,36 +54,30 @@ function useDynamicPower(minPower: number, maxPower: number) {
   return power;
 }
 
-export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisualizationProps) {
+export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) {
   const config = modeConfig[mode];
   const power = useDynamicPower(config.minPower, config.maxPower);
-  const showFlowDetails = true;
-  const isCharging = mode === "charging";
-  const showModeLabel = mode !== "charging";
 
   return (
-    <div className="relative z-10 flex flex-col items-center justify-center h-full px-6">
+    <div className="flex flex-col items-center justify-center h-full px-6">
       {/* Mode label */}
-      {showModeLabel && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6"
+      >
+        <span
+          className="text-sm font-medium px-3 py-1 rounded-full"
+          style={{
+            backgroundColor: `${config.color}20`,
+            color: config.color
+          }}
         >
-          <span
-            className="text-sm font-medium px-3 py-1 rounded-full"
-            style={{
-              backgroundColor: `${config.color}20`,
-              color: config.color
-            }}
-          >
-            {config.label}
-          </span>
-        </motion.div>
-      )}
+          {config.label}
+        </span>
+      </motion.div>
 
       {/* Energy flow visualization */}
-      {showFlowDetails && (
       <div className={`flex items-center gap-4 w-full ${mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}
         <motion.div
@@ -97,7 +90,7 @@ export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisual
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
-                className="w-16 h-auto opacity-100"
+                className="w-16 h-auto opacity-80"
               />
             </div>
           ) : (
@@ -115,6 +108,29 @@ export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisual
 
         {/* Spacer between source and destination */}
         <div className="flex-1 flex items-center justify-center relative h-8 mx-2">
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="absolute w-3 h-3 rounded-full"
+              style={{ backgroundColor: config.color }}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{
+                x: ["-100%", "200%"],
+                opacity: [0, 1, 1, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.4,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+          {/* Track line */}
+          <div
+            className="absolute inset-x-0 h-0.5 rounded-full opacity-20"
+            style={{ backgroundColor: config.color }}
+          />
         </div>
 
         {/* Destination */}
@@ -160,9 +176,43 @@ export function EnergyFlowVisualization({ batteryLevel, mode }: EnergyFlowVisual
           )}
         </motion.div>
       </div>
-      )}
 
       {/* Battery level indicator for charging mode */}
+      {mode === "charging" && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 w-full max-w-[200px]"
+        >
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Batterinivå</span>
+            <motion.span
+              animate={{ opacity: [1, 0.6, 1] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="text-primary"
+            >
+              Laddar...
+            </motion.span>
+          </div>
+          <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{ backgroundColor: config.color }}
+              initial={{ width: "52%" }}
+              animate={{ width: "54%" }}
+              transition={{
+                duration: 60,
+                ease: "linear",
+              }}
+            />
+          </div>
+          <div className="flex justify-between text-xs mt-1">
+            <span className="text-muted-foreground">52%</span>
+            <span className="text-muted-foreground">~2h kvar</span>
+          </div>
+        </motion.div>
+      )}
+
       {/* Power indicator */}
       <motion.div
         initial={{ opacity: 0 }}

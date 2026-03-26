@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { HomeHeader } from "@/components/layout/HomeHeader";
 import { AppBottomNav } from "@/components/layout/AppBottomNav";
-import { HomeBatteryWater } from "@/components/home/HomeBatteryWater";
 import { HomeCarousel } from "@/components/home/HomeCarousel";
+import { HomeBatteryWater } from "@/components/home/HomeBatteryWater";
+import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleModal";
 import Profile from "./Profile";
 import Settings from "./Settings";
 import Statistics from "./Statistics";
+import { mockUser } from "@/lib/mock-data";
+import { useBackground } from "@/hooks/useBackground";
+import { cn } from "@/lib/utils";
 
 function SlideIndicators({ currentSlide, onChange }: { currentSlide: "charger" | "stats" | "price"; onChange: (slide: "charger" | "stats" | "price") => void }) {
   const slides = ["charger", "stats", "price"] as const;
@@ -30,6 +34,8 @@ function SlideIndicators({ currentSlide, onChange }: { currentSlide: "charger" |
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
+  const [showSettings, setShowSettings] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
   const [batteryLevel, setBatteryLevel] = useState(50);
   const [activeHomeSlide, setActiveHomeSlide] = useState<"charger" | "stats" | "price">("charger");
@@ -59,11 +65,16 @@ export default function Index() {
 
     return () => window.clearInterval(interval);
   }, [chargingMode]);
+  const { selected, setSelected, current } = useBackground();
 
   const renderContent = () => {
+    if (showSettings) {
+      return <Settings onBack={() => setShowSettings(false)} />;
+    }
+
     switch (activeTab) {
       case "profile":
-        return <Profile />;
+        return <Profile selectedBackground={selected} onBackgroundChange={setSelected} />;
       case "statistics":
         return <Statistics />;
       case "settings":
@@ -72,19 +83,20 @@ export default function Index() {
         return (
           <>
             <HomeHeader
-              userName="Milton"
+              userName={mockUser.firstName}
               isOnline={true}
-              onSettingsClick={() => setActiveTab("settings")}
+              onSettingsClick={() => setShowSettings(true)}
               centerContent={
                 <SlideIndicators currentSlide={activeHomeSlide} onChange={setActiveHomeSlide} />
               }
             />
             <HomeCarousel
-              userName="Milton"
+              userName={mockUser.firstName}
               batteryLevel={batteryLevel}
               chargingMode={chargingMode}
               onModeChange={setChargingMode}
               onBatteryLevelChange={handleBatteryLevelChange}
+              onScheduleClick={() => setShowSchedule(true)}
               activeSlide={activeHomeSlide}
               onSlideChange={setActiveHomeSlide}
             />
@@ -94,7 +106,14 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-mesh flex flex-col pt-10">
+    <div
+      className={cn("min-h-screen flex flex-col", current.style)}
+      style={current.image ? {
+        backgroundImage: `url(${current.image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      } : undefined}
+    >
       {/* Main Card Container */}
       <div className="flex-1 flex flex-col px-5 pt-2 pb-36 safe-top">
         <motion.div
@@ -112,7 +131,15 @@ export default function Index() {
       </div>
 
       {/* Bottom Navigation */}
-      <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {!showSettings && (
+        <AppBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      )}
+
+      {/* Schedule Modal */}
+      <ChargingScheduleModal
+        isOpen={showSchedule}
+        onClose={() => setShowSchedule(false)}
+      />
     </div>
   );
 }

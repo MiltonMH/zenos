@@ -5,13 +5,12 @@ import chargerBoxImage from "@/assets/charger-box.png";
 import { EnergyFlowVisualization } from "../EnergyFlowVisualization";
 
 interface ChargerSlideProps {
-  batteryLevel: number;
   mode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
-  onBatteryLevelChange: (level: number) => void;
+  onScheduleClick?: () => void;
 }
 
-export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelChange }: ChargerSlideProps) {
+export function ChargerSlide({ mode, onModeChange, onScheduleClick }: ChargerSlideProps) {
   const [isLocked, setIsLocked] = useState(false);
 
   // Cycle through all modes for simulation
@@ -31,47 +30,15 @@ export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelC
     }
   };
 
-  const handleSetBatteryLevel = () => {
-    const nextLevel = window.prompt("Set battery percentage (0-100)", String(Math.round(batteryLevel)));
-
-    if (nextLevel === null) {
-      return;
-    }
-
-    const parsedLevel = Number(nextLevel.trim());
-
-    if (!Number.isFinite(parsedLevel)) {
-      return;
-    }
-
-    onBatteryLevelChange(parsedLevel);
-  };
-
   return (
-    <div className="relative h-full flex flex-col items-center px-6 pt-4 pb-8">
-      {mode !== "idle" && (
-        <div className="absolute left-6 top-0 z-10 flex justify-start">
-          <button
-            type="button"
-            onClick={handleSetBatteryLevel}
-            className="rounded-full border border-white/15 bg-black/10 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-foreground/75 transition hover:bg-black/15"
-          >
-            Set %
-          </button>
-        </div>
-      )}
-
-      {mode !== "idle" && (
-        <div className="relative z-10 mb-5 mt-6 flex min-h-[4.5rem] w-full items-start justify-center text-foreground/95">
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-[2rem] font-semibold leading-none">{Math.round(batteryLevel)}%</span>
-            <div className="h-3 w-3 rounded-full bg-primary status-pulse" />
-          </div>
-        </div>
-      )}
+    <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
+      {/* Connection indicator */}
+      <div className="mb-2">
+        <div className={`w-2.5 h-2.5 rounded-full ${mode === "idle" ? "bg-muted-foreground" : "bg-primary status-pulse"}`} />
+      </div>
 
       {/* Content area - either static image or dynamic visualization */}
-      <div className="relative z-10 flex-1 flex items-center justify-center w-full overflow-hidden rounded-[2rem]">
+      <div className="flex-1 flex items-center justify-center w-full">
         <AnimatePresence mode="wait">
           {mode === "idle" ? (
             <motion.div
@@ -99,19 +66,19 @@ export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelC
               exit={{ opacity: 0, scale: 0.9 }}
               className="w-full h-full"
             >
-              <EnergyFlowVisualization batteryLevel={batteryLevel} mode={mode} />
+              <EnergyFlowVisualization mode={mode} />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
       {/* Quick Actions */}
-      <div className="relative z-10 flex gap-5 w-full justify-center mt-4">
+      <div className="flex gap-3 w-full justify-center mt-4">
         <ActionButton
           icon={isLocked ? Lock : LockOpen}
           label="Lås"
           sublabel={isLocked ? "Låst" : "Olåst"}
-          isActive={isLocked}
+          isActive={!isLocked}
           onClick={() => setIsLocked(!isLocked)}
         />
         <ActionButton
@@ -126,7 +93,7 @@ export function ChargerSlide({ batteryLevel, mode, onModeChange, onBatteryLevelC
           label="Schema"
           sublabel="Auto"
           isActive={true}
-          onClick={() => {}}
+          onClick={onScheduleClick || (() => {})}
         />
       </div>
     </div>
@@ -143,14 +110,14 @@ interface ActionButtonProps {
 
 function ActionButton({ icon: Icon, label, sublabel, isActive, onClick }: ActionButtonProps) {
   return (
-    <motion.button
+     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="relative z-10 flex flex-col items-center gap-1.5 w-[90px] h-[100px] px-5 py-3 glass rounded-2xl"
+      className="relative flex flex-col items-center gap-1.5 px-5 py-3 rounded-2xl min-w-[85px] bg-white/30 border border-white/40"
     >
-      <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-      <span className="text-sm font-medium text-foreground">{label}</span>
-      <span className="text-[11px] text-muted-foreground">{sublabel}</span>
+      <Icon className={`w-5 h-5 relative z-10 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="text-sm font-medium text-foreground relative z-10">{label}</span>
+      <span className="text-[11px] text-muted-foreground relative z-10">{sublabel}</span>
     </motion.button>
   );
 }

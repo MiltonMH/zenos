@@ -15,6 +15,7 @@ interface ChargingScheduleCardProps {
   nextActionTime: string;
   schedule: ScheduleSlot[];
   onToggleSmart: () => void;
+  onScheduleClick?: () => void;
 }
 
 export function ChargingScheduleCard({
@@ -22,6 +23,7 @@ export function ChargingScheduleCard({
   nextAction,
   nextActionTime,
   schedule,
+  onScheduleClick,
 }: ChargingScheduleCardProps) {
   return (
     <GlassCard>
@@ -82,7 +84,10 @@ export function ChargingScheduleCard({
       </div>
 
       {/* View full schedule */}
-      <button className="flex items-center justify-center gap-1 w-full mt-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors">
+      <button 
+        onClick={onScheduleClick}
+        className="flex items-center justify-center gap-1 w-full mt-4 py-2 text-sm text-primary hover:text-primary/80 transition-colors"
+      >
         Se hela schemat
         <ChevronRight className="w-4 h-4" />
       </button>

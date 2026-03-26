@@ -14,27 +14,17 @@ interface HomeCarouselProps {
   chargingMode: "idle" | "charging" | "v2h" | "v2g";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
   onBatteryLevelChange: (level: number) => void;
+  onScheduleClick?: () => void;
   activeSlide?: SlideId;
   onSlideChange?: (slideId: SlideId) => void;
 }
 
-export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChange, onBatteryLevelChange, activeSlide, onSlideChange }: HomeCarouselProps) {
+export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChange, onBatteryLevelChange, onScheduleClick, activeSlide, onSlideChange }: HomeCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-
   const slides = [
-    {
-      id: "charger",
-      component: (
-        <ChargerSlide
-          batteryLevel={batteryLevel}
-          mode={chargingMode}
-          onModeChange={onModeChange}
-          onBatteryLevelChange={onBatteryLevelChange}
-        />
-      ),
-    },
+    { id: "charger", component: <ChargerSlide mode={chargingMode} onModeChange={onModeChange} onScheduleClick={onScheduleClick} /> },
     { id: "stats", component: <MonthStatsSlide /> },
     { id: "price", component: <EnergyPriceSlide /> },
   ] as const;
@@ -131,6 +121,9 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
     }),
   };
 
+  const canGoPrev = currentSlide > 0;
+  const canGoNext = currentSlide < slides.length - 1;
+
   return (
     <div className="relative flex-1 flex flex-col">
       <div className="mb-4 flex justify-center">
@@ -141,7 +134,6 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
 
       {/* Carousel content */}
       <div
-        ref={containerRef}
         className="flex-1 relative overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -163,7 +155,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
         </AnimatePresence>
 
         {/* Navigation arrows */}
-        {currentSlide > 0 && (
+        {canGoPrev && (
           <button
             onClick={goPrev}
             className="absolute left-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
@@ -171,7 +163,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
             <ChevronLeft className="w-6 h-6" />
           </button>
         )}
-        {currentSlide < slides.length - 1 && (
+        {canGoNext && (
           <button
             onClick={goNext}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"

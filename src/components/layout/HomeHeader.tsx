@@ -28,8 +28,8 @@ export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent 
         )}
       </div>
 
-      <div className={`p-2.5 glass-subtle rounded-2xl ${isOnline ? "text-primary" : "text-foreground/80"}`}>
-        <Wifi className="w-6 h-6" />
+      <div className={isOnline ? "text-primary" : "text-foreground/70"}>
+        <Wifi className="w-7 h-7" />
       </div>
     </div>
   );
