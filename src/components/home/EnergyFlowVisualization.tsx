@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, Building2, Car } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
+import chargingCarImage from "@/assets/EX30-cutout.png";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
 
@@ -65,11 +66,11 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
-        <span 
+        <span
           className="text-sm font-medium px-3 py-1 rounded-full"
-          style={{ 
+          style={{
             backgroundColor: `${config.color}20`,
-            color: config.color 
+            color: config.color
           }}
         >
           {config.label}
@@ -77,7 +78,7 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
       </motion.div>
 
       {/* Energy flow visualization */}
-      <div className="flex items-center justify-center gap-4 w-full max-w-xs">
+      <div className={`flex items-center gap-4 w-full ${mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -86,14 +87,14 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
         >
           {mode === "charging" ? (
             <div className="relative">
-              <img 
-                src={chargerBoxImage} 
-                alt="ZenBox Charger" 
+              <img
+                src={chargerBoxImage}
+                alt="ZenBox Charger"
                 className="w-16 h-auto opacity-80"
               />
             </div>
           ) : (
-            <div 
+            <div
               className="p-3 rounded-2xl"
               style={{ backgroundColor: `${config.color}15` }}
             >
@@ -105,7 +106,7 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
           </span>
         </motion.div>
 
-        {/* Animated pulses */}
+        {/* Spacer between source and destination */}
         <div className="flex-1 flex items-center justify-center relative h-8 mx-2">
           {[0, 1, 2].map((i) => (
             <motion.div
@@ -126,7 +127,7 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
             />
           ))}
           {/* Track line */}
-          <div 
+          <div
             className="absolute inset-x-0 h-0.5 rounded-full opacity-20"
             style={{ backgroundColor: config.color }}
           />
@@ -136,26 +137,30 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex flex-col items-center gap-2"
+          className={`flex flex-col gap-2 ${mode === "charging" ? "items-end ml-auto" : "items-center"}`}
         >
           <motion.div
-            animate={{
+            animate={mode === "charging" ? undefined : {
               boxShadow: [
                 `0 0 0 0 ${config.color}00`,
                 `0 0 20px 5px ${config.color}30`,
                 `0 0 0 0 ${config.color}00`,
               ],
             }}
-            transition={{
+            transition={mode === "charging" ? undefined : {
               duration: 2,
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="p-3 rounded-2xl"
-            style={{ backgroundColor: `${config.color}15` }}
+            className={mode === "charging" ? "relative w-32 overflow-hidden" : "p-3 rounded-2xl"}
+            style={mode === "charging" ? undefined : { backgroundColor: `${config.color}15` }}
           >
             {mode === "charging" && (
-              <Car className="w-8 h-8" style={{ color: config.color }} />
+              <img
+                src={chargingCarImage}
+                alt="Volvo EX30"
+                className="w-64 h-auto pr-0 max-w-none opacity-100"
+              />
             )}
             {mode === "v2h" && (
               <Home className="w-8 h-8" style={{ color: config.color }} />
@@ -164,9 +169,11 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
               <Building2 className="w-8 h-8" style={{ color: config.color }} />
             )}
           </motion.div>
-          <span className="text-xs text-muted-foreground">
-            {mode === "charging" ? "Bil" : mode === "v2h" ? "Hem" : "Elnät"}
-          </span>
+          {mode !== "charging" && (
+            <span className="text-xs text-muted-foreground">
+              {mode === "v2h" ? "Hem" : "Elnät"}
+            </span>
+          )}
         </motion.div>
       </div>
 
@@ -213,7 +220,7 @@ export function EnergyFlowVisualization({ mode }: EnergyFlowVisualizationProps) 
         transition={{ delay: 0.3 }}
         className="mt-4 text-center"
       >
-        <motion.span 
+        <motion.span
           key={power}
           initial={{ opacity: 0.5, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}

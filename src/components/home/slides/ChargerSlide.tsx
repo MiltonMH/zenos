@@ -50,11 +50,11 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick }: ChargerSli
             >
               {/* Glow effect behind charger */}
               <div className="absolute inset-0 blur-2xl bg-primary/10 rounded-full scale-110" />
-              
+
               {/* Product image */}
-              <img 
-                src={chargerBoxImage} 
-                alt="ZenBox Charger" 
+              <img
+                src={chargerBoxImage}
+                alt="ZenBox Charger"
                 className="relative w-36 max-w-[50vw] h-auto drop-shadow-2xl"
               />
             </motion.div>

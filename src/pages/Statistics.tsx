@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -12,18 +12,19 @@ import {
 } from "recharts";
 import { Zap, TrendingUp, TrendingDown, Battery, Plug } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
-import { 
-  weeklyData, 
-  monthlyData, 
-  yearlyData, 
-  dailyData, 
+import {
+  weeklyData,
+  monthlyData,
+  yearlyData,
+  dailyData,
   chargingHistory,
   getStatsForPeriod,
-  type Period 
+  type Period
 } from "@/lib/statistics-data";
 
 export default function Statistics() {
   const [period, setPeriod] = useState<Period>("V");
+  const periods: Period[] = ["D", "V", "M", "Å"];
 
   const getChartData = () => {
     switch (period) {
@@ -67,14 +68,21 @@ export default function Statistics() {
 
       {/* Period Toggle */}
       <div className="flex justify-center px-4 mb-4">
-        <div className="pill-toggle">
-          {(["D", "V", "M", "Å"] as Period[]).map((p) => (
+        <div className="pill-toggle relative w-full max-w-[240px]">
+          {periods.map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`pill-toggle-item ${period === p ? "active" : ""}`}
+              className={`pill-toggle-item relative z-10 flex-1 ${period === p ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
             >
-              {p}
+              {period === p && (
+                <motion.span
+                  layoutId="statistics-period-indicator"
+                  className="absolute inset-0 rounded-full bg-white shadow-sm"
+                  transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
+                />
+              )}
+              <span className="relative z-10">{p}</span>
             </button>
           ))}
         </div>
@@ -161,15 +169,15 @@ export default function Statistics() {
                       <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis 
-                    dataKey={xKey} 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey={xKey}
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                     unit=" kWh"
                   />
@@ -214,23 +222,23 @@ export default function Statistics() {
             <div className="h-[100px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                  <XAxis 
-                    dataKey={xKey} 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey={xKey}
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                     unit=" kr"
                   />
                   <Bar dataKey="cost" radius={[4, 4, 0, 0]}>
                     {data.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.cost > 60 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'} 
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.cost > 60 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'}
                         fillOpacity={0.8}
                       />
                     ))}
@@ -267,7 +275,7 @@ export default function Statistics() {
                       <Battery className="w-4 h-4 text-success" />
                     )}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-foreground">{session.date}</span>

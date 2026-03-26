@@ -10,7 +10,7 @@ export default function Settings({ onBack }: SettingsProps) {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-white/20">
-        <button 
+        <button
           onClick={onBack}
           className="p-2.5 glass-subtle rounded-2xl text-foreground/80 hover:text-foreground transition-colors"
         >

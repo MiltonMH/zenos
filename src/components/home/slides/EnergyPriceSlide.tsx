@@ -48,7 +48,7 @@ export function EnergyPriceSlide() {
   // Chart dimensions
   const chartWidth = 260;
   const chartHeight = 100;
-  
+
   // Create smooth path through all points
   const points = priceData.map((d) => ({
     x: (d.hour / 23) * chartWidth,
@@ -79,21 +79,35 @@ export function EnergyPriceSlide() {
       <div className="pill-toggle mb-4">
         <button
           onClick={() => setTab("today")}
-          className={`pill-toggle-item ${tab === "today" ? "active" : ""}`}
+          className={`pill-toggle-item relative ${tab === "today" ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
         >
-          idag
+          {tab === "today" && (
+            <motion.span
+              layoutId="energy-price-tab-indicator"
+              className="absolute inset-0 rounded-full bg-white shadow-sm"
+              transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
+            />
+          )}
+          <span className="relative z-10">idag</span>
         </button>
         <button
           onClick={() => setTab("tomorrow")}
-          className={`pill-toggle-item ${tab === "tomorrow" ? "active" : ""}`}
+          className={`pill-toggle-item relative ${tab === "tomorrow" ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
         >
-          imorgon
+          {tab === "tomorrow" && (
+            <motion.span
+              layoutId="energy-price-tab-indicator"
+              className="absolute inset-0 rounded-full bg-white shadow-sm"
+              transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
+            />
+          )}
+          <span className="relative z-10">imorgon</span>
         </button>
       </div>
 
       {/* Price Summary Cards */}
       <div className="flex gap-2 w-full max-w-[280px] mb-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex-1 glass-subtle rounded-xl p-3"
@@ -106,7 +120,7 @@ export function EnergyPriceSlide() {
           <div className="text-xs text-muted-foreground">kl {formatHour(minHour)}</div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
