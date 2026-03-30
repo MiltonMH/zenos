@@ -115,7 +115,7 @@ export default function Index() {
       } : undefined}
     >
       {/* Main Card Container */}
-      <div className="flex-1 flex flex-col px-5 pt-6 pb-36">
+      <div className="flex-1 flex flex-col px-5 pt-8 pb-40">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

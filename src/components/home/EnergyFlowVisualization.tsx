@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Home, Building2, Car } from "lucide-react";
 import chargerBoxImage from "@/assets/Sidan1Cropped.png";
 import chargingCarImage from "@/assets/EX30-cutout.png";
+import electricTowerImage from "@/assets/electric-tower.png";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
 
@@ -85,9 +86,6 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <Car className="w-8 h-8" style={{ color: config.color }} />
             </div>
           )}
-          <span className="text-xs text-muted-foreground">
-            {mode === "charging" ? "Laddbox" : "Bil"}
-          </span>
         </motion.div>
 
         {/* Spacer between source and destination */}
@@ -150,14 +148,13 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <Home className="w-8 h-8" style={{ color: config.color }} />
             )}
             {mode === "v2g" && (
-              <Building2 className="w-8 h-8" style={{ color: config.color }} />
+              <img
+                src={electricTowerImage}
+                alt="Elnät"
+                className="w-32 h-32 object-contain"
+              />
             )}
           </motion.div>
-          {mode !== "charging" && (
-            <span className="text-xs text-muted-foreground">
-              {mode === "v2h" ? "Hem" : "Elnät"}
-            </span>
-          )}
         </motion.div>
       </div>
 
