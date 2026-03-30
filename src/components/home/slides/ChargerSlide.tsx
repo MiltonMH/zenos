@@ -67,12 +67,12 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
           <span className="text-xs font-medium text-destructive">Frånkopplad</span>
         )}
         {mode !== "idle" && batteryLevel !== undefined && (
-          <span className="text-xl font-bold text-foreground">{batteryLevel}%</span>
+          <span className="text-xl font-bold text-foreground">{Math.round(batteryLevel)}%</span>
         )}
       </div>
 
       {/* Content area - either static image or dynamic visualization */}
-      <div className="flex-1 flex items-center justify-center w-full">
+      <div className="flex-1 flex items-center justify-center w-full relative">
         <AnimatePresence mode="wait">
           {mode === "idle" ? (
             <motion.div
@@ -122,9 +122,11 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full h-full"
+              className="w-full h-full relative z-10"
             >
-              <EnergyFlowVisualization mode={mode} batteryLevel={batteryLevel} />
+              {["charging", "v2h", "v2g"].includes(mode) && (
+                <EnergyFlowVisualization mode={mode as "charging" | "v2h" | "v2g"} batteryLevel={batteryLevel} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>

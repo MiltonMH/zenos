@@ -9,7 +9,7 @@ interface HomeBatteryWaterProps {
 const clampLevel = (level: number) => Math.max(0, Math.min(100, level));
 
 export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) {
-  if (mode !== "charging") {
+  if (!["charging", "v2h", "v2g"].includes(mode)) {
     return null;
   }
 
