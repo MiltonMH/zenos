@@ -61,7 +61,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
   const power = useDynamicPower(config.minPower, config.maxPower);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-6">
+    <div className="flex flex-col items-center justify-center h-full">
       {/* Energy flow visualization */}
       <div className={`flex items-center gap-4 w-full ${mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, LockOpen, Clock, Home, Unplug, LucideIcon } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
@@ -37,12 +37,12 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
   }, [isLocked]);
 
   // Cycle through all modes for simulation
-  const cycleMode = () => {
+  const cycleMode = useCallback(() => {
     const modes: Array<"idle" | "charging" | "v2h" | "v2g" | "disconnected"> = ["idle", "charging", "v2h", "v2g", "disconnected"];
     const currentIndex = modes.indexOf(mode);
     const nextIndex = (currentIndex + 1) % modes.length;
     onModeChange(modes[nextIndex]);
-  };
+  }, [mode, onModeChange]);
 
   const getModeLabel = () => {
     switch (mode) {
@@ -55,7 +55,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
   };
 
   return (
-    <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
+    <div className="h-full flex flex-col items-center pt-4 pb-8">
       {/* Connection indicator */}
       <div className="mb-2 flex flex-col items-center gap-1.5">
         <div className={`w-2.5 h-2.5 rounded-full ${
