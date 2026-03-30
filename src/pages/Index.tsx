@@ -36,7 +36,7 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState("home");
   const [showSettings, setShowSettings] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
-  const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g">("idle");
+  const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g" | "disconnected">("idle");
   const [batteryLevel, setBatteryLevel] = useState(50);
   const [activeHomeSlide, setActiveHomeSlide] = useState<"charger" | "stats" | "price">("charger");
 
@@ -115,13 +115,13 @@ export default function Index() {
       } : undefined}
     >
       {/* Main Card Container */}
-      <div className="flex-1 flex flex-col px-5 pt-2 pb-36 safe-top">
+      <div className="flex-1 flex flex-col px-5 pt-6 pb-36">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative isolate flex-1 glass-main flex flex-col overflow-hidden"
         >
-          {activeTab === "home" && activeHomeSlide === "charger" && chargingMode === "charging" && (
+          {activeTab === "home" && activeHomeSlide === "charger" && (chargingMode === "charging" || chargingMode === "v2h" || chargingMode === "v2g") && (
             <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />
           )}
           <div className="relative z-10 flex-1 flex flex-col">

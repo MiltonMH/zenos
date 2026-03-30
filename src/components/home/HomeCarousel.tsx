@@ -11,8 +11,8 @@ type SlideId = typeof slideIds[number];
 interface HomeCarouselProps {
   userName: string;
   batteryLevel: number;
-  chargingMode: "idle" | "charging" | "v2h" | "v2g";
-  onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
+  chargingMode: "idle" | "charging" | "v2h" | "v2g" | "disconnected";
+  onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g" | "disconnected") => void;
   onBatteryLevelChange: (level: number) => void;
   onScheduleClick?: () => void;
   activeSlide?: SlideId;

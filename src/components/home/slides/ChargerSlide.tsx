@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, LockOpen, Clock, Home, LucideIcon } from "lucide-react";
+import { Lock, LockOpen, Clock, Home, Unplug, LucideIcon } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
 import { EnergyFlowVisualization } from "../EnergyFlowVisualization";
 import { cn } from "@/lib/utils";
@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 const CHARGER_LOCK_STORAGE_KEY = "zenos-home-charger-locked";
 
 interface ChargerSlideProps {
-  mode: "idle" | "charging" | "v2h" | "v2g";
-  onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g") => void;
+  mode: "idle" | "charging" | "v2h" | "v2g" | "disconnected";
+  onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g" | "disconnected") => void;
   onScheduleClick?: () => void;
   batteryLevel?: number;
   onBatteryLevelChange?: (level: number) => void;
@@ -38,7 +38,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
 
   // Cycle through all modes for simulation
   const cycleMode = () => {
-    const modes: Array<"idle" | "charging" | "v2h" | "v2g"> = ["idle", "charging", "v2h", "v2g"];
+    const modes: Array<"idle" | "charging" | "v2h" | "v2g" | "disconnected"> = ["idle", "charging", "v2h", "v2g", "disconnected"];
     const currentIndex = modes.indexOf(mode);
     const nextIndex = (currentIndex + 1) % modes.length;
     onModeChange(modes[nextIndex]);
@@ -50,6 +50,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
       case "charging": return "Ladda";
       case "v2h": return "V2H";
       case "v2g": return "V2G";
+      case "disconnected": return "Frånkopplad";
     }
   };
 
@@ -57,7 +58,14 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
     <div className="h-full flex flex-col items-center px-6 pt-4 pb-8">
       {/* Connection indicator */}
       <div className="mb-2 flex flex-col items-center gap-1.5">
-        <div className={`w-2.5 h-2.5 rounded-full ${mode === "idle" ? "bg-muted-foreground" : "bg-primary status-pulse"}`} />
+        <div className={`w-2.5 h-2.5 rounded-full ${
+          mode === "disconnected" ? "bg-destructive"
+          : mode === "idle" ? "bg-muted-foreground"
+          : "bg-primary status-pulse"
+        }`} />
+        {mode === "disconnected" && (
+          <span className="text-xs font-medium text-destructive">Frånkopplad</span>
+        )}
         {mode !== "idle" && batteryLevel !== undefined && (
           <span className="text-xl font-bold text-foreground">{batteryLevel}%</span>
         )}
@@ -84,6 +92,30 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
                 className="relative w-36 max-w-[50vw] h-auto drop-shadow-2xl"
               />
             </motion.div>
+          ) : mode === "disconnected" ? (
+            <motion.div
+              key="disconnected"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="relative flex flex-col items-center gap-3"
+            >
+              {/* Red glow effect */}
+              <div className="absolute inset-0 blur-2xl bg-destructive/15 rounded-full scale-110" />
+
+              {/* Product image — desaturated and dimmed */}
+              <div className="relative">
+                <img
+                  src={chargerBoxImage}
+                  alt="ZenBox Charger"
+                  className="relative w-36 max-w-[50vw] h-auto drop-shadow-2xl grayscale opacity-50"
+                />
+                {/* Unplug badge */}
+                <div className="absolute -bottom-3 -right-3 bg-destructive rounded-full p-1.5 shadow-lg">
+                  <Unplug className="w-4 h-4 text-white" />
+                </div>
+              </div>
+            </motion.div>
           ) : (
             <motion.div
               key="active"
@@ -98,8 +130,8 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
         </AnimatePresence>
       </div>
 
-      {/* Test battery setter — only on active (non-idle) modes */}
-      {mode !== "idle" && onBatteryLevelChange && (
+      {/* Test battery setter — only on active (non-idle, non-disconnected) modes */}
+      {mode !== "idle" && mode !== "disconnected" && onBatteryLevelChange && (
         <button
           type="button"
           onClick={applyTestLevel}
