@@ -108,7 +108,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
                 <img
                   src={chargerBoxImage}
                   alt="ZenBox Charger"
-                  className="relative w-36 max-w-[50vw] h-auto drop-shadow-2xl grayscale opacity-50"
+                  className="relative w-36 max-w-[50vw] h-auto drop-shadow-2xl grayscale opacity-100"
                 />
                 {/* Unplug badge */}
                 <div className="absolute -bottom-3 -right-3 bg-destructive rounded-full p-1.5 shadow-lg">

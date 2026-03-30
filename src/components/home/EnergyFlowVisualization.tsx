@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, Building2, Car } from "lucide-react";
-import chargerBoxImage from "@/assets/charger-box.png";
+import chargerBoxImage from "@/assets/Sidan1Cropped.png";
 import chargingCarImage from "@/assets/EX30-cutout.png";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
@@ -74,7 +74,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
-                className="w-16 h-auto opacity-80"
+                className="w-16 h-auto opacity-100"
               />
             </div>
           ) : (
