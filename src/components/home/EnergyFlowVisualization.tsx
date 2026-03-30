@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Home, Building2, Car } from "lucide-react";
+import { Home, Car } from "lucide-react";
 import chargerBoxImage from "@/assets/Sidan1Cropped.png";
 import chargingCarImage from "@/assets/EX30-cutout.png";
 import electricTowerImage from "@/assets/electric-tower.png";
@@ -63,19 +63,27 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
   return (
     <div className="flex flex-col items-center justify-center h-full">
       {/* Energy flow visualization */}
-      <div className={`flex items-center gap-4 w-full ${mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
+      <div className={`flex items-center gap-4 w-full ${(mode === "charging" || mode === "v2h" || mode === "v2g") ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex flex-col items-center gap-2"
+          className={`flex flex-col gap-2 ${(mode === "v2h" || mode === "v2g") ? "items-start" : "items-center"}`}
         >
           {mode === "charging" ? (
             <div className="relative">
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
-                className="w-16 h-auto opacity-100"
+                className="w-20 h-auto opacity-100"
+              />
+            </div>
+          ) : (mode === "v2h" || mode === "v2g") ? (
+            <div className="relative w-40 shrink-0 overflow-hidden">
+              <img
+                src={chargingCarImage}
+                alt="Volvo EX30"
+                className="w-60 h-auto max-w-none opacity-100 -scale-x-100 -ml-24"
               />
             </div>
           ) : (
@@ -134,14 +142,14 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className={mode === "charging" ? "relative w-32 overflow-hidden" : "p-3 rounded-2xl"}
+            className={mode === "charging" ? "relative w-40 overflow-hidden" : "p-3 rounded-2xl"}
             style={mode === "charging" ? undefined : { backgroundColor: `${config.color}15` }}
           >
             {mode === "charging" && (
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
-                className="w-64 h-auto pr-0 max-w-none opacity-100"
+                className="w-60 h-auto pr-0 max-w-none opacity-100"
               />
             )}
             {mode === "v2h" && (
