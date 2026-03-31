@@ -156,8 +156,8 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             {mode === "v2h" && (
               <img
                 src={houseImage}
-                alt="Hus"
-                className="w-70 h-70 object-contain"
+                  alt="Hus"
+                  className="w-70 h-70 object-contain -ml-2"
               />
             )}
             {mode === "v2g" && (
