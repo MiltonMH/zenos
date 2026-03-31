@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { HomeHeader } from "@/components/layout/HomeHeader";
 import { AppBottomNav } from "@/components/layout/AppBottomNav";
@@ -43,28 +43,6 @@ export default function Index() {
   const handleBatteryLevelChange = (nextLevel: number) => {
     setBatteryLevel(Math.max(0, Math.min(100, nextLevel)));
   };
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setBatteryLevel((currentLevel) => {
-        if (chargingMode === "charging") {
-          return currentLevel;
-        }
-
-        if (chargingMode === "v2h") {
-          return Math.max(8, currentLevel - 0.18);
-        }
-
-        if (chargingMode === "v2g") {
-          return Math.max(8, currentLevel - 0.22);
-        }
-
-        return currentLevel;
-      });
-    }, 1400);
-
-    return () => window.clearInterval(interval);
-  }, [chargingMode]);
   const { selected, setSelected, current } = useBackground();
 
   const renderContent = () => {

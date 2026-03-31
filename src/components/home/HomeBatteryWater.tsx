@@ -45,8 +45,8 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
         <defs>
           <linearGradient id={chargedLayerId} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor={chargedColor} />
-            <stop offset="76%" stopColor={chargedColor} />
-            <stop offset="92%" stopColor="rgba(255, 255, 255, 0.95)" />
+            <stop offset="88%" stopColor={chargedColor} />
+            <stop offset="98%" stopColor="rgba(255, 255, 255, 0.95)" />
             <stop offset="100%" stopColor={unchargedColor} />
           </linearGradient>
           <linearGradient id={bottomFadeId} x1="0" y1="0" x2="0" y2="1">

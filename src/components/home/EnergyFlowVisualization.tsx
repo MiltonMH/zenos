@@ -79,7 +79,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               />
             </div>
           ) : (mode === "v2h" || mode === "v2g") ? (
-            <div className="relative w-40 shrink-0 overflow-hidden">
+            <div className="relative w-40 shrink-0">
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
