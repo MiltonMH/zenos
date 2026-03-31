@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Zap, Check } from "lucide-react";
+import { X, Check } from "lucide-react";
+import lightningIcon from "@/assets/Lightning_Vector1.svg";
 import { Button } from "@/components/ui/button";
 import { DaySelector, type DayKey, days } from "@/components/schedule/DaySelector";
 import { TimeRangePicker } from "@/components/schedule/TimeRangePicker";
@@ -40,7 +41,7 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
             onClick={onClose}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
           />
-          
+
           {/* Modal Container */}
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
@@ -54,7 +55,7 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
               {/* Header */}
               <div className="flex items-center justify-between p-4 pb-2">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-primary" />
+                  <img src={lightningIcon} alt="" className="w-5 h-5" />
                   <h2 className="font-semibold text-lg">Laddschema</h2>
                 </div>
                 <button
@@ -70,8 +71,8 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
                 {/* Days */}
                 <div>
                   <p className="text-sm text-muted-foreground mb-3">Välj dagar</p>
-                  <DaySelector 
-                    selectedDays={selectedDays} 
+                  <DaySelector
+                    selectedDays={selectedDays}
                     onToggleDay={handleToggleDay}
                     showLabels={false}
                   />

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Home, Car } from "lucide-react";
+import { Car } from "lucide-react";
 import chargerBoxImage from "@/assets/Sidan1Cropped.png";
 import chargingCarImage from "@/assets/EX30-cutout.png";
 import electricTowerImage from "@/assets/electric-tower.png";
+import houseImage from "@/assets/houseZenOS2.png";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
 
@@ -153,7 +154,11 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               />
             )}
             {mode === "v2h" && (
-              <Home className="w-8 h-8" style={{ color: config.color }} />
+              <img
+                src={houseImage}
+                alt="Hus"
+                className="w-70 h-70 object-contain"
+              />
             )}
             {mode === "v2g" && (
               <img
