@@ -203,8 +203,8 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, iconClassName, on
           iconClassName,
         )}
       />
-      <span className="text-sm font-medium text-foreground relative z-10 text-center truncate w-full px-1">{label}</span>
-      <span className="text-[11px] text-muted-foreground relative z-10 text-center truncate w-full px-1">{sublabel}</span>
+      <span className="text-[14px] font-medium text-foreground relative z-10 text-center truncate w-full px-1">{label}</span>
+      <span className="text-[14px] text-muted-foreground relative z-10 text-center truncate w-full px-1">{sublabel}</span>
     </motion.button>
   );
 }

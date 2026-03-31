@@ -118,7 +118,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
                 />
                 <span
                   className={cn(
-                    "text-xs relative z-10 transition-colors duration-300",
+                    "text-[14px] relative z-10 transition-colors duration-300",
                     isActive ? "text-foreground font-medium" : "text-muted-foreground"
                   )}
                 >
