@@ -10,7 +10,9 @@ import {
   Bar,
   Cell
 } from "recharts";
-import { Zap, TrendingUp, TrendingDown, Battery, Plug } from "lucide-react";
+import { TrendingUp, TrendingDown, Plug } from "lucide-react";
+import lightningIcon from "@/assets/Lightning_Vector1.svg";
+import batteryIcon from "@/assets/Battery_Colored.svg";
 import { GlassCard } from "@/components/ui/glass-card";
 import {
   weeklyData,
@@ -98,10 +100,10 @@ export default function Statistics() {
           >
             <GlassCard className="p-3" variant="subtle">
               <div className="flex items-center gap-2 mb-1">
-                <Zap className="w-4 h-4 text-primary" />
+                <img src={lightningIcon} alt="Laddat" className="w-4 h-4" />
                 <span className="text-xs text-muted-foreground">Laddat</span>
               </div>
-              <div className="text-xl font-bold text-foreground">{stats.charged} kWh</div>
+              <div className="text-l font-medium text-foreground">{stats.charged} kWh</div>
             </GlassCard>
           </motion.div>
 
@@ -112,10 +114,10 @@ export default function Statistics() {
           >
             <GlassCard className="p-3" variant="subtle">
               <div className="flex items-center gap-2 mb-1">
-                <Battery className="w-4 h-4 text-success" />
+                <img src={batteryIcon} alt="V2H" className="w-4 h-4" />
                 <span className="text-xs text-muted-foreground">V2H</span>
               </div>
-              <div className="text-xl font-bold text-foreground">{stats.v2h} kWh</div>
+              <div className="text-l font-medium text-foreground">{stats.v2h} kWh</div>
             </GlassCard>
           </motion.div>
 
@@ -129,7 +131,7 @@ export default function Statistics() {
                 <TrendingDown className="w-4 h-4 text-destructive" />
                 <span className="text-xs text-muted-foreground">Kostnad</span>
               </div>
-              <div className="text-xl font-bold text-foreground">{stats.cost} kr</div>
+              <div className="text-l font-medium text-foreground">{stats.cost} kr</div>
             </GlassCard>
           </motion.div>
 
@@ -143,7 +145,7 @@ export default function Statistics() {
                 <TrendingUp className="w-4 h-4 text-accent" />
                 <span className="text-xs text-muted-foreground">Snittpris</span>
               </div>
-              <div className="text-xl font-bold text-foreground">{avgPrice.toFixed(2)} kr/kWh</div>
+              <div className="text-l font-medium text-foreground">{avgPrice.toFixed(2)} kr/kWh</div>
             </GlassCard>
           </motion.div>
         </div>
@@ -272,7 +274,7 @@ export default function Statistics() {
                     {session.type === "charging" ? (
                       <Plug className={`w-4 h-4 ${session.type === "charging" ? "text-primary" : "text-success"}`} />
                     ) : (
-                      <Battery className="w-4 h-4 text-success" />
+                      <img src={batteryIcon} alt="V2H" className="w-4 h-4" />
                     )}
                   </div>
 

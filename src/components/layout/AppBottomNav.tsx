@@ -27,7 +27,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
       className="fixed bottom-3 left-0 right-0 z-50 px-6 pb-12 safe-bottom"
     >
       <div
-        className="relative glass-main"
+        className="relative glass-main !py-2"
       >
         {/* Animated gradient blob background */}
         <motion.div

@@ -42,7 +42,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
       case "charging": return "Ladda";
       case "v2h": return "V2H";
       case "v2g": return "V2G";
-      case "disconnected": return "Frånkopplad";
+      case "disconnected": return "Offline";
     }
   };
 
@@ -55,9 +55,6 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
           : mode === "idle" ? "bg-muted-foreground"
           : "bg-primary status-pulse"
         }`} />
-        {mode === "disconnected" && (
-          <span className="text-xs font-medium text-destructive">Frånkopplad</span>
-        )}
         {mode !== "idle" && batteryLevel !== undefined && (
           <span className="text-xl font-bold text-foreground">{Math.round(batteryLevel)}%</span>
         )}
@@ -97,7 +94,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
                   className="relative w-20 mobile-lg:w-36 max-w-[50vw] h-auto grayscale opacity-100"
                 />
                 {/* Unplug badge */}
-                <div className="absolute -bottom-3 -right-3 bg-destructive rounded-full p-1.5 shadow-lg">
+                <div className="absolute -bottom-3 -right-3 max-h-sm:-bottom-1 max-h-sm:-right-1 bg-destructive rounded-full p-1.5 shadow-lg">
                   <Unplug className="w-4 h-4 text-white" />
                 </div>
               </div>
@@ -162,7 +159,7 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, iconClassName, on
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
       className={cn(
-        "relative flex flex-col items-center justify-center gap-1.5 bg-white/30 border border-white/40 rounded-2xl overflow-hidden",
+        "relative flex flex-col items-center justify-center gap-1.5 bg-white/30 border border-white/40 rounded-2xl max-h-sm:rounded-sm overflow-hidden",
         "w-[98px] h-[100px] max-h-sm:w-[76px] max-h-sm:h-[80px] min-w-0 p-0"
       )}
       style={{ maxWidth: '100%', maxHeight: '100%' }}
