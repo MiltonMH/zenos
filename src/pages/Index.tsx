@@ -47,7 +47,7 @@ export default function Index() {
 
   const renderContent = () => {
     if (showSettings) {
-      return <Settings onBack={() => setShowSettings(false)} />;
+      return <Settings onBack={() => setShowSettings(false)} onBatteryLevelChange={handleBatteryLevelChange} />;
     }
 
     switch (activeTab) {
@@ -56,7 +56,7 @@ export default function Index() {
       case "statistics":
         return <Statistics />;
       case "settings":
-        return <Settings onBack={() => setActiveTab("home")} />;
+        return <Settings onBack={() => setActiveTab("home")} onBatteryLevelChange={handleBatteryLevelChange} />;
       default:
         return (
           <>

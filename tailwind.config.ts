@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 export default {
   darkMode: ["class"],
@@ -13,6 +14,9 @@ export default {
       },
     },
     extend: {
+      screens: {
+        "mobile-lg": "390px", // iPhone 14 Pro and larger
+      },
       fontFamily: {
         sans: ['Outfit', 'system-ui', 'sans-serif'],
       },
@@ -132,5 +136,10 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    plugin(function ({ addVariant }) {
+      addVariant("max-h-sm", "@media (max-height: 699px)");
+    }),
+  ],
 } satisfies Config;

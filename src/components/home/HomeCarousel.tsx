@@ -127,7 +127,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
   return (
     <div className="relative flex-1 flex flex-col">
       {slides[currentSlide].id === "charger" && (
-        <div className="mb-4 flex justify-center">
+        <div className="mb-4 max-h-sm:mb-0 flex justify-center">
           <h1 className="text-lg font-semibold text-foreground">
             Hej, {userName}
           </h1>

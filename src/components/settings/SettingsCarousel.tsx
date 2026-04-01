@@ -5,30 +5,31 @@ import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
 import { useCarousel } from "@/hooks/useCarousel";
 
-export function SettingsCarousel() {
+export function SettingsCarousel({ onBatteryLevelChange }: { onBatteryLevelChange?: (level: number) => void }) {
   // Settings state
   const [chargeLimit, setChargeLimit] = useState([90]);
   const [v2hEnabled, setV2hEnabled] = useState(false);
   const [v2gEnabled, setV2gEnabled] = useState(false);
   const [dischargeLimit, setDischargeLimit] = useState([50]);
   const [optimizationMode, setOptimizationMode] = useState("balanced");
-  
+
   const slides = [
-    { 
-      id: "status", 
+    {
+      id: "status",
       label: "Laddning",
       component: (
-        <StatusSlide 
+        <StatusSlide
           chargeLimit={chargeLimit}
           onChargeLimitChange={setChargeLimit}
+          onBatteryLevelChange={onBatteryLevelChange}
         />
       )
     },
-    { 
-      id: "v2x", 
+    {
+      id: "v2x",
       label: "V2X",
       component: (
-        <OptimizationSlide 
+        <OptimizationSlide
           v2hEnabled={v2hEnabled}
           v2gEnabled={v2gEnabled}
           dischargeLimit={dischargeLimit}
@@ -76,7 +77,7 @@ export function SettingsCarousel() {
       </div>
 
       {/* Carousel content */}
-      <div 
+      <div
         className="flex-1 relative overflow-hidden min-h-0"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

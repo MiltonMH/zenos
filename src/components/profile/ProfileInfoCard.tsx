@@ -32,7 +32,7 @@ export function ProfileInfoCard({
       <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 shrink-0">
         <Icon className="w-5 h-5 text-primary" />
       </div>
-      
+
       <div className="flex-1 min-w-0">
         <p className="text-xs text-muted-foreground/80 mb-0.5 font-medium">{label}</p>
         <div className="flex items-center gap-2">
@@ -59,9 +59,12 @@ export function ProfileInfoCard({
       {action && (
         <Button
           size="sm"
-          variant={action.variant === "secondary" ? "outline" : "default"}
+          variant={action.variant === "secondary" ? "ghost" : "default"}
           onClick={action.onClick}
-          className="shrink-0 text-xs h-8 px-3.5 rounded-xl font-medium"
+          className={action.variant === "secondary"
+            ? "shrink-0 text-xs h-8 px-3.5 rounded-xl font-medium bg-white/40 backdrop-blur-lg border border-transparent shadow-sm hover:bg-white/60"
+            : "shrink-0 text-xs h-8 px-3.5 rounded-xl font-medium"
+          }
         >
           {action.label}
         </Button>

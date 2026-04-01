@@ -62,9 +62,9 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
   const power = useDynamicPower(config.minPower, config.maxPower);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
+    <div className="relative flex flex-col items-center h-full pb-9">
       {/* Energy flow visualization */}
-      <div className={`flex items-center gap-4 w-full ${(mode === "charging" || mode === "v2h" || mode === "v2g") ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
+      <div className={`flex-1 min-h-0 flex items-center gap-4 w-full ${(mode === "charging" || mode === "v2h" || mode === "v2g") ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -76,15 +76,15 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
-                className="w-20 h-auto opacity-100"
+                className="w-20 max-h-sm:w-16 h-auto opacity-100"
               />
             </div>
           ) : (mode === "v2h" || mode === "v2g") ? (
-            <div className="relative w-40 shrink-0">
+            <div className="relative w-40 max-h-sm:w-28 shrink-0">
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
-                className="w-60 h-auto max-w-none opacity-100 -scale-x-100 -ml-24"
+                className="w-60 max-h-sm:w-40 h-auto max-w-none opacity-100 -scale-x-100 max-h-sm:-ml-12 -ml-24"
               />
             </div>
           ) : (
@@ -143,28 +143,28 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className={mode === "charging" ? "relative w-40 overflow-hidden" : "p-3 rounded-2xl"}
+            className={mode === "charging" ? "relative w-40 max-h-sm:w-28 overflow-hidden" : "p-3 rounded-2xl"}
             style={mode === "charging" ? undefined : { backgroundColor: `${config.color}15` }}
           >
             {mode === "charging" && (
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
-                className="w-60 h-auto pr-0 max-w-none opacity-100"
+                className="w-60 max-h-sm:w-40 h-auto pr-0 max-w-none opacity-100"
               />
             )}
             {mode === "v2h" && (
               <img
                 src={houseImage}
                   alt="Hus"
-                  className="w-70 h-70 object-contain -ml-2"
+                  className="w-70 max-h-[22vh] object-contain -ml-2"
               />
             )}
             {mode === "v2g" && (
               <img
                 src={electricTowerImage}
                 alt="Elnät"
-                className="w-32 h-32 object-contain"
+                className="w-32 max-h-sm:w-24 h-32 max-h-sm:h-24 object-contain"
               />
             )}
           </motion.div>
@@ -176,7 +176,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="mt-4 text-center"
+        className="absolute bottom-1 left-0 right-0 text-center"
       >
         <motion.span
           key={power}
