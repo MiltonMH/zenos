@@ -76,7 +76,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
-                className="w-28 max-h-sm:w-24 h-auto opacity-100"
+                className="w-28 max-h-sm:w-28 h-auto opacity-100"
               />
             </div>
           ) : (mode === "v2h" || mode === "v2g") ? (
