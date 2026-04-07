@@ -16,6 +16,8 @@ interface ChargerSlideProps {
 }
 
 export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel, onBatteryLevelChange }: ChargerSlideProps) {
+  const isEnergyMode = mode === "charging" || mode === "v2h" || mode === "v2g";
+
   const [isLocked, setIsLocked] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -122,6 +124,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
           label="Lås"
           sublabel={isLocked ? "Låst" : "Olåst"}
           isActive={isLocked}
+          isFrosty={isEnergyMode}
           iconClassName={isLocked ? "text-primary" : "text-muted-foreground"}
           onClick={() => setIsLocked(!isLocked)}
         />
@@ -130,6 +133,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
           label="Läge"
           sublabel={getModeLabel()}
           isActive={mode !== "idle"}
+          isFrosty={isEnergyMode}
           onClick={cycleMode}
         />
         <ActionButton
@@ -137,6 +141,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
           label="Schema"
           sublabel="Auto"
           isActive={true}
+          isFrosty={isEnergyMode}
           onClick={onScheduleClick || (() => {})}
         />
       </div>
@@ -149,17 +154,21 @@ interface ActionButtonProps {
   label: string;
   sublabel: string;
   isActive: boolean;
+  isFrosty?: boolean;
   iconClassName?: string;
   onClick: () => void;
 }
 
-function ActionButton({ icon: Icon, label, sublabel, isActive, iconClassName, onClick }: ActionButtonProps) {
+function ActionButton({ icon: Icon, label, sublabel, isActive, isFrosty = false, iconClassName, onClick }: ActionButtonProps) {
   return (
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
       className={cn(
-        "relative flex flex-col items-center justify-center gap-1.5 bg-white/30 border border-white/40 rounded-2xl max-h-sm:rounded-sm overflow-hidden",
+        "relative flex flex-col items-center justify-center gap-1.5 rounded-2xl max-h-sm:rounded-sm overflow-hidden",
+        isFrosty
+          ? "bg-white/45 backdrop-blur-xl border border-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_8px_20px_rgba(0,0,0,0.06)]"
+          : "bg-white/30 border border-white/40",
         "w-[98px] h-[100px] max-h-sm:w-[76px] max-h-sm:h-[80px] min-w-0 p-0"
       )}
       style={{ maxWidth: '100%', maxHeight: '100%' }}

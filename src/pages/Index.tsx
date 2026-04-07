@@ -40,6 +40,11 @@ export default function Index() {
   const [batteryLevel, setBatteryLevel] = useState(50);
   const [activeHomeSlide, setActiveHomeSlide] = useState<"charger" | "stats" | "price">("charger");
 
+  const isEnergyHomeView =
+    activeTab === "home" &&
+    activeHomeSlide === "charger" &&
+    (chargingMode === "charging" || chargingMode === "v2h" || chargingMode === "v2g");
+
   const handleBatteryLevelChange = (nextLevel: number) => {
     setBatteryLevel(Math.max(0, Math.min(100, nextLevel)));
   };
@@ -97,9 +102,12 @@ export default function Index() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative isolate flex-1 glass-main flex flex-col overflow-hidden"
+          className={cn(
+            "relative isolate flex-1 glass-main flex flex-col overflow-hidden",
+            isEnergyHomeView && "glass-main-energy-active"
+          )}
         >
-          {activeTab === "home" && activeHomeSlide === "charger" && (chargingMode === "charging" || chargingMode === "v2h" || chargingMode === "v2g") && (
+          {isEnergyHomeView && (
             <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />
           )}
           <div className="relative z-10 flex-1 flex flex-col">

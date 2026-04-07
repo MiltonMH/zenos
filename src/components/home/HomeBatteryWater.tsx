@@ -9,14 +9,15 @@ interface HomeBatteryWaterProps {
 const clampLevel = (level: number) => Math.max(0, Math.min(100, level));
 
 export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) {
-  if (!["charging", "v2h", "v2g"].includes(mode)) {
-    return null;
-  }
-
   const chargedLayerId = useId().replace(/:/g, "");
   const sweepLayerId = `${chargedLayerId}-sweep`;
   const bottomFadeId = `${chargedLayerId}-bottom-fade`;
   const bottomMaskId = `${chargedLayerId}-bottom-mask`;
+
+  if (!["charging", "v2h", "v2g"].includes(mode)) {
+    return null;
+  }
+
   const level = clampLevel(batteryLevel);
   const fillHeight = 50;
   const chargedWidth = level;
@@ -24,10 +25,10 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   const chargeFillWidth = chargedWidth;
   const cornerFadeMask =
     "radial-gradient(145% 145% at 50% 50%, rgba(0,0,0,1) 20%, rgba(0,0,0,0.72) 78%, rgba(0,0,0,0) 100%)";
-  const fillColor = "hsl(var(--primary) / 0.2)";
-  const unchargedColor = "rgba(255, 255, 255, 0.9)";
-  const chargedColor = "hsl(var(--primary) / 0.34)";
-  const sweepColor = "hsl(var(--primary) / 0.5)";
+  const fillColor = "#C5E7E7";
+  const unchargedColor = "#FFFFFF";
+  const chargedColor = "#C5E7E7";
+  const sweepColor = "#99D1D1";
 
   return (
     <div
@@ -62,12 +63,23 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
             <feGaussianBlur stdDeviation="0.8" />
           </filter>
           <linearGradient id={sweepLayerId} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor={sweepColor} stopOpacity="0.95" />
-            <stop offset="72%" stopColor={sweepColor} stopOpacity="0.6" />
+            <stop offset="0%" stopColor={sweepColor} stopOpacity="0.82" />
+            <stop offset="82%" stopColor={sweepColor} stopOpacity="0.62" />
+            <stop offset="90%" stopColor={sweepColor} stopOpacity="0.5" />
+            <stop offset="97%" stopColor={sweepColor} stopOpacity="0.28" />
             <stop offset="100%" stopColor={sweepColor} stopOpacity="0" />
           </linearGradient>
           <filter id={`${sweepLayerId}-blur`} x="-10%" y="-10%" width="120%" height="120%">
-            <feGaussianBlur stdDeviation="0.9" />
+            <feGaussianBlur stdDeviation="0.75">
+              <animate
+                attributeName="stdDeviation"
+                values="0.75;0.75;1.05;0.75"
+                keyTimes="0;0.86;0.95;1"
+                dur="3.7s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+            </feGaussianBlur>
           </filter>
         </defs>
 
@@ -107,12 +119,19 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
               filter={`url(#${sweepLayerId}-blur)`}
             >
               <animate
+                attributeName="opacity"
+                values="0;1;1;0"
+                keyTimes="0;0.06;0.92;1"
+                dur="3.7s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              />
+              <animate
                 attributeName="width"
                 values={`0;${chargeFillWidth}`}
-                dur="5s"
+                dur="3.7s"
                 repeatCount="indefinite"
-                calcMode="spline"
-                keySplines="0 0 0.2 1"
+                calcMode="linear"
               />
             </rect>
           )}
