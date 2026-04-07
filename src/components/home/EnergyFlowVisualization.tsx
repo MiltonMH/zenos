@@ -60,6 +60,7 @@ function useDynamicPower(minPower: number, maxPower: number) {
 export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisualizationProps) {
   const config = modeConfig[mode];
   const power = useDynamicPower(config.minPower, config.maxPower);
+  const hidePowerIndicator = mode === "charging" && (batteryLevel ?? 0) >= 100;
 
   return (
     <div className="relative flex flex-col items-center h-full pb-9">
@@ -76,7 +77,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
-                className="w-28 max-h-sm:w-28 h-auto opacity-100"
+                className="w-24 max-h-sm:w-23 h-auto opacity-100"
               />
             </div>
           ) : (mode === "v2h" || mode === "v2g") ? (
@@ -179,23 +180,27 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
         </motion.div>
       </div>
 
-      {/* Power indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="absolute bottom-12 max-h-sm:bottom-10 left-0 right-0 text-center"
-      >
-        <motion.span
-          key={power}
-          initial={{ opacity: 0.5, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-3xl max-h-sm:text-[1.75rem] font-semibold text-foreground"
-        >
-          {power.toFixed(1)}
-        </motion.span>
-        <span className="text-lg max-h-sm:text-base text-[#404040] ml-1">kW</span>
-      </motion.div>
+      {!hidePowerIndicator && (
+        <>
+          {/* Power indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="absolute bottom-12 max-h-sm:bottom-10 left-0 right-0 text-center"
+          >
+            <motion.span
+              key={power}
+              initial={{ opacity: 0.5, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-3xl max-h-sm:text-[1.75rem] font-semibold text-foreground"
+            >
+              {power.toFixed(1)}
+            </motion.span>
+            <span className="text-lg max-h-sm:text-base text-[#404040] ml-1">kW</span>
+          </motion.div>
+        </>
+      )}
     </div>
   );
 }

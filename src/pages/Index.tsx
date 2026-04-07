@@ -48,6 +48,7 @@ export default function Index() {
   const handleBatteryLevelChange = (nextLevel: number) => {
     setBatteryLevel(Math.max(0, Math.min(100, nextLevel)));
   };
+  const displayBatteryLevel = chargingMode === "charging" ? 100 : batteryLevel;
   const { selected, setSelected, current } = useBackground();
 
   const renderContent = () => {
@@ -75,7 +76,7 @@ export default function Index() {
             />
             <HomeCarousel
               userName={mockUser.firstName}
-              batteryLevel={batteryLevel}
+              batteryLevel={displayBatteryLevel}
               chargingMode={chargingMode}
               onModeChange={setChargingMode}
               onBatteryLevelChange={handleBatteryLevelChange}
@@ -108,7 +109,7 @@ export default function Index() {
           )}
         >
           {isEnergyHomeView && (
-            <HomeBatteryWater batteryLevel={batteryLevel} mode={chargingMode} />
+            <HomeBatteryWater batteryLevel={displayBatteryLevel} mode={chargingMode} />
           )}
           <div className="relative z-10 flex-1 flex flex-col">
             {renderContent()}
