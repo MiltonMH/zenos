@@ -72,9 +72,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
   const pointerStartY = useRef(0);
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    // Don't intercept interactive elements
-    if ((e.target as HTMLElement).closest('button, a, [role="button"], input, select, textarea')) return;
-
+    // Allow swiping everywhere on the carousel, including on buttons
     const startX = e.clientX;
     const startY = e.clientY;
     pointerStartX.current = startX;
