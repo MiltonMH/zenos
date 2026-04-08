@@ -5,6 +5,7 @@ import chargerBoxImage from "@/assets/Sidan1Cropped.png";
 import chargingCarImage from "@/assets/EX30-cutout.png";
 import electricTowerImage from "@/assets/electric-tower.png";
 import houseImage from "@/assets/houseZenOS2.png";
+import ElectricCable from "@/components/charger/ElectricCable";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
 
@@ -64,8 +65,15 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
 
   return (
     <div className="relative flex flex-col items-center h-full pb-9">
+      {/* Cable background for charging mode */}
+      {mode === "charging" && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <ElectricCable />
+        </div>
+      )}
+
       {/* Energy flow visualization */}
-      <div className={`flex-1 min-h-0 flex items-center gap-4 w-full ${(mode === "charging" || mode === "v2h" || mode === "v2g") ? (mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-none justify-between pr-2") : "max-w-xs justify-center"}`}>
+      <div className={`flex-1 min-h-0 flex items-center gap-4 w-full relative z-10 ${(mode === "charging" || mode === "v2h" || mode === "v2g") ? (mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-none justify-between pr-2") : "max-w-xs justify-center"}`}>
         {/* Source */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -102,37 +110,41 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
 
         {/* Spacer between source and destination */}
         <div className="flex-1 flex items-center justify-center relative h-8 mx-2">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="absolute w-4 h-4 rounded-full brightness-[1.2] saturate-110"
-              style={{ backgroundColor: config.color }}
-              initial={{ x: "-100%", opacity: 0.5, scale: 0.9 }}
-              animate={{
-                x: ["-100%", "200%"],
-                opacity: [0.5, 1, 1, 0.5],
-                scale: [0.9, 1.08, 1.08, 0.9],
-                boxShadow: [
-                  `0 0 4px 1px ${config.color}33, 0 0 6px 1px rgba(255,255,255,0.28)`,
-                  `0 0 16px 3px ${config.color}66, 0 0 10px 2px rgba(255,255,255,0.46)`,
-                  `0 0 16px 3px ${config.color}66, 0 0 10px 2px rgba(255,255,255,0.46)`,
-                  `0 0 4px 1px ${config.color}33, 0 0 6px 1px rgba(255,255,255,0.28)`,
-                ],
-              }}
-              transition={{
-                duration: 1.25,
-                repeat: Infinity,
-                delay: i * 0.3,
-                ease: "linear",
-                times: [0, 0.12, 0.82, 1],
-              }}
-            />
-          ))}
-          {/* Track line */}
-          <div
-            className="absolute inset-x-0 h-0.5 rounded-full opacity-20"
-            style={{ backgroundColor: config.color }}
-          />
+          {mode !== "charging" && (
+            <>
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-4 h-4 rounded-full brightness-[1.2] saturate-110"
+                  style={{ backgroundColor: config.color }}
+                  initial={{ x: "-100%", opacity: 0.5, scale: 0.9 }}
+                  animate={{
+                    x: ["-100%", "200%"],
+                    opacity: [0.5, 1, 1, 0.5],
+                    scale: [0.9, 1.08, 1.08, 0.9],
+                    boxShadow: [
+                      `0 0 4px 1px ${config.color}33, 0 0 6px 1px rgba(255,255,255,0.28)`,
+                      `0 0 16px 3px ${config.color}66, 0 0 10px 2px rgba(255,255,255,0.46)`,
+                      `0 0 16px 3px ${config.color}66, 0 0 10px 2px rgba(255,255,255,0.46)`,
+                      `0 0 4px 1px ${config.color}33, 0 0 6px 1px rgba(255,255,255,0.28)`,
+                    ],
+                  }}
+                  transition={{
+                    duration: 1.25,
+                    repeat: Infinity,
+                    delay: i * 0.3,
+                    ease: "linear",
+                    times: [0, 0.12, 0.82, 1],
+                  }}
+                />
+              ))}
+              {/* Track line */}
+              <div
+                className="absolute inset-x-0 h-0.5 rounded-full opacity-20"
+                style={{ backgroundColor: config.color }}
+              />
+            </>
+          )}
         </div>
 
         {/* Destination */}
