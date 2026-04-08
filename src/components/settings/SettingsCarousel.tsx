@@ -82,7 +82,7 @@ export function SettingsCarousel() {
         onPointerMove={handleTouchMove}
         onPointerUp={handleTouchEnd}
         onPointerCancel={handleTouchEnd}
-        style={{ touchAction: "pan-y" }}
+        style={{ touchAction: "pan-y", userSelect: "none" }}
       >
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div

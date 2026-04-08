@@ -77,6 +77,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
+                draggable={false}
                 className="relative w-20 mobile-lg:w-36 max-w-[50vw] h-auto"
               />
             </motion.div>
@@ -93,6 +94,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
                 <img
                   src={chargerBoxImage}
                   alt="ZenBox Charger"
+                  draggable={false}
                   className="relative w-20 mobile-lg:w-36 max-w-[50vw] h-auto grayscale opacity-100"
                 />
                 {/* Unplug badge */}

@@ -74,12 +74,14 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
   const isPointerDown = useRef(false);
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    // Don't intercept clicks on interactive elements (buttons, links, etc.)
+    if ((e.target as HTMLElement).closest('button, a, [role="button"], input, select, textarea')) return;
     pointerStartX.current = e.clientX;
     pointerStartY.current = e.clientY;
     pointerEndX.current = e.clientX;
     pointerEndY.current = e.clientY;
     isPointerDown.current = true;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    // Note: no setPointerCapture — that was stealing events from child buttons
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -140,7 +142,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        style={{ touchAction: "pan-y" }}
+        style={{ touchAction: "pan-y", userSelect: "none" }}
       >
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div

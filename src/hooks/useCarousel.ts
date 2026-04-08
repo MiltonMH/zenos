@@ -40,10 +40,12 @@ export function useCarousel({ totalSlides, swipeThreshold = 50 }: UseCarouselOpt
   }, [currentSlide, selectionChanged]);
 
   const handleTouchStart = useCallback((e: React.PointerEvent) => {
+    // Don't intercept clicks on interactive elements
+    if ((e.target as HTMLElement).closest('button, a, [role="button"], input, select, textarea')) return;
     pointerStartX.current = e.clientX;
     pointerEndX.current = e.clientX;
     isPointerDown.current = true;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    // Note: no setPointerCapture — that steals events from child buttons
   }, []);
 
   const handleTouchMove = useCallback((e: React.PointerEvent) => {

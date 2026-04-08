@@ -77,6 +77,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
+                draggable={false}
                 className="w-24 max-h-sm:w-23 h-auto opacity-100"
               />
             </div>
@@ -85,6 +86,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
+                draggable={false}
                 className="w-80 max-h-sm:w-60 h-auto max-w-none opacity-100 -scale-x-100 -ml-28 max-h-sm:-ml-14"
               />
             </div>
@@ -159,6 +161,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
+                draggable={false}
                 className="w-80 max-h-sm:w-60 h-auto pr-0 max-w-none opacity-100 -ml-4 max-h-sm:-ml-2"
               />
             )}
@@ -166,6 +169,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={houseImage}
                 alt="Hus"
+                draggable={false}
                 className="w-full h-full object-contain"
               />
             )}
@@ -173,6 +177,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               <img
                 src={electricTowerImage}
                 alt="Elnät"
+                draggable={false}
                 className="w-full h-full object-contain scale-100 origin-center"
               />
             )}
