@@ -66,45 +66,42 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
     }
   };
 
-  // Pointer-based swipe handling (works for both mouse and touch)
+  // Pointer-based swipe — attach move/up to document so tracking works
+  // everywhere regardless of which child element the pointer drifts over.
   const pointerStartX = useRef(0);
   const pointerStartY = useRef(0);
-  const pointerEndX = useRef(0);
-  const pointerEndY = useRef(0);
-  const isPointerDown = useRef(false);
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    // Don't intercept clicks on interactive elements (buttons, links, etc.)
+    // Don't intercept interactive elements
     if ((e.target as HTMLElement).closest('button, a, [role="button"], input, select, textarea')) return;
-    pointerStartX.current = e.clientX;
-    pointerStartY.current = e.clientY;
-    pointerEndX.current = e.clientX;
-    pointerEndY.current = e.clientY;
-    isPointerDown.current = true;
-    // Note: no setPointerCapture — that was stealing events from child buttons
-  };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isPointerDown.current) return;
-    pointerEndX.current = e.clientX;
-    pointerEndY.current = e.clientY;
-  };
+    const startX = e.clientX;
+    const startY = e.clientY;
+    pointerStartX.current = startX;
+    pointerStartY.current = startY;
+    let endX = startX;
+    let endY = startY;
 
-  const handlePointerUp = () => {
-    if (!isPointerDown.current) return;
-    isPointerDown.current = false;
+    const onMove = (ev: PointerEvent) => {
+      endX = ev.clientX;
+      endY = ev.clientY;
+    };
 
-    const diffX = pointerStartX.current - pointerEndX.current;
-    const diffY = pointerStartY.current - pointerEndY.current;
-    const isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
 
-    if (isHorizontalSwipe && Math.abs(diffX) > 50) {
-      if (diffX > 0) {
-        goNext();
-      } else {
-        goPrev();
+      const diffX = startX - endX;
+      const diffY = startY - endY;
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        if (diffX > 0) goNext(); else goPrev();
       }
-    }
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
   };
 
   const variants = {
@@ -139,9 +136,6 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
       <div
         className="flex-1 relative overflow-hidden"
         onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
         style={{ touchAction: "pan-y", userSelect: "none" }}
       >
         <AnimatePresence mode="wait" custom={direction}>

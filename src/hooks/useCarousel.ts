@@ -11,10 +11,6 @@ export function useCarousel({ totalSlides, swipeThreshold = 50 }: UseCarouselOpt
   const [direction, setDirection] = useState(0);
   const { lightImpact, selectionChanged } = useHaptics();
 
-  const pointerStartX = useRef(0);
-  const pointerEndX = useRef(0);
-  const isPointerDown = useRef(false);
-
   const goToSlide = useCallback((index: number) => {
     if (index >= 0 && index < totalSlides) {
       setDirection(index > currentSlide ? 1 : -1);
@@ -39,32 +35,35 @@ export function useCarousel({ totalSlides, swipeThreshold = 50 }: UseCarouselOpt
     }
   }, [currentSlide, selectionChanged]);
 
+  // Attach move/up to document on drag start so motion is captured
+  // everywhere regardless of which child element the pointer drifts over.
   const handleTouchStart = useCallback((e: React.PointerEvent) => {
-    // Don't intercept clicks on interactive elements
     if ((e.target as HTMLElement).closest('button, a, [role="button"], input, select, textarea')) return;
-    pointerStartX.current = e.clientX;
-    pointerEndX.current = e.clientX;
-    isPointerDown.current = true;
-    // Note: no setPointerCapture — that steals events from child buttons
-  }, []);
 
-  const handleTouchMove = useCallback((e: React.PointerEvent) => {
-    if (!isPointerDown.current) return;
-    pointerEndX.current = e.clientX;
-  }, []);
+    const startX = e.clientX;
+    let endX = startX;
 
-  const handleTouchEnd = useCallback(() => {
-    if (!isPointerDown.current) return;
-    isPointerDown.current = false;
-    const diff = pointerStartX.current - pointerEndX.current;
-    if (Math.abs(diff) > swipeThreshold) {
-      if (diff > 0) {
-        goNext();
-      } else {
-        goPrev();
+    const onMove = (ev: PointerEvent) => { endX = ev.clientX; };
+
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+
+      const diff = startX - endX;
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) goNext(); else goPrev();
       }
-    }
+    };
+
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
   }, [swipeThreshold, goNext, goPrev]);
+
+  // Kept for API compatibility — logic is now inside handleTouchStart
+  const handleTouchMove = useCallback((_e: React.PointerEvent) => {}, []);
+  const handleTouchEnd = useCallback(() => {}, []);
 
   const canGoNext = currentSlide < totalSlides - 1;
   const canGoPrev = currentSlide > 0;
