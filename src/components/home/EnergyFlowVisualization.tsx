@@ -81,11 +81,11 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               />
             </div>
           ) : (mode === "v2h" || mode === "v2g") ? (
-            <div className="relative w-48 max-h-sm:w-34 shrink-0">
+            <div className="relative w-48 max-h-sm:w-36 overflow-hidden shrink-0">
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
-                className="w-72 max-h-sm:w-48 h-auto max-w-none opacity-100 -scale-x-100 max-h-sm:-ml-14 -ml-28"
+                className="w-80 max-h-sm:w-60 h-auto max-w-none opacity-100 -scale-x-100 -ml-28 max-h-sm:-ml-14"
               />
             </div>
           ) : (
@@ -152,8 +152,8 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className={mode === "charging" ? "relative w-48 max-h-sm:w-36 overflow-hidden" : mode === "v2g" ? "relative w-48 h-48 max-h-sm:w-34 max-h-sm:h-34 overflow-visible" : "p-3 rounded-2xl"}
-            style={mode === "charging" || mode === "v2g" ? undefined : { backgroundColor: `${config.color}15` }}
+            className={mode === "charging" ? "relative w-48 max-h-sm:w-36 overflow-hidden" : "relative w-48 h-48 max-h-sm:w-34 max-h-sm:h-34 overflow-visible"}
+            style={mode === "v2h" ? { backgroundColor: `${config.color}15` } : undefined}
           >
             {mode === "charging" && (
               <img
@@ -165,8 +165,8 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             {mode === "v2h" && (
               <img
                 src={houseImage}
-                  alt="Hus"
-                  className="w-[16rem] max-h-[24vh] max-h-sm:w-[12rem] max-h-sm:max-h-[18vh] max-w-none object-contain -ml-2"
+                alt="Hus"
+                className="w-full h-full object-contain"
               />
             )}
             {mode === "v2g" && (

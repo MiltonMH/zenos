@@ -5,7 +5,7 @@ import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
 import { useCarousel } from "@/hooks/useCarousel";
 
-export function SettingsCarousel({ onBatteryLevelChange }: { onBatteryLevelChange?: (level: number) => void }) {
+export function SettingsCarousel() {
   // Settings state
   const [chargeLimit, setChargeLimit] = useState([90]);
   const [v2hEnabled, setV2hEnabled] = useState(false);
@@ -21,7 +21,6 @@ export function SettingsCarousel({ onBatteryLevelChange }: { onBatteryLevelChang
         <StatusSlide
           chargeLimit={chargeLimit}
           onChargeLimitChange={setChargeLimit}
-          onBatteryLevelChange={onBatteryLevelChange}
         />
       )
     },

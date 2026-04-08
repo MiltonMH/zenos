@@ -9,20 +9,10 @@ type ChargingStatus = "charging" | "idle" | "v2h" | "v2g" | "searching" | "error
 interface StatusSlideProps {
   chargeLimit: number[];
   onChargeLimitChange: (value: number[]) => void;
-  onBatteryLevelChange?: (level: number) => void;
 }
 
-export function StatusSlide({ chargeLimit, onChargeLimitChange, onBatteryLevelChange }: StatusSlideProps) {
+export function StatusSlide({ chargeLimit, onChargeLimitChange }: StatusSlideProps) {
   const [status] = useState<ChargingStatus>("idle");
-
-  const applyTestLevel = () => {
-    const input = window.prompt("Enter battery percentage (0–100):");
-    if (input === null) return;
-    const parsed = parseInt(input, 10);
-    if (!isNaN(parsed) && onBatteryLevelChange) {
-      onBatteryLevelChange(Math.max(0, Math.min(100, parsed)));
-    }
-  };
 
   const getStatusConfig = (status: ChargingStatus) => {
     switch (status) {
@@ -71,17 +61,7 @@ export function StatusSlide({ chargeLimit, onChargeLimitChange, onBatteryLevelCh
             <RefreshCw className="w-4 h-4 mr-2" />
             Starta om laddbox
           </Button>
-          {onBatteryLevelChange && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={applyTestLevel}
-              className="w-full glass-subtle border-white/30 hover:bg-white/20 text-foreground mt-2"
-            >
-              <Battery className="w-4 h-4 mr-2" />
-              Ange batterinivå (test)
-            </Button>
-          )}
+
         </div>
 
         {/* Max Charge Limit */}

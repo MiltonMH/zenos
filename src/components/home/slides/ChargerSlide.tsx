@@ -57,7 +57,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
           : mode === "idle" ? "bg-muted-foreground"
           : "bg-primary status-pulse"
         }`} />
-        {mode !== "idle" && batteryLevel !== undefined && (
+        {isEnergyMode && batteryLevel !== undefined && (
           <span className="text-xl font-bold text-foreground">{Math.round(batteryLevel)}%</span>
         )}
       </div>
@@ -118,7 +118,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
       </div>
 
       {/* Quick Actions */}
-      <div className={`flex gap-3 w-full justify-center ${mode === "v2h" ? "mt-1" : "mt-4"}`}>
+      <div className="flex gap-3 w-full justify-center mt-2">
         <ActionButton
           icon={isLocked ? Lock : LockOpen}
           label="Lås"

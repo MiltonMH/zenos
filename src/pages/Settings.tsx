@@ -3,10 +3,9 @@ import { SettingsCarousel } from "@/components/settings/SettingsCarousel";
 
 interface SettingsProps {
   onBack: () => void;
-  onBatteryLevelChange?: (level: number) => void;
 }
 
-export default function Settings({ onBack, onBatteryLevelChange }: SettingsProps) {
+export default function Settings({ onBack }: SettingsProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -22,7 +21,7 @@ export default function Settings({ onBack, onBatteryLevelChange }: SettingsProps
       </div>
 
       {/* Carousel Content */}
-      <SettingsCarousel onBatteryLevelChange={onBatteryLevelChange} />
+      <SettingsCarousel />
     </div>
   );
 }
