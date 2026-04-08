@@ -102,6 +102,78 @@
     --chart-4: 235 60% 60%;
     --chart-5: 270 50% 65%;
   }
+
+  .dark {
+    /* Core colors - deep blue charcoal instead of flat black */
+    --background: 220 24% 10%;
+    --foreground: 210 26% 95%;
+
+    /* Cards */
+    --card: 220 22% 14%;
+    --card-foreground: 210 26% 95%;
+
+    /* Glass */
+    --glass: 220 26% 15%;
+    --glass-border: 205 24% 32%;
+    --glass-highlight: 210 35% 92%;
+
+    /* Popover */
+    --popover: 220 22% 13%;
+    --popover-foreground: 210 26% 95%;
+
+    /* Brand accents */
+    --primary: 172 62% 54%;
+    --primary-foreground: 220 35% 10%;
+    --primary-glow: 172 72% 62%;
+
+    --secondary: 216 18% 20%;
+    --secondary-foreground: 210 24% 90%;
+
+    --muted: 218 16% 18%;
+    --muted-foreground: 214 14% 72%;
+
+    --accent: 199 70% 56%;
+    --accent-foreground: 220 35% 10%;
+
+    /* Status colors */
+    --success: 152 62% 50%;
+    --success-foreground: 220 35% 10%;
+    --warning: 42 90% 58%;
+    --warning-foreground: 220 30% 12%;
+    --destructive: 0 76% 62%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Energy */
+    --energy-charging: 172 62% 54%;
+    --energy-discharging: 264 70% 68%;
+    --energy-v2h: 152 62% 50%;
+    --energy-v2g: 204 82% 62%;
+
+    /* UI */
+    --border: 218 16% 28%;
+    --input: 218 18% 16%;
+    --ring: 172 62% 54%;
+
+    /* Sidebar */
+    --sidebar-background: 220 22% 12%;
+    --sidebar-foreground: 210 26% 95%;
+    --sidebar-primary: 172 62% 54%;
+    --sidebar-primary-foreground: 220 35% 10%;
+    --sidebar-accent: 218 16% 18%;
+    --sidebar-accent-foreground: 210 24% 90%;
+    --sidebar-border: 218 16% 24%;
+    --sidebar-ring: 172 62% 54%;
+
+    /* Charts */
+    --chart-1: 172 62% 54%;
+    --chart-2: 152 62% 50%;
+    --chart-3: 20 86% 66%;
+    --chart-4: 204 82% 62%;
+    --chart-5: 264 70% 68%;
+    --chart-charged: 232 80% 68%;
+    --chart-v2h: 152 62% 50%;
+    --chart-spent: 18 84% 64%;
+  }
 }
 
 @layer base {
@@ -126,6 +198,80 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+  }
+
+  /* Rich dark atmosphere for the Mork background option */
+  .bg-nocturne {
+    /* Semantic token overrides so text/icons stay readable in dark mode */
+    --background: 220 24% 10%;
+    --foreground: 210 26% 95%;
+    --card: 220 22% 14%;
+    --card-foreground: 210 26% 95%;
+    --popover: 220 22% 13%;
+    --popover-foreground: 210 26% 95%;
+    --muted: 218 16% 18%;
+    --muted-foreground: 214 14% 72%;
+    --secondary: 216 18% 20%;
+    --secondary-foreground: 210 24% 90%;
+    --accent: 199 70% 56%;
+    --accent-foreground: 220 35% 10%;
+    --border: 218 16% 28%;
+    --input: 218 18% 16%;
+    --ring: 172 62% 54%;
+    --primary: 172 62% 54%;
+    --primary-foreground: 220 35% 10%;
+
+    background-color: hsl(222 28% 8%);
+    background-image:
+      radial-gradient(120% 80% at 10% -10%, rgba(74, 222, 207, 0.22) 0%, rgba(74, 222, 207, 0) 58%),
+      radial-gradient(110% 85% at 100% 0%, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0) 52%),
+      radial-gradient(90% 80% at 52% 118%, rgba(14, 116, 144, 0.28) 0%, rgba(14, 116, 144, 0) 58%),
+      linear-gradient(180deg, #121a2b 0%, #0d1423 58%, #0a101d 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .bg-nocturne .glass-main {
+    background: linear-gradient(145deg, rgba(25, 36, 58, 0.84) 0%, rgba(23, 34, 56, 0.66) 44%, rgba(15, 24, 44, 0.78) 100%);
+    border: 1.5px solid rgba(138, 171, 210, 0.26);
+    box-shadow:
+      0 22px 60px rgba(3, 6, 14, 0.52),
+      inset 0 1px 0 rgba(191, 214, 255, 0.18);
+  }
+
+  .bg-nocturne .glass-main-energy-active {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(36, 56, 78, 0.86) 0%,
+        rgba(31, 49, 72, 0.68) 46%,
+        rgba(18, 30, 51, 0.54) 70%,
+        rgba(12, 22, 40, 0.44) 100%
+      );
+  }
+
+  .bg-nocturne .glass {
+    @apply border;
+    background: linear-gradient(145deg, rgba(26, 38, 61, 0.7) 0%, rgba(22, 33, 55, 0.56) 100%);
+    border-color: rgba(170, 199, 235, 0.24);
+    box-shadow:
+      0 10px 34px rgba(4, 9, 20, 0.35),
+      inset 0 1px 0 rgba(194, 216, 255, 0.13);
+  }
+
+  .bg-nocturne .glass-strong {
+    @apply border;
+    background: linear-gradient(145deg, rgba(34, 49, 77, 0.9) 0%, rgba(26, 38, 62, 0.86) 100%);
+    border-color: rgba(177, 204, 236, 0.3);
+    box-shadow:
+      0 12px 40px rgba(3, 8, 18, 0.44),
+      inset 0 1px 0 rgba(205, 224, 255, 0.2);
+  }
+
+  .bg-nocturne .glass-subtle {
+    @apply border;
+    background: linear-gradient(145deg, rgba(28, 41, 66, 0.58) 0%, rgba(22, 34, 56, 0.48) 100%);
+    border-color: rgba(164, 194, 230, 0.22);
   }
 
   /* Glass morphism effects - Enhanced for light theme */
@@ -198,7 +344,9 @@
 
   /* Pill toggle styles */
   .pill-toggle {
-    @apply bg-white/60 backdrop-blur-sm rounded-full p-1 flex gap-1;
+    @apply rounded-full p-1 flex gap-1 backdrop-blur-sm border;
+    background: hsl(var(--card) / 0.45);
+    border-color: hsl(var(--border) / 0.55);
   }
 
   .pill-toggle-item {
@@ -206,7 +354,8 @@
   }
 
   .pill-toggle-item.active {
-    @apply bg-white text-foreground shadow-sm;
+    @apply text-foreground shadow-sm;
+    background: hsl(var(--card) / 0.8);
   }
 
   .pill-toggle-item:not(.active) {

@@ -58,7 +58,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
           : "bg-primary status-pulse"
         }`} />
         {isEnergyMode && batteryLevel !== undefined && (
-          <span className="text-xl font-bold text-foreground">{Math.round(batteryLevel)}%</span>
+          <span className={`font-bold text-foreground ${batteryLevel === 100 ? "text-4xl" : "text-xl"}`}>{Math.round(batteryLevel)}%</span>
         )}
       </div>
 

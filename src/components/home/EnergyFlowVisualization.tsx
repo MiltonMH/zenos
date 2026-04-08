@@ -78,7 +78,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`flex flex-col gap-2 ${(mode === "v2h" || mode === "v2g") ? "items-start" : "items-center"}`}
+          className={`flex flex-col gap-2 relative z-10 ${(mode === "v2h" || mode === "v2g") ? "items-start" : "items-center"}`}
         >
           {mode === "charging" ? (
             <div className="relative">
@@ -109,8 +109,55 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
         </motion.div>
 
         {/* Spacer between source and destination */}
-        <div className="flex-1 flex items-center justify-center relative h-8 mx-2">
-          {mode !== "charging" && (
+        <div className="flex-1 flex items-center justify-center relative h-8 mx-2" style={{ overflow: 'visible' }}>
+          {mode === "v2h" ? (
+            <>
+              {/* Bent V2H cable, extending behind both car and house */}
+              <svg
+                className="absolute -left-16 -right-16 top-1/2 h-8 -translate-y-1/2"
+                viewBox="0 0 340 32"
+                preserveAspectRatio="none"
+                style={{ zIndex: 0, overflow: "visible" }}
+              >
+                <path
+                  d="M 0 14 C 58 30, 122 30, 170 16 C 220 2, 286 2, 340 16"
+                  stroke="rgba(29, 143, 130, 0.22)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+              <svg
+                className="absolute -left-16 -right-16 top-1/2 h-8 -translate-y-1/2"
+                viewBox="0 0 340 32"
+                preserveAspectRatio="none"
+                style={{ zIndex: 0, overflow: "visible" }}
+              >
+                <defs>
+                  <linearGradient id="v2h-cable-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="rgba(29,143,130,0.15)" />
+                    <stop offset="45%" stopColor="#1D8F82" />
+                    <stop offset="100%" stopColor="rgba(29,143,130,0.45)" />
+                  </linearGradient>
+                </defs>
+                <motion.path
+                  d="M 0 14 C 58 30, 122 30, 170 16 C 220 2, 286 2, 340 16"
+                  stroke="url(#v2h-cable-gradient)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  fill="none"
+                  style={{ filter: "drop-shadow(0 0 8px rgba(29,143,130,0.5))" }}
+                  animate={{ pathLength: [0, 1, 1], opacity: [0.25, 0.75, 0.75] }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "linear",
+                    times: [0, 0.92, 1],
+                  }}
+                />
+              </svg>
+            </>
+          ) : mode !== "charging" ? (
             <>
               {[0, 1, 2].map((i) => (
                 <motion.div
@@ -144,14 +191,14 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
                 style={{ backgroundColor: config.color }}
               />
             </>
-          )}
+          ) : null}
         </div>
 
         {/* Destination */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`flex flex-col gap-2 ${mode === "charging" ? "items-end ml-auto" : "items-center"}`}
+          className={`flex flex-col gap-2 relative z-10 ${mode === "charging" ? "items-end ml-auto" : "items-center"}`}
         >
           <motion.div
             animate={mode === "charging" ? undefined : {

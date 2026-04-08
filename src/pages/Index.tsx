@@ -48,7 +48,7 @@ export default function Index() {
   const handleBatteryLevelChange = (nextLevel: number) => {
     setBatteryLevel(Math.max(0, Math.min(100, nextLevel)));
   };
-  const displayBatteryLevel = chargingMode === "charging" ? 91 : batteryLevel;
+  const displayBatteryLevel = chargingMode === "charging" ? 80 : batteryLevel;
   const { selected, setSelected, current } = useBackground();
 
   const renderContent = () => {

@@ -23,12 +23,16 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
   const chargedWidth = level;
   const isFullyCharged = chargedWidth >= 100;
   const chargeFillWidth = chargedWidth;
+  const isDarkMode =
+    typeof document !== "undefined" &&
+    (document.documentElement.classList.contains("dark") || document.querySelector(".bg-nocturne") !== null);
   const cornerFadeMask =
     "radial-gradient(145% 145% at 50% 50%, rgba(0,0,0,1) 20%, rgba(0,0,0,0.72) 78%, rgba(0,0,0,0) 100%)";
   const fillColor = "#C5E7E7";
-  const unchargedColor = "#FFFFFF";
+  const unchargedColor = isDarkMode ? "#1E3A5A" : "#FFFFFF";
   const chargedColor = "#C5E7E7";
   const sweepColor = "#99D1D1";
+  const unchargedEdgeColor = isDarkMode ? "rgba(30, 58, 90, 0.95)" : "rgba(255, 255, 255, 0.95)";
 
   return (
     <div
@@ -47,7 +51,7 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
           <linearGradient id={chargedLayerId} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor={chargedColor} />
             <stop offset="88%" stopColor={chargedColor} />
-            <stop offset="98%" stopColor="rgba(255, 255, 255, 0.95)" />
+            <stop offset="98%" stopColor={unchargedEdgeColor} />
             <stop offset="100%" stopColor={unchargedColor} />
           </linearGradient>
           <linearGradient id={bottomFadeId} x1="0" y1="0" x2="0" y2="1">

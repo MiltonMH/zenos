@@ -23,8 +23,8 @@ export const backgrounds: BackgroundConfig[] = [
   {
     id: "black",
     label: "Mörk",
-    style: "bg-black",
-    preview: "bg-black",
+    style: "bg-nocturne",
+    preview: "bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950",
   },
   {
     id: "white",

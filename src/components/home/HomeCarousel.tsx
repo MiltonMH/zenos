@@ -121,16 +121,19 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
 
   const canGoPrev = currentSlide > 0;
   const canGoNext = currentSlide < slides.length - 1;
+  const isChargerSlide = slides[currentSlide].id === "charger";
 
   return (
     <div className="relative flex-1 flex flex-col">
-      {slides[currentSlide].id === "charger" && (
-        <div className="mb-4 max-h-sm:mb-0 flex justify-center">
+      <div className="mb-4 max-h-sm:mb-0 flex justify-center min-h-7">
+        {isChargerSlide ? (
           <h1 className="text-lg font-semibold text-foreground">
             Hej, {userName}
           </h1>
-        </div>
-      )}
+        ) : (
+          <div className="h-7" aria-hidden="true" />
+        )}
+      </div>
 
       {/* Carousel content */}
       <div
@@ -157,7 +160,8 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
         {canGoPrev && (
           <button
             onClick={goPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
+            aria-label="Föregående slide"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -165,7 +169,8 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
         {canGoNext && (
           <button
             onClick={goNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
+            aria-label="Nästa slide"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
