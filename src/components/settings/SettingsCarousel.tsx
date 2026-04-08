@@ -78,9 +78,11 @@ export function SettingsCarousel() {
       {/* Carousel content */}
       <div
         className="flex-1 relative overflow-hidden min-h-0"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        onPointerDown={handleTouchStart}
+        onPointerMove={handleTouchMove}
+        onPointerUp={handleTouchEnd}
+        onPointerCancel={handleTouchEnd}
+        style={{ touchAction: "pan-y" }}
       >
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div

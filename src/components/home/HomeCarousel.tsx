@@ -66,35 +66,34 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
     }
   };
 
-  // Touch/swipe handling
-  const touchStartX = useRef(0);
-  const touchStartY = useRef(0);
-  const touchEndX = useRef(0);
-  const touchEndY = useRef(0);
-  const hasTouchMoved = useRef(false);
+  // Pointer-based swipe handling (works for both mouse and touch)
+  const pointerStartX = useRef(0);
+  const pointerStartY = useRef(0);
+  const pointerEndX = useRef(0);
+  const pointerEndY = useRef(0);
+  const isPointerDown = useRef(false);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-    // Initialize end points so taps don't get treated like swipes.
-    touchEndX.current = touchStartX.current;
-    touchEndY.current = touchStartY.current;
-    hasTouchMoved.current = false;
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartX.current = e.clientX;
+    pointerStartY.current = e.clientY;
+    pointerEndX.current = e.clientX;
+    pointerEndY.current = e.clientY;
+    isPointerDown.current = true;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-    touchEndY.current = e.touches[0].clientY;
-    hasTouchMoved.current = true;
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isPointerDown.current) return;
+    pointerEndX.current = e.clientX;
+    pointerEndY.current = e.clientY;
   };
 
-  const handleTouchEnd = () => {
-    if (!hasTouchMoved.current) {
-      return;
-    }
+  const handlePointerUp = () => {
+    if (!isPointerDown.current) return;
+    isPointerDown.current = false;
 
-    const diffX = touchStartX.current - touchEndX.current;
-    const diffY = touchStartY.current - touchEndY.current;
+    const diffX = pointerStartX.current - pointerEndX.current;
+    const diffY = pointerStartY.current - pointerEndY.current;
     const isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
 
     if (isHorizontalSwipe && Math.abs(diffX) > 50) {
@@ -137,9 +136,11 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
       {/* Carousel content */}
       <div
         className="flex-1 relative overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        style={{ touchAction: "pan-y" }}
       >
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
