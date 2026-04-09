@@ -86,16 +86,16 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
                 src={chargerBoxImage}
                 alt="ZenBox Charger"
                 draggable={false}
-                className="w-24 max-h-sm:w-23 h-auto opacity-100"
+                className="w-24 max-h-sm:w-20 max-[375px]:w-18 max-[343px]:w-16 max-[320px]:w-14 h-auto opacity-100"
               />
             </div>
           ) : (mode === "v2h" || mode === "v2g") ? (
-            <div className="relative w-48 max-h-sm:w-36 overflow-hidden shrink-0">
+            <div className="relative w-48 max-h-sm:w-36 max-[375px]:w-30 max-[343px]:w-28 max-[320px]:w-24 overflow-hidden shrink-0">
               <img
                 src={chargingCarImage}
                 alt="Volvo EX30"
                 draggable={false}
-                className="w-80 max-h-sm:w-60 h-auto max-w-none opacity-100 -scale-x-100 -ml-28 max-h-sm:-ml-14"
+                className="w-80 max-h-sm:w-56 max-[375px]:w-48 max-[343px]:w-40 max-[320px]:w-32 h-auto max-w-none opacity-100 -scale-x-100 -ml-24 max-h-sm:-ml-10 max-[375px]:-ml-12 max-[343px]:-ml-10 max-[320px]:-ml-4"
               />
             </div>
           ) : (
@@ -213,7 +213,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className={mode === "charging" ? "relative w-48 max-h-sm:w-36 overflow-hidden" : "relative w-48 h-48 max-h-sm:w-34 max-h-sm:h-34 overflow-visible"}
+            className={mode === "charging" ? "relative w-48 max-h-sm:w-36 max-[375px]:w-32 max-[343px]:w-28 max-[320px]:w-24 overflow-hidden" : "relative w-48 h-48 max-h-sm:w-34 max-h-sm:h-34 max-[375px]:w-28 max-[375px]:h-28 max-[343px]:w-24 max-[343px]:h-24 max-[320px]:w-20 max-[320px]:h-20 overflow-visible"}
             style={mode === "v2h" ? { backgroundColor: `${config.color}15` } : undefined}
           >
             {mode === "charging" && (
@@ -221,7 +221,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
                 src={chargingCarImage}
                 alt="Volvo EX30"
                 draggable={false}
-                className="w-80 max-h-sm:w-60 h-auto pr-0 max-w-none opacity-100 -ml-4 max-h-sm:-ml-2"
+                className="w-80 max-h-sm:w-56 max-[375px]:w-48 max-[343px]:w-40 max-[320px]:w-32 h-auto pr-0 max-w-none opacity-100 -ml-4 max-h-sm:-ml-2 max-[375px]:-ml-2 max-[343px]:-ml-1 max-[320px]:-ml-0.5"
               />
             )}
             {mode === "v2h" && (

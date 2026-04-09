@@ -71,9 +71,9 @@ export function EnergyPriceSlide() {
   const formatHour = (hour: number) => `${hour.toString().padStart(2, '0')}:00`;
 
   return (
-    <div className="h-full flex flex-col items-center px-4 pt-2 overflow-y-auto">
+    <div className="h-full flex flex-col items-center px-4 pt-0 pb-3 max-h-sm:pb-2 overflow-y-auto">
       {/* Title */}
-      <h2 className="text-lg font-semibold text-foreground mb-2">Elpris idag</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-2 mt-1">Elpris idag</h2>
 
       {/* Tab Toggle */}
       <div className="pill-toggle mb-3">
