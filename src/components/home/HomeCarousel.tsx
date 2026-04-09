@@ -123,7 +123,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
 
   return (
     <div className="relative flex-1 flex flex-col">
-      <div className={`flex justify-center min-h-7 ${isChargerSlide ? "mb-4 max-h-sm:mb-0" : "mb-0"}`}>
+      <div className={`flex justify-center ${isChargerSlide ? "mb-4 max-h-sm:mb-0 min-h-7" : "hidden"}`}>
         {isChargerSlide ? (
           <h1 className="text-lg font-semibold text-foreground">
             Hej, {userName}
