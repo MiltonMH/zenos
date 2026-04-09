@@ -83,8 +83,8 @@ const ElectricCable = () => {
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y + 2);
       }
-      ctx.strokeStyle = "rgba(0,0,0,0.3)";
-      ctx.lineWidth = 4;
+      ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      ctx.lineWidth = 2.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.miterLimit = 2;
@@ -96,7 +96,7 @@ const ElectricCable = () => {
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y);
       }
-      ctx.strokeStyle = "hsl(210, 8%, 20%)";
+      ctx.strokeStyle = "hsl(65 0.9% 77.1% / 0.8)";
       ctx.lineWidth = 4;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
@@ -109,7 +109,7 @@ const ElectricCable = () => {
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y);
       }
-      ctx.strokeStyle = "hsl(210, 6%, 28%)";
+      ctx.strokeStyle = "hsl(65 0.9% 77.1%)";
       ctx.lineWidth = 2.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
@@ -123,7 +123,7 @@ const ElectricCable = () => {
         ctx.lineTo(path[i].x, path[i].y - 1.5);
       }
       ctx.strokeStyle = "hsla(210, 5%, 42%, 0.5)";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.stroke();
 
@@ -138,9 +138,9 @@ const ElectricCable = () => {
           let intensity: number;
 
           if (headOnCable && distFromHead < glowLength) {
-            // Bright leading edge (same as before)
-            intensity = 1 - (distFromHead / glowLength);
-            intensity = intensity * intensity;
+            // Leading edge: start at body level (0.6) and ramp smoothly to 1 at the tip
+            const t = 1 - (distFromHead / glowLength); // 0 at body edge, 1 at tip
+            intensity = 0.6 + 0.4 * t * t;
           } else {
             // Body
             intensity = 0.6;
@@ -150,46 +150,24 @@ const ElectricCable = () => {
             intensity *= distFromTail / glowLength;
           }
 
-          // Outer glow
-          const glowRadius = 6 * intensity;
+          // Tip boost: make the very front a larger continuous glow
+          const tipBoost = (headOnCable && distFromHead < glowLength)
+            ? (1 - distFromHead / glowLength)
+            : 0;
+          const glowRadius = (5 + tipBoost * 1) * Math.max(intensity, 0.01);
+          const centerAlpha = 0.2 + tipBoost * 0.1;
           const gradient = ctx.createRadialGradient(
             path[i].x, path[i].y, 0,
             path[i].x, path[i].y, glowRadius
           );
-          gradient.addColorStop(0, `hsla(175, 100%, 75%, ${0.4 * intensity})`);
+          gradient.addColorStop(0, `hsla(175, 100%, 75%, ${centerAlpha * intensity})`);
           gradient.addColorStop(0.4, `hsla(175, 90%, 60%, ${0.15 * intensity})`);
-          gradient.addColorStop(1, `hsla(175, 80%, 50%, 0)`);
+          gradient.addColorStop(1, `hsla(175, 20%, 50%, 0)`);
           ctx.beginPath();
           ctx.arc(path[i].x, path[i].y, glowRadius, 0, Math.PI * 2);
           ctx.fillStyle = gradient;
           ctx.fill();
         }
-      }
-
-      // Draw bright pulse edge at fill level
-      ctx.beginPath();
-      let started = false;
-      for (let i = 0; i < path.length; i++) {
-        const frac = cumDist[i] / totalLen;
-        // Draw bright edge at head position
-        if (headOnCable && Math.abs(frac - headPos) < 0.05) {
-          if (!started) {
-            ctx.moveTo(path[i].x, path[i].y);
-            started = true;
-          } else {
-            ctx.lineTo(path[i].x, path[i].y);
-          }
-        }
-      }
-      if (headOnCable && started) {
-        ctx.strokeStyle = "hsla(175, 100%, 90%, 0.4)";
-        ctx.lineWidth = 4;
-        ctx.lineCap = "round";
-        ctx.stroke();
-
-        ctx.strokeStyle = "hsla(180, 100%, 97%, 0.9)";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
       }
 
       // Cable end caps (flat cut ends)
