@@ -14,6 +14,8 @@ const ElectricCable = () => {
       canvas.width = canvas.offsetWidth * dpr;
       canvas.height = canvas.offsetHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
     };
     resize();
     window.addEventListener("resize", resize);
@@ -22,50 +24,19 @@ const ElectricCable = () => {
     const W = () => canvas.offsetWidth;
     const H = () => canvas.offsetHeight;
 
-    const getPath = (): { x: number; y: number }[] => {
+    const getPath = (t: number): { x: number; y: number }[] => {
       const w = W();
       const h = H();
       const points: { x: number; y: number }[] = [];
-
-      const cubicPoint = (
-        u: number,
-        p0: { x: number; y: number },
-        p1: { x: number; y: number },
-        p2: { x: number; y: number },
-        p3: { x: number; y: number }
-      ) => {
-        const inv = 1 - u;
-        const inv2 = inv * inv;
-        const inv3 = inv2 * inv;
-        const u2 = u * u;
-        const u3 = u2 * u;
-        return {
-          x: inv3 * p0.x + 3 * inv2 * u * p1.x + 3 * inv * u2 * p2.x + u3 * p3.x,
-          y: inv3 * p0.y + 3 * inv2 * u * p1.y + 3 * inv * u2 * p2.y + u3 * p3.y,
-        };
-      };
-
-      // Single broad valley with smooth rise, based on reference shape.
-      const p0 = { x: -0.06 * w, y: -0.1 * h };
-      const p1 = { x: 0.14 * w, y: 1.05 * h };
-      const p2 = { x: 0.48 * w, y: 1.2 * h };
-      const p3 = { x: 0.72 * w, y: 0.62 * h };
-
-      const p4 = { x: 0.86 * w, y: 0.28 * h };
-      const p5 = { x: 0.96 * w, y: 0.14 * h };
-      const p6 = { x: 1.05 * w, y: 0.18 * h };
-
-      const segmentSteps = 150;
-      for (let i = 0; i <= segmentSteps; i++) {
-        const u = i / segmentSteps;
-        points.push(cubicPoint(u, p0, p1, p2, p3));
+      const steps = 600;
+      for (let i = 0; i <= steps; i++) {
+        const frac = i / steps;
+        const x = frac * w;
+        const amplitude = h * 0.15;
+        const freq = 1.5;
+        const y = h / 2 + Math.sin(frac * Math.PI * freq - 0.5) * amplitude;
+        points.push({ x, y });
       }
-
-      for (let i = 1; i <= segmentSteps; i++) {
-        const u = i / segmentSteps;
-        points.push(cubicPoint(u, p3, p4, p5, p6));
-      }
-
       return points;
     };
 
@@ -81,9 +52,9 @@ const ElectricCable = () => {
     };
 
     let animId: number;
-    const pulseSpeed = 0.4; // fraction of path per second
-    const pulseLength = 0.18;
-    const glowLength = 0.25;
+    const snakeSpeed = 0.256; // cable lengths per second (matches original fill speed)
+    const segLen = 1.0; // snake body spans full cable length
+    const glowLength = 0.05;
     let startTime: number | null = null;
 
     const draw = (timestamp: number) => {
@@ -91,158 +62,103 @@ const ElectricCable = () => {
       const elapsed = (timestamp - startTime) / 1000;
       const w = W();
       const h = H();
-      const isDarkMode = Boolean(canvas.closest(".bg-nocturne") || document.documentElement.classList.contains("dark"));
-
-      const palette = isDarkMode
-        ? {
-            shadow: "rgba(0, 0, 0, 0.45)",
-            outer: "hsl(214, 26%, 36%)",
-            mid: "hsl(210, 30%, 46%)",
-            highlight: "hsla(205, 92%, 84%, 0.72)",
-            bottomShadow: "hsla(220, 32%, 8%, 0.5)",
-            ribbed: "hsla(206, 28%, 86%, 0.16)",
-            glow0: "hsla(181, 100%, 80%, 1)",
-            glow1: "hsla(186, 95%, 64%, 1)",
-            glow2: "hsla(192, 90%, 56%, 0)",
-            coreA: "hsla(183, 100%, 93%, 0.95)",
-            coreB: "hsla(188, 100%, 98%, 0.9)",
-            endCap: "hsl(212, 28%, 38%)",
-            spark0: "hsla(183, 100%, 95%, 1)",
-            spark1: "hsla(188, 95%, 68%, 1)",
-            spark2: "hsla(193, 90%, 52%, 0)",
-          }
-        : {
-            shadow: "rgba(0,0,0,0.25)",
-            outer: "hsl(210, 8%, 18%)",
-            mid: "hsl(210, 6%, 24%)",
-            highlight: "hsla(210, 5%, 38%, 0.6)",
-            bottomShadow: "hsla(210, 8%, 10%, 0.4)",
-            ribbed: "hsla(210, 5%, 15%, 0.15)",
-            glow0: "hsla(175, 100%, 75%, 1)",
-            glow1: "hsla(175, 90%, 60%, 1)",
-            glow2: "hsla(175, 80%, 50%, 0)",
-            coreA: "hsla(175, 100%, 90%, 0.9)",
-            coreB: "hsla(180, 100%, 97%, 0.8)",
-            endCap: "hsl(210, 6%, 20%)",
-            spark0: "hsla(175, 100%, 90%, 1)",
-            spark1: "hsla(175, 80%, 60%, 1)",
-            spark2: "hsla(175, 60%, 40%, 0)",
-          };
 
       ctx.clearRect(0, 0, w, h);
+      ctx.filter = "blur(0.8px)";
 
-      const path = getPath();
+      const path = getPath(elapsed);
       const cumDist = getCumulativeDist(path);
       const totalLen = cumDist[cumDist.length - 1];
 
-      // Pulse position (loops)
-      const pulseHead = ((elapsed * pulseSpeed) % 1.4) - 0.2;
+      // Snake animation: head moves charger→car, then tail follows charger→car, then loops.
+      const headPos = (elapsed * snakeSpeed) % (1 + segLen);
+      const tailPos = headPos - segLen;
+      const visibleHead = Math.min(headPos, 1);
+      const visibleTail = Math.max(tailPos, 0);
+      const headOnCable = headPos <= 1;
 
-      // Draw cable shadow
+      // Cable shadow
       ctx.beginPath();
       ctx.moveTo(path[0].x, path[0].y + 2);
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y + 2);
       }
-      ctx.strokeStyle = palette.shadow;
-      ctx.lineWidth = 10;
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.lineWidth = 4;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
+      ctx.miterLimit = 2;
       ctx.stroke();
 
-      // Draw cable outer (dark rubber)
+      // Cable outer
       ctx.beginPath();
       ctx.moveTo(path[0].x, path[0].y);
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y);
       }
-      ctx.strokeStyle = palette.outer;
-      ctx.lineWidth = 8;
+      ctx.strokeStyle = "hsl(210, 8%, 20%)";
+      ctx.lineWidth = 4;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
+      ctx.miterLimit = 2;
       ctx.stroke();
 
-      // Cable mid layer (dark grey rubber)
+      // Cable inner
       ctx.beginPath();
       ctx.moveTo(path[0].x, path[0].y);
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y);
       }
-      ctx.strokeStyle = palette.mid;
-      ctx.lineWidth = 6;
+      ctx.strokeStyle = "hsl(210, 6%, 28%)";
+      ctx.lineWidth = 2.5;
       ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.miterLimit = 2;
       ctx.stroke();
 
-      // Cable highlight (specular top edge for 3D look)
+      // Specular highlight
       ctx.beginPath();
-      ctx.moveTo(path[0].x, path[0].y - 5);
+      ctx.moveTo(path[0].x, path[0].y - 1.5);
       for (let i = 1; i < path.length; i++) {
-        ctx.lineTo(path[i].x, path[i].y - 5);
+        ctx.lineTo(path[i].x, path[i].y - 1.5);
       }
-      ctx.strokeStyle = palette.highlight;
-      ctx.lineWidth = 4;
+      ctx.strokeStyle = "hsla(210, 5%, 42%, 0.5)";
+      ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.stroke();
-
-      // Subtle bottom edge shadow for roundness
-      ctx.beginPath();
-      ctx.moveTo(path[0].x, path[0].y + 5);
-      for (let i = 1; i < path.length; i++) {
-        ctx.lineTo(path[i].x, path[i].y + 5);
-      }
-      ctx.strokeStyle = palette.bottomShadow;
-      ctx.lineWidth = 4;
-      ctx.lineCap = "round";
-      ctx.stroke();
-
-      // Ribbed texture lines across the cable
-      for (let i = 0; i < path.length; i += 6) {
-        const frac = cumDist[i] / totalLen;
-        // Get tangent direction
-        const next = Math.min(i + 1, path.length - 1);
-        const prev = Math.max(i - 1, 0);
-        const dx = path[next].x - path[prev].x;
-        const dy = path[next].y - path[prev].y;
-        const len = Math.sqrt(dx * dx + dy * dy) || 1;
-        // Normal perpendicular to tangent
-        const nx = -dy / len;
-        const ny = dx / len;
-
-        ctx.beginPath();
-        ctx.moveTo(path[i].x + nx * 3, path[i].y + ny * 3);
-        ctx.lineTo(path[i].x - nx * 3, path[i].y - ny * 3);
-        ctx.strokeStyle = palette.ribbed;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
 
       // Draw glow layer
       for (let i = 0; i < path.length; i++) {
         const frac = cumDist[i] / totalLen;
-        const dist = frac - pulseHead;
 
-        // Main pulse glow
-        if (dist > -glowLength && dist < pulseLength) {
+        // Snake: lit segment between visibleTail and visibleHead
+        if (frac >= visibleTail && frac <= visibleHead) {
+          const distFromHead = visibleHead - frac;
+          const distFromTail = frac - visibleTail;
           let intensity: number;
-          if (dist < 0) {
-            // Trailing glow
-            intensity = 1 - Math.abs(dist) / glowLength;
-            intensity = intensity * intensity * 0.6;
-          } else {
-            // Leading edge
-            intensity = 1 - dist / pulseLength;
+
+          if (headOnCable && distFromHead < glowLength) {
+            // Bright leading edge (same as before)
+            intensity = 1 - (distFromHead / glowLength);
             intensity = intensity * intensity;
+          } else {
+            // Body
+            intensity = 0.6;
+          }
+          // Fade tail as it slides along the cable
+          if (tailPos >= 0 && distFromTail < glowLength) {
+            intensity *= distFromTail / glowLength;
           }
 
           // Outer glow
-          const glowRadius = 10 * intensity;
+          const glowRadius = 6 * intensity;
           const gradient = ctx.createRadialGradient(
             path[i].x, path[i].y, 0,
             path[i].x, path[i].y, glowRadius
           );
-          gradient.addColorStop(0, palette.glow0.replace("1)", `${0.8 * intensity})`));
-          gradient.addColorStop(0.4, palette.glow1.replace("1)", `${0.4 * intensity})`));
-          gradient.addColorStop(1, palette.glow2);
+          gradient.addColorStop(0, `hsla(175, 100%, 75%, ${0.4 * intensity})`);
+          gradient.addColorStop(0.4, `hsla(175, 90%, 60%, ${0.15 * intensity})`);
+          gradient.addColorStop(1, `hsla(175, 80%, 50%, 0)`);
           ctx.beginPath();
           ctx.arc(path[i].x, path[i].y, glowRadius, 0, Math.PI * 2);
           ctx.fillStyle = gradient;
@@ -250,13 +166,13 @@ const ElectricCable = () => {
         }
       }
 
-      // Draw bright pulse core
+      // Draw bright pulse edge at fill level
       ctx.beginPath();
       let started = false;
       for (let i = 0; i < path.length; i++) {
         const frac = cumDist[i] / totalLen;
-        const dist = frac - pulseHead;
-        if (dist > -0.02 && dist < pulseLength * 0.6) {
+        // Draw bright edge at head position
+        if (headOnCable && Math.abs(frac - headPos) < 0.05) {
           if (!started) {
             ctx.moveTo(path[i].x, path[i].y);
             started = true;
@@ -265,15 +181,14 @@ const ElectricCable = () => {
           }
         }
       }
-      if (started) {
-        ctx.strokeStyle = palette.coreA;
-        ctx.lineWidth = 2;
+      if (headOnCable && started) {
+        ctx.strokeStyle = "hsla(175, 100%, 90%, 0.4)";
+        ctx.lineWidth = 4;
         ctx.lineCap = "round";
         ctx.stroke();
 
-        // Even brighter core
-        ctx.strokeStyle = palette.coreB;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "hsla(180, 100%, 97%, 0.9)";
+        ctx.lineWidth = 1.5;
         ctx.stroke();
       }
 
@@ -287,25 +202,26 @@ const ElectricCable = () => {
         ctx.beginPath();
         ctx.moveTo(pt.x + nx * 4, pt.y + ny * 4);
         ctx.lineTo(pt.x - nx * 4, pt.y - ny * 4);
-        ctx.strokeStyle = palette.endCap;
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = "hsl(210, 6%, 20%)";
+        ctx.lineWidth = 2;
         ctx.lineCap = "round";
         ctx.stroke();
       };
       drawEndCap(path[0], path[1]);
       drawEndCap(path[path.length - 1], path[path.length - 2]);
 
-      // End spark
-      const endPulse = pulseHead - 1;
-      if (endPulse > -0.05 && endPulse < 0.15) {
-        const sparkIntensity = 1 - Math.abs(endPulse) / 0.15;
+      // End spark as head reaches the car end
+      if (headPos > 0.95 && headPos < 1.1) {
+        const sparkIntensity = headPos <= 1.0
+          ? (headPos - 0.95) / 0.05
+          : Math.max(0, 1 - (headPos - 1.0) / 0.1);
         const last = path[path.length - 1];
         const sparkGrad = ctx.createRadialGradient(
           last.x, last.y, 0, last.x, last.y, 15 * sparkIntensity
         );
-        sparkGrad.addColorStop(0, palette.spark0.replace("1)", `${sparkIntensity})`));
-        sparkGrad.addColorStop(0.5, palette.spark1.replace("1)", `${sparkIntensity * 0.5})`));
-        sparkGrad.addColorStop(1, palette.spark2);
+        sparkGrad.addColorStop(0, `hsla(175, 100%, 90%, ${sparkIntensity * 0.6})`);
+        sparkGrad.addColorStop(0.5, `hsla(175, 80%, 60%, ${sparkIntensity * 0.3})`);
+        sparkGrad.addColorStop(1, `hsla(175, 60%, 40%, 0)`);
         ctx.beginPath();
         ctx.arc(last.x, last.y, 15 * sparkIntensity, 0, Math.PI * 2);
         ctx.fillStyle = sparkGrad;
@@ -323,11 +239,11 @@ const ElectricCable = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center w-full overflow-visible">
+    <div className="flex min-h-screen items-center justify-center bg-cable-bg">
       <canvas
         ref={canvasRef}
-        className="w-full"
-        style={{ height: 50 }}
+        className="w-[200px] max-w-xl"
+        style={{ height: 100 }}
       />
     </div>
   );
