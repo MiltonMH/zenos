@@ -251,7 +251,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="absolute bottom-12 max-h-sm:bottom-10 left-0 right-0 text-center"
+            className="absolute bottom-12 max-h-sm:bottom-10 left-0 right-0 text-center z-20"
           >
             <motion.span
               key={power}

@@ -91,7 +91,7 @@ export default function Index() {
 
   return (
     <div
-      className={cn("min-h-screen flex flex-col", current.style)}
+      className={cn("min-h-dvh flex flex-col", current.style)}
       style={current.image ? {
         backgroundImage: `url(${current.image})`,
         backgroundSize: "cover",
@@ -99,7 +99,7 @@ export default function Index() {
       } : undefined}
     >
       {/* Main Card Container */}
-      <div className="flex-1 flex flex-col px-5 pt-8 pb-40">
+      <div className="flex-1 flex flex-col px-5 safe-top pb-40">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
