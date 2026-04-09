@@ -53,7 +53,7 @@ const ElectricCable = () => {
 
     let animId: number;
     const snakeSpeed = 0.256; // cable lengths per second (matches original fill speed)
-    const segLen = 1.0; // snake body spans full cable length
+    const segLen = 0.7; // snake body spans full cable length
     const glowLength = 0.05;
     let startTime: number | null = null;
 

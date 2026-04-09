@@ -32,12 +32,12 @@ export function MonthStatsSlide() {
   };
 
   return (
-    <div className="h-full flex flex-col items-center px-6 pt-4">
+    <div className="h-full flex flex-col items-center px-6 pt-2">
       {/* Title */}
-      <h2 className="text-xl font-semibold text-foreground mb-4">{getPeriodLabel()}</h2>
+      <h2 className="text-xl font-semibold text-foreground mb-2">{getPeriodLabel()}</h2>
 
       {/* Period Toggle */}
-      <div className="pill-toggle mb-8">
+      <div className="pill-toggle mb-4">
         {periods.map((p) => (
           <button
             key={p}

@@ -64,7 +64,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
   const hidePowerIndicator = mode === "charging" && (batteryLevel ?? 0) >= 100;
 
   return (
-    <div className="relative flex flex-col items-center h-full pb-9">
+    <div className="relative flex flex-col items-center h-full pb-2">
       {/* Cable background for charging mode */}
       {mode === "charging" && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -245,25 +245,22 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
       </div>
 
       {!hidePowerIndicator && (
-        <>
-          {/* Power indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="absolute bottom-12 max-h-sm:bottom-10 left-0 right-0 text-center z-20"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="relative z-20 text-center shrink-0 pb-1"
+        >
+          <motion.span
+            key={power}
+            initial={{ opacity: 0.5, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-3xl max-h-sm:text-[1.75rem] font-semibold text-foreground"
           >
-            <motion.span
-              key={power}
-              initial={{ opacity: 0.5, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-3xl max-h-sm:text-[1.75rem] font-semibold text-foreground"
-            >
-              {power.toFixed(1)}
-            </motion.span>
-            <span className="text-lg max-h-sm:text-base text-[#404040] ml-1">kW</span>
-          </motion.div>
-        </>
+            {power.toFixed(1)}
+          </motion.span>
+          <span className="text-lg max-h-sm:text-base text-[#404040] ml-1">kW</span>
+        </motion.div>
       )}
     </div>
   );

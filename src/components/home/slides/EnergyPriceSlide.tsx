@@ -71,12 +71,12 @@ export function EnergyPriceSlide() {
   const formatHour = (hour: number) => `${hour.toString().padStart(2, '0')}:00`;
 
   return (
-    <div className="h-full flex flex-col items-center px-4 pt-4">
+    <div className="h-full flex flex-col items-center px-4 pt-2 overflow-y-auto">
       {/* Title */}
-      <h2 className="text-lg font-semibold text-foreground mb-3">Elpris idag</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-2">Elpris idag</h2>
 
       {/* Tab Toggle */}
-      <div className="pill-toggle mb-4">
+      <div className="pill-toggle mb-3">
         <button
           onClick={() => setTab("today")}
           className={`pill-toggle-item relative ${tab === "today" ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
@@ -106,7 +106,7 @@ export function EnergyPriceSlide() {
       </div>
 
       {/* Price Summary Cards */}
-      <div className="flex gap-2 w-full max-w-[280px] mb-4">
+      <div className="flex gap-2 w-full max-w-[280px] mb-3">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
