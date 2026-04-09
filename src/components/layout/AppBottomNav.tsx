@@ -29,43 +29,6 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
       <div
         className="relative glass-main !py-2"
       >
-        {/* Animated gradient blob background */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse 80% 60% at 50% 120%, rgba(168, 212, 207, 0.3), transparent)",
-          }}
-          animate={{
-            background: [
-              "radial-gradient(ellipse 80% 60% at 30% 120%, rgba(168, 212, 207, 0.3), transparent)",
-              "radial-gradient(ellipse 80% 60% at 70% 120%, rgba(168, 212, 207, 0.3), transparent)",
-              "radial-gradient(ellipse 80% 60% at 30% 120%, rgba(168, 212, 207, 0.3), transparent)",
-            ],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-
-        {/* Subtle shimmer effect */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none opacity-30"
-          style={{
-            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%)",
-          }}
-          animate={{
-            x: ["-100%", "200%"],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            repeatDelay: 3,
-          }}
-        />
-
         <div className="flex items-center justify-around relative z-10">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
@@ -80,7 +43,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
                 {isActive && (
                   <motion.div
                     layoutId="activeNavTab"
-                    className="absolute inset-0 rounded-full overflow-hidden backdrop-blur-md"
+                    className="absolute inset-0 rounded-full backdrop-blur-md"
                     style={{
                       background: "linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 100%)",
                       boxShadow: "0 4px 15px -3px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.5)",
@@ -92,23 +55,7 @@ export function AppBottomNav({ activeTab, onTabChange }: AppBottomNavProps) {
                       damping: 25,
                       mass: 0.8,
                     }}
-                  >
-                    {/* Liquid inner glow */}
-                    <motion.div
-                      className="absolute inset-0"
-                      style={{
-                        background: "radial-gradient(circle at 50% 0%, rgba(168, 212, 207, 0.4), transparent 70%)",
-                      }}
-                      animate={{
-                        opacity: [0.5, 0.8, 0.5],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  </motion.div>
+                  />
                 )}
                 <Icon
                   className={cn(

@@ -217,7 +217,7 @@ const ElectricCable = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cable-bg">
+    <div className="flex w-full items-center justify-center">
       <canvas
         ref={canvasRef}
         className="w-[200px] max-w-xl"

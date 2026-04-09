@@ -169,8 +169,8 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, isFrosty = false,
       className={cn(
         "relative flex flex-col items-center justify-center gap-1.5 rounded-2xl max-h-sm:rounded-sm overflow-hidden",
         isFrosty
-          ? "bg-white/45 backdrop-blur-xl border border-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_8px_20px_rgba(0,0,0,0.06)]"
-          : "bg-white/30 border border-white/40",
+          ? "bg-primary/10 backdrop-blur-xl border border-primary/25 shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+          : "bg-primary/10 border border-primary/25",
         "w-[98px] h-[100px] max-h-sm:w-[76px] max-h-sm:h-[80px] min-w-0 p-0"
       )}
       style={{ maxWidth: '100%', maxHeight: '100%' }}

@@ -64,10 +64,10 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
   const hidePowerIndicator = mode === "charging" && (batteryLevel ?? 0) >= 100;
 
   return (
-    <div className="relative flex flex-col items-center h-full pb-2">
+    <div className="relative flex flex-col items-center h-full pb-2 overflow-hidden">
       {/* Cable background for charging mode */}
       {mode === "charging" && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[100px] flex items-center justify-center pointer-events-none overflow-hidden">
           <ElectricCable />
         </div>
       )}
