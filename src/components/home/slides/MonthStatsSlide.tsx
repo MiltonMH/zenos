@@ -47,7 +47,7 @@ export function MonthStatsSlide() {
             {period === p && (
               <motion.span
                 layoutId="month-stats-period-indicator"
-                className="absolute inset-0 rounded-full bg-white shadow-sm"
+                className="absolute inset-0 rounded-full bg-primary/20 border border-primary/35 shadow-sm"
                 transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
               />
             )}

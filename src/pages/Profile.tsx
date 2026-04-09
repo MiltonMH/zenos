@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Crown, Zap, Car, Wrench, Pencil, User } from "lucide-react";
+import { Mail, Crown, Wrench, Pencil, User } from "lucide-react";
+import lightningIcon from "@/assets/Lightning_Vector1.svg";
+import { CarIcon } from "@/components/icons/CarIcon";
 import { ProfileInfoCard } from "@/components/profile/ProfileInfoCard";
 import { Button } from "@/components/ui/button";
 import { EditProfile } from "./EditProfile";
@@ -21,8 +23,8 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] as const }
   },
@@ -53,13 +55,13 @@ export default function Profile({ selectedBackground, onBackgroundChange }: Prof
         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-3 ring-2 ring-white/50 shadow-lg">
           <User className="w-10 h-10 text-primary/70" />
         </div>
-        
+
         <h1 className="text-xl font-semibold text-foreground">{mockUser.name}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">{mockUser.carModel}</p>
       </motion.div>
 
       {/* Information Cards */}
-      <motion.div 
+      <motion.div
         className="flex-1 space-y-2.5 overflow-y-auto scrollbar-hide"
         variants={containerVariants}
         initial="hidden"
@@ -92,7 +94,7 @@ export default function Profile({ selectedBackground, onBackgroundChange }: Prof
 
         <motion.div variants={itemVariants}>
           <ProfileInfoCard
-            icon={Zap}
+            icon={lightningIcon}
             label="Laddbox"
             value={mockUser.charger.model}
             secondaryValue={`Version ${mockUser.charger.version}`}
@@ -101,7 +103,7 @@ export default function Profile({ selectedBackground, onBackgroundChange }: Prof
 
         <motion.div variants={itemVariants}>
           <ProfileInfoCard
-            icon={Car}
+            icon={CarIcon}
             label="Bil"
             value={mockUser.carModel}
           />

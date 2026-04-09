@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface ProfileInfoCardProps {
-  icon: LucideIcon;
+  icon: LucideIcon | string;
   label: string;
   value: string;
   secondaryValue?: string;
@@ -30,7 +30,11 @@ export function ProfileInfoCard({
   return (
     <div className="glass p-3.5 rounded-2xl flex items-center gap-3">
       <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 shrink-0">
-        <Icon className="w-5 h-5 text-primary" />
+        {typeof Icon === "string" ? (
+          <img src={Icon} alt="" className="w-5 h-5" />
+        ) : (
+          <Icon className="w-5 h-5 text-primary" />
+        )}
       </div>
 
       <div className="flex-1 min-w-0">
