@@ -62,23 +62,31 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
   const config = modeConfig[mode];
   const power = useDynamicPower(config.minPower, config.maxPower);
   const hidePowerIndicator = mode === "charging" && (batteryLevel ?? 0) >= 100;
+  const usesSharedCable = mode === "charging" || mode === "v2h" || mode === "v2g";
 
   return (
     <div className="relative flex flex-col items-center h-full pb-2 overflow-hidden">
-      {/* Cable background for charging mode */}
-      {mode === "charging" && (
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[100px] flex items-center justify-center pointer-events-none overflow-hidden">
-          <ElectricCable />
+      {/* Shared cable background for active energy transfer modes */}
+      {usesSharedCable && (
+        <div
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[100px] flex items-center justify-center pointer-events-none overflow-hidden"
+          style={mode === "v2h"
+            ? { WebkitMaskImage: "linear-gradient(to right, black 65%, transparent 95%)", maskImage: "linear-gradient(to right, black 65%, transparent 95%)" }
+            : mode === "v2g"
+            ? { WebkitMaskImage: "linear-gradient(to right, black 85%, transparent 100%)", maskImage: "linear-gradient(to right, black 70%, transparent 100%)" }
+            : undefined}
+        >
+          <ElectricCable mode={mode} fullWidth={mode === "v2h" || mode === "v2g"} />
         </div>
       )}
 
       {/* Energy flow visualization */}
-      <div className={`flex-1 min-h-0 flex items-center gap-4 w-full relative z-10 ${(mode === "charging" || mode === "v2h" || mode === "v2g") ? (mode === "charging" ? "max-w-none justify-between -mr-6 pr-0" : "max-w-none justify-between pr-2") : "max-w-xs justify-center"}`}>
+      <div className={`flex-1 min-h-0 flex items-center gap-4 w-full relative z-10 ${usesSharedCable ? "max-w-none justify-between -mr-6 pr-0" : "max-w-xs justify-center"}`}>
         {/* Source */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`flex flex-col gap-2 relative z-10 ${(mode === "v2h" || mode === "v2g") ? "items-start" : "items-center"}`}
+          className="flex flex-col gap-2 relative z-10 items-center"
         >
           {mode === "charging" ? (
             <div className="relative">
@@ -109,96 +117,13 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
         </motion.div>
 
         {/* Spacer between source and destination */}
-        <div className="flex-1 flex items-center justify-center relative h-8 mx-2" style={{ overflow: 'visible' }}>
-          {mode === "v2h" ? (
-            <>
-              {/* Bent V2H cable, extending behind both car and house */}
-              <svg
-                className="absolute -left-16 -right-16 top-1/2 h-8 -translate-y-1/2"
-                viewBox="0 0 340 32"
-                preserveAspectRatio="none"
-                style={{ zIndex: 0, overflow: "visible" }}
-              >
-                <path
-                  d="M 0 14 C 58 30, 122 30, 170 16 C 220 2, 286 2, 340 16"
-                  stroke="rgba(29, 143, 130, 0.22)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              </svg>
-              <svg
-                className="absolute -left-16 -right-16 top-1/2 h-8 -translate-y-1/2"
-                viewBox="0 0 340 32"
-                preserveAspectRatio="none"
-                style={{ zIndex: 0, overflow: "visible" }}
-              >
-                <defs>
-                  <linearGradient id="v2h-cable-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="rgba(29,143,130,0.15)" />
-                    <stop offset="45%" stopColor="#1D8F82" />
-                    <stop offset="100%" stopColor="rgba(29,143,130,0.45)" />
-                  </linearGradient>
-                </defs>
-                <motion.path
-                  d="M 0 14 C 58 30, 122 30, 170 16 C 220 2, 286 2, 340 16"
-                  stroke="url(#v2h-cable-gradient)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  fill="none"
-                  style={{ filter: "drop-shadow(0 0 8px rgba(29,143,130,0.5))" }}
-                  animate={{ pathLength: [0, 1, 1], opacity: [0.25, 0.75, 0.75] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "linear",
-                    times: [0, 0.92, 1],
-                  }}
-                />
-              </svg>
-            </>
-          ) : mode !== "charging" ? (
-            <>
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-4 h-4 rounded-full brightness-[1.2] saturate-110"
-                  style={{ backgroundColor: config.color }}
-                  initial={{ x: "-100%", opacity: 0.5, scale: 0.9 }}
-                  animate={{
-                    x: ["-100%", "200%"],
-                    opacity: [0.5, 1, 1, 0.5],
-                    scale: [0.9, 1.08, 1.08, 0.9],
-                    boxShadow: [
-                      `0 0 4px 1px ${config.color}33, 0 0 6px 1px rgba(255,255,255,0.28)`,
-                      `0 0 16px 3px ${config.color}66, 0 0 10px 2px rgba(255,255,255,0.46)`,
-                      `0 0 16px 3px ${config.color}66, 0 0 10px 2px rgba(255,255,255,0.46)`,
-                      `0 0 4px 1px ${config.color}33, 0 0 6px 1px rgba(255,255,255,0.28)`,
-                    ],
-                  }}
-                  transition={{
-                    duration: 1.25,
-                    repeat: Infinity,
-                    delay: i * 0.3,
-                    ease: "linear",
-                    times: [0, 0.12, 0.82, 1],
-                  }}
-                />
-              ))}
-              {/* Track line */}
-              <div
-                className="absolute inset-x-0 h-0.5 rounded-full opacity-20"
-                style={{ backgroundColor: config.color }}
-              />
-            </>
-          ) : null}
-        </div>
+        <div className="flex-1 flex items-center justify-center relative h-8 mx-2" style={{ overflow: 'visible' }} />
 
         {/* Destination */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`flex flex-col gap-2 relative z-10 ${mode === "charging" ? "items-end ml-auto" : "items-center"}`}
+          className={`flex flex-col gap-2 relative z-10 ${usesSharedCable ? "items-end ml-auto" : "items-center"}`}
         >
           <motion.div
             animate={mode === "charging" ? undefined : {

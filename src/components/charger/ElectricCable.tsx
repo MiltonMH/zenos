@@ -1,6 +1,13 @@
 import { useEffect, useRef } from "react";
 
-const ElectricCable = () => {
+type CableMode = "charging" | "v2h" | "v2g";
+
+interface ElectricCableProps {
+  mode?: CableMode;
+  fullWidth?: boolean;
+}
+
+const ElectricCable = ({ mode = "charging", fullWidth = false }: ElectricCableProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -32,9 +39,24 @@ const ElectricCable = () => {
       for (let i = 0; i <= steps; i++) {
         const frac = i / steps;
         const x = frac * w;
-        const amplitude = h * 0.15;
-        const freq = 1.5;
-        const y = h / 2 + Math.sin(frac * Math.PI * freq - 0.5) * amplitude;
+        let y: number;
+
+        if (mode === "v2h") {
+          // Arc upward in middle, right end lands above center (behind house mid-body)
+          // frac=0 → center | frac=0.5 → high arc | frac=1 → h*0.4 (above center, behind house)
+          y = h * 0.5 - Math.sin(frac * Math.PI) * h * 0.35 - frac * h * 0.1;
+        } else if (mode === "v2g") {
+          // Catenary sag (like a real power line): starts above center, sags down in middle,
+          // then rises to near the top of the canvas where the tower arm sits
+          // frac=0 → above center-left | frac≈0.5 → sags toward center | frac=1 → top (tower arm)
+          y = h * 0.35 + Math.sin(frac * Math.PI) * h * 0.3 - frac * h * 0.35;
+        } else {
+          // Original charging sine wave
+          const amplitude = h * 0.15;
+          const freq = 1.5;
+          y = h / 2 + Math.sin(frac * Math.PI * freq - 0.5) * amplitude;
+        }
+
         points.push({ x, y });
       }
       return points;
@@ -52,6 +74,7 @@ const ElectricCable = () => {
     };
 
     let animId: number;
+    const cableOpacity = 0.5;
     const snakeSpeed = 0.256; // cable lengths per second (matches original fill speed)
     const segLen = 0.7; // snake body spans full cable length
     const glowLength = 0.05;
@@ -64,6 +87,8 @@ const ElectricCable = () => {
       const h = H();
 
       ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      ctx.globalAlpha = cableOpacity;
       ctx.filter = "blur(0.8px)";
 
       const path = getPath(elapsed);
@@ -96,7 +121,7 @@ const ElectricCable = () => {
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y);
       }
-      ctx.strokeStyle = "hsl(65 0.9% 77.1% / 0.8)";
+      ctx.strokeStyle = "hsl(65 0.9% 77.1% / 0.4)";
       ctx.lineWidth = 4;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
@@ -109,7 +134,7 @@ const ElectricCable = () => {
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y);
       }
-      ctx.strokeStyle = "hsl(65 0.9% 77.1%)";
+      ctx.strokeStyle = "hsl(65 0.1% 77.1%)";
       ctx.lineWidth = 2.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
@@ -122,7 +147,7 @@ const ElectricCable = () => {
       for (let i = 1; i < path.length; i++) {
         ctx.lineTo(path[i].x, path[i].y - 1.5);
       }
-      ctx.strokeStyle = "hsla(210, 5%, 42%, 0.5)";
+      ctx.strokeStyle = "hsla(210, 5%, 42%, 0.25)";
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -206,6 +231,8 @@ const ElectricCable = () => {
         ctx.fill();
       }
 
+      ctx.restore();
+
       animId = requestAnimationFrame(draw);
     };
 
@@ -214,13 +241,13 @@ const ElectricCable = () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [mode]);
 
   return (
     <div className="flex w-full items-center justify-center">
       <canvas
         ref={canvasRef}
-        className="w-[200px] max-w-xl"
+        className={fullWidth ? "w-full" : "w-[200px] max-w-xl"}
         style={{ height: 100 }}
       />
     </div>
