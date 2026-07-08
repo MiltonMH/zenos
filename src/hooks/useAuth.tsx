@@ -17,6 +17,7 @@ import {
   validateCredentials,
   writeSsoSession,
 } from "@/lib/auth-config";
+import { getLoginLanguage, getLoginTexts } from "@/lib/login-i18n";
 import { fetchAuthProviders } from "@/lib/numiz-api";
 import {
   buildAppleAuthUrl,
@@ -80,9 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const startSsoLogin = useCallback(async (provider: SsoProvider) => {
     const providers = await fetchAuthProviders();
     const clientId = providers[provider]?.client_id;
+    const i18n = getLoginTexts(getLoginLanguage());
 
     if (!clientId) {
-      throw new Error("Inloggning via denna leverantör är inte tillgänglig");
+      throw new Error(i18n.providerNotAvailable);
     }
 
     const state = generateOAuthState();

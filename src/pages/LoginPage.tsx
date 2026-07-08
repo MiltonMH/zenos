@@ -8,21 +8,23 @@ import { Label } from "@/components/ui/label";
 import { LoginBoltHero } from "@/components/auth/LoginBoltHero";
 import { SsoButton } from "@/components/auth/SsoButton";
 import { useAuth } from "@/hooks/useAuth";
-import { fetchAuthProviders } from "@/lib/numiz-api";
 import type { SsoProvider } from "@/lib/auth-config";
+import { getLoginLanguage, getLoginTexts } from "@/lib/login-i18n";
+import { fetchAuthProviders } from "@/lib/numiz-api";
+
+
+const DEFAULT_SSO_PROVIDERS = { google: false, apple: false };
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading, login, startSsoLogin } = useAuth();
+  const i18n = getLoginTexts(getLoginLanguage());
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [enabledProviders, setEnabledProviders] = useState<Record<SsoProvider, boolean>>({
-    google: false,
-    apple: false,
-  });
+  const [enabledProviders, setEnabledProviders] = useState(DEFAULT_SSO_PROVIDERS);
   const [ssoLoading, setSsoLoading] = useState<SsoProvider | null>(null);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function LoginPage() {
         });
       })
       .catch(() => {
-        setEnabledProviders({ google: false, apple: false });
+        setEnabledProviders(DEFAULT_SSO_PROVIDERS);
       });
   }, []);
 
@@ -55,7 +57,7 @@ export default function LoginPage() {
     if (success) {
       navigate("/", { replace: true });
     } else {
-      setError("Felaktigt e-post eller lösenord");
+      setError(i18n.invalidCredentials);
     }
 
     setLoading(false);
@@ -68,8 +70,7 @@ export default function LoginPage() {
     try {
       await startSsoLogin(provider);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Kunde inte starta inloggningen";
+      const message = err instanceof Error ? err.message : i18n.ssoStartFailed;
       setError(message);
       setSsoLoading(null);
     }
@@ -109,14 +110,14 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                E-post
+                {i18n.email}
               </Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="namn@foretag.se"
+                placeholder={i18n.emailPlaceholder}
                 required
                 autoComplete="email"
                 className="h-11"
@@ -125,7 +126,7 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">
-                Lösenord
+                {i18n.password}
               </Label>
               <div className="relative">
                 <Input
@@ -133,7 +134,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder={i18n.passwordPlaceholder}
                   required
                   autoComplete="current-password"
                   className="h-11 pr-11"
@@ -143,7 +144,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword((v) => !v)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   tabIndex={-1}
-                  aria-label={showPassword ? "Dölj lösenord" : "Visa lösenord"}
+                  aria-label={showPassword ? i18n.hidePassword : i18n.showPassword}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -169,10 +170,10 @@ export default function LoginPage() {
               {loading ? (
                 <span className="flex items-center gap-2.5">
                   <span className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                  Loggar in…
+                  {i18n.signingIn}
                 </span>
               ) : (
-                "Logga in"
+                i18n.signIn
               )}
             </Button>
 
@@ -181,21 +182,21 @@ export default function LoginPage() {
                 <span className="w-full border-t border-border/70" />
               </div>
               <div className="relative flex justify-center text-xs uppercase tracking-wide">
-                <span className="bg-card px-3 text-muted-foreground">eller</span>
+                <span className="bg-card px-3 text-muted-foreground">{i18n.or}</span>
               </div>
             </div>
 
             <div className="space-y-3">
               <SsoButton
                 provider="google"
-                label="Fortsätt med Google"
+                label={i18n.continueWithGoogle}
                 onClick={() => handleSsoLogin("google")}
                 disabled={!enabledProviders.google}
                 loading={ssoLoading === "google"}
               />
               <SsoButton
                 provider="apple"
-                label="Fortsätt med Apple"
+                label={i18n.continueWithApple}
                 onClick={() => handleSsoLogin("apple")}
                 disabled={!enabledProviders.apple}
                 loading={ssoLoading === "apple"}
@@ -205,7 +206,7 @@ export default function LoginPage() {
         </motion.div>
 
         <p className="text-[11px] text-muted-foreground text-center mt-6 tracking-wide">
-          Kontakta Zenion för att få ett konto
+          {i18n.footer}
         </p>
       </motion.div>
     </div>
