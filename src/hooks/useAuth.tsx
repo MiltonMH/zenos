@@ -8,17 +8,23 @@ import {
   type ReactNode,
 } from "react";
 import {
-  AUTH_STORAGE_KEY,
+  clearBasicSession,
   clearSsoSession,
-  hasHardcodedAuth,
+  isBasicSessionAccessValid,
+  readBasicSession,
   readSsoSession,
   type SsoProvider,
   type SsoSession,
-  validateCredentials,
+  writeBasicSession,
   writeSsoSession,
 } from "@/lib/auth-config";
 import { getLoginLanguage, getLoginTexts } from "@/lib/login-i18n";
-import { fetchAuthProviders } from "@/lib/numiz-api";
+import {
+  fetchAuthProviders,
+  loginResponseToBasicSession,
+  loginWithBasicAuth,
+  refreshBasicAuth,
+} from "@/lib/numiz-api";
 import {
   buildAppleAuthUrl,
   buildGoogleAuthUrl,
@@ -30,7 +36,7 @@ import {
 interface AuthContextValue {
   isAuthenticated: boolean;
   loading: boolean;
-  login: (email: string, password: string) => boolean;
+  login: (email: string, password: string) => Promise<void>;
   loginWithSso: (session: SsoSession) => void;
   startSsoLogin: (provider: SsoProvider) => Promise<void>;
   signOut: () => void;
@@ -38,8 +44,22 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function isSessionAuthenticated(): boolean {
-  return hasHardcodedAuth() || readSsoSession() !== null;
+async function restoreBasicSession(): Promise<boolean> {
+  const session = readBasicSession();
+  if (!session) return false;
+
+  if (isBasicSessionAccessValid(session)) {
+    return true;
+  }
+
+  try {
+    const response = await refreshBasicAuth(session.refreshToken);
+    writeBasicSession(loginResponseToBasicSession(response));
+    return true;
+  } catch {
+    clearBasicSession();
+    return false;
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -47,29 +67,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setIsAuthenticated(isSessionAuthenticated());
-    setLoading(false);
+    let cancelled = false;
+
+    async function bootstrap() {
+      const basicAuthenticated = await restoreBasicSession();
+      if (cancelled) return;
+
+      if (basicAuthenticated || readSsoSession() !== null) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+
+      setLoading(false);
+    }
+
+    bootstrap();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const login = useCallback((email: string, password: string) => {
-    if (!validateCredentials(email, password)) {
-      return false;
-    }
+  const login = useCallback(async (email: string, password: string) => {
+    const response = await loginWithBasicAuth(email, password);
 
     try {
       clearSsoSession();
-      localStorage.setItem(AUTH_STORAGE_KEY, "true");
+      writeBasicSession(loginResponseToBasicSession(response));
     } catch {
       // Continue even if storage fails in restricted environments.
     }
 
     setIsAuthenticated(true);
-    return true;
   }, []);
 
   const loginWithSso = useCallback((session: SsoSession) => {
     try {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+      clearBasicSession();
       writeSsoSession(session);
     } catch {
       // Continue even if storage fails in restricted environments.
@@ -101,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(() => {
     try {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+      clearBasicSession();
       clearSsoSession();
     } catch {
       // Ignore storage errors on sign out.

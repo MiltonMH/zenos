@@ -48,19 +48,19 @@ export default function LoginPage() {
     return <Navigate to="/" replace />;
   }
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const success = login(email, password);
-    if (success) {
+    try {
+      await login(email, password);
       navigate("/", { replace: true });
-    } else {
+    } catch {
       setError(i18n.invalidCredentials);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleSsoLogin = async (provider: SsoProvider) => {

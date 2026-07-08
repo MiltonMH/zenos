@@ -1,8 +1,5 @@
-export const AUTH_STORAGE_KEY = "zenos-auth";
 export const SSO_SESSION_KEY = "zenos-sso-session";
-
-export const HARDCODED_EMAIL = "max@example.com";
-export const HARDCODED_PASSWORD = "zenos123";
+export const BASIC_SESSION_KEY = "zenos-basic-session";
 
 export type SsoProvider = "google" | "apple";
 
@@ -13,11 +10,12 @@ export interface SsoSession {
   expiresAt?: number;
 }
 
-export function validateCredentials(email: string, password: string): boolean {
-  return (
-    email.trim().toLowerCase() === HARDCODED_EMAIL.toLowerCase() &&
-    password === HARDCODED_PASSWORD
-  );
+export interface BasicAuthSession {
+  email: string;
+  accessToken: string;
+  refreshToken: string;
+  accessExpiresAt: number;
+  refreshExpiresAt: number;
 }
 
 export function readSsoSession(): SsoSession | null {
@@ -47,10 +45,33 @@ export function clearSsoSession(): void {
   localStorage.removeItem(SSO_SESSION_KEY);
 }
 
-export function hasHardcodedAuth(): boolean {
+export function readBasicSession(): BasicAuthSession | null {
   try {
-    return localStorage.getItem(AUTH_STORAGE_KEY) === "true";
+    const raw = localStorage.getItem(BASIC_SESSION_KEY);
+    if (!raw) return null;
+
+    const session = JSON.parse(raw) as BasicAuthSession;
+    if (!session.accessToken || !session.refreshToken || !session.email) return null;
+
+    if (Date.now() >= session.refreshExpiresAt) {
+      localStorage.removeItem(BASIC_SESSION_KEY);
+      return null;
+    }
+
+    return session;
   } catch {
-    return false;
+    return null;
   }
+}
+
+export function writeBasicSession(session: BasicAuthSession): void {
+  localStorage.setItem(BASIC_SESSION_KEY, JSON.stringify(session));
+}
+
+export function clearBasicSession(): void {
+  localStorage.removeItem(BASIC_SESSION_KEY);
+}
+
+export function isBasicSessionAccessValid(session: BasicAuthSession): boolean {
+  return Date.now() < session.accessExpiresAt;
 }

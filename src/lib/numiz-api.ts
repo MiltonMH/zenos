@@ -13,6 +13,18 @@ export interface AuthProvidersResponse {
   apple?: { client_id: string };
 }
 
+export interface JwtToken {
+  token: string;
+  type: string;
+  expiresAt: string;
+}
+
+export interface LoginResponse {
+  token: JwtToken;
+  refreshToken: JwtToken;
+  email: string;
+}
+
 interface ApiErrorBody {
   error?: string;
   message?: string;
@@ -60,6 +72,47 @@ async function numizFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
 export async function fetchAuthProviders(): Promise<AuthProvidersResponse> {
   return numizFetch<AuthProvidersResponse>("/auth/providers");
+}
+
+function encodeBasicAuth(email: string, password: string): string {
+  return btoa(`${email}:${password}`);
+}
+
+export async function loginWithBasicAuth(
+  email: string,
+  password: string,
+): Promise<LoginResponse> {
+  const response = await fetch(`${getNumizApiBase()}/auth/login`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${encodeBasicAuth(email.trim(), password)}`,
+    },
+  });
+
+  if (response.status === 401) {
+    throw new Error("INVALID_CREDENTIALS");
+  }
+
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+
+  return response.json() as Promise<LoginResponse>;
+}
+
+export async function refreshBasicAuth(refreshToken: string): Promise<LoginResponse> {
+  const params = new URLSearchParams({ refreshToken });
+  return numizFetch<LoginResponse>(`/auth/refresh?${params.toString()}`, { method: "POST" });
+}
+
+export function loginResponseToBasicSession(response: LoginResponse) {
+  return {
+    email: response.email,
+    accessToken: response.token.token,
+    refreshToken: response.refreshToken.token,
+    accessExpiresAt: new Date(response.token.expiresAt).getTime(),
+    refreshExpiresAt: new Date(response.refreshToken.expiresAt).getTime(),
+  };
 }
 
 function buildTokenExchangeUrl(path: string, code: string, redirectUri: string): string {
