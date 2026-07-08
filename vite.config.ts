@@ -7,9 +7,16 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 8090,
     hmr: {
       overlay: false,
+    },
+    proxy: {
+      "/numiz-api": {
+        target: process.env.VITE_NUMIZ_API_URL ?? "http://localhost:8080",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/numiz-api/, ""),
+      },
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),

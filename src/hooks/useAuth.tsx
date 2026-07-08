@@ -7,29 +7,47 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { AUTH_STORAGE_KEY, validateCredentials } from "@/lib/auth-config";
+import {
+  AUTH_STORAGE_KEY,
+  clearSsoSession,
+  hasHardcodedAuth,
+  readSsoSession,
+  type SsoProvider,
+  type SsoSession,
+  validateCredentials,
+  writeSsoSession,
+} from "@/lib/auth-config";
+import { fetchAuthProviders } from "@/lib/numiz-api";
+import {
+  buildAppleAuthUrl,
+  buildGoogleAuthUrl,
+  generateOAuthState,
+  getRedirectUri,
+  storeOAuthState,
+} from "@/lib/oauth";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
   loading: boolean;
   login: (email: string, password: string) => boolean;
+  loginWithSso: (session: SsoSession) => void;
+  startSsoLogin: (provider: SsoProvider) => Promise<void>;
   signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+function isSessionAuthenticated(): boolean {
+  return hasHardcodedAuth() || readSsoSession() !== null;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      setIsAuthenticated(localStorage.getItem(AUTH_STORAGE_KEY) === "true");
-    } catch {
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
-    }
+    setIsAuthenticated(isSessionAuthenticated());
+    setLoading(false);
   }, []);
 
   const login = useCallback((email: string, password: string) => {
@@ -38,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      clearSsoSession();
       localStorage.setItem(AUTH_STORAGE_KEY, "true");
     } catch {
       // Continue even if storage fails in restricted environments.
@@ -47,9 +66,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
+  const loginWithSso = useCallback((session: SsoSession) => {
+    try {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      writeSsoSession(session);
+    } catch {
+      // Continue even if storage fails in restricted environments.
+    }
+
+    setIsAuthenticated(true);
+  }, []);
+
+  const startSsoLogin = useCallback(async (provider: SsoProvider) => {
+    const providers = await fetchAuthProviders();
+    const clientId = providers[provider]?.client_id;
+
+    if (!clientId) {
+      throw new Error("Inloggning via denna leverantör är inte tillgänglig");
+    }
+
+    const state = generateOAuthState();
+    storeOAuthState(state);
+
+    const redirectUri = getRedirectUri(provider);
+    const authUrl =
+      provider === "google"
+        ? buildGoogleAuthUrl(clientId, state, redirectUri)
+        : buildAppleAuthUrl(clientId, state, redirectUri);
+
+    window.location.assign(authUrl);
+  }, []);
+
   const signOut = useCallback(() => {
     try {
       localStorage.removeItem(AUTH_STORAGE_KEY);
+      clearSsoSession();
     } catch {
       // Ignore storage errors on sign out.
     }
@@ -58,8 +109,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ isAuthenticated, loading, login, signOut }),
-    [isAuthenticated, loading, login, signOut],
+    () => ({ isAuthenticated, loading, login, loginWithSso, startSsoLogin, signOut }),
+    [isAuthenticated, loading, login, loginWithSso, startSsoLogin, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
