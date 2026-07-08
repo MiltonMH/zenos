@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff, Copy, Check, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +29,8 @@ interface EditProfileProps {
 }
 
 export function EditProfile({ onBack }: EditProfileProps) {
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [formData, setFormData] = useState({
     name: mockUser.name,
     email: mockUser.email,
@@ -286,7 +290,10 @@ export function EditProfile({ onBack }: EditProfileProps) {
         <Button
           variant="ghost"
           className="w-full h-10 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl"
-          onClick={() => console.log("Logout")}
+          onClick={() => {
+            signOut();
+            navigate("/login", { replace: true });
+          }}
         >
           <LogOut className="w-4 h-4 mr-2" />
           Logga ut
