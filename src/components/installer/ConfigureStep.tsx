@@ -68,12 +68,12 @@ export function ConfigureStep({ onBack, onNext }: ConfigureStepProps) {
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Laddbox</p>
           <ConnectionRow label="Ansluter till internet" state={connStep === 0 ? "active" : "done"} />
           <ConnectionRow
-            label="Hämtar mjukvara – Smartheten"
+            label="Installerar Numiz"
             state={connStep < 1 ? "pending" : connStep === 1 ? "active" : "done"}
           />
           {connStep === 2 && (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-success pl-6">
-              Redo att kopplas till kund
+              Numiz är redo att kopplas till kund
             </motion.p>
           )}
         </GlassCard>
@@ -115,8 +115,8 @@ export function ConfigureStep({ onBack, onNext }: ConfigureStepProps) {
                 className="rounded-xl bg-success/10 p-3 text-xs text-foreground"
               >
                 {confirmedExists
-                  ? "Konto hittat – laddboxen kopplas direkt till kundens konto."
-                  : "Nytt konto – kunden får ett mejl för att slutföra sin registrering."}
+                  ? "Konto hittat – laddboxen kopplas direkt till kundens konto i Numiz."
+                  : "Nytt konto – kunden får ett mejl för att slutföra sin registrering i Numiz."}
               </motion.div>
             ) : confirming ? (
               <motion.div

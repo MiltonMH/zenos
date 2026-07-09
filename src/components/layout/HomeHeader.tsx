@@ -15,7 +15,7 @@ export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent 
         type="button"
         onClick={onSettingsClick}
         aria-label="Öppna inställningar"
-        className="p-2.5 glass-subtle rounded-2xl text-foreground/80 hover:text-foreground transition-colors"
+        className="p-2.5 glass-subtle gradient-stroke-ring rounded-full shadow-sm text-foreground/80 hover:text-foreground transition-colors"
       >
         <Settings className="w-6 h-6" />
       </button>

@@ -15,6 +15,7 @@ import { installerFuseOptions, evModels } from "@/lib/installer-mock-data";
 import { gridCompanies, electricityProviders } from "@/lib/mock-data";
 
 export interface InstallerDetails {
+  pinCode: string;
   fuse: string;
   consumption: string;
   evModel: string;
@@ -49,9 +50,9 @@ function DeferrableSelect({
         <button
           type="button"
           onClick={onToggleDefer}
-          className="text-[11px] text-primary hover:underline"
+          className="text-[11px] font-medium text-foreground underline underline-offset-2 decoration-foreground/30 hover:decoration-foreground"
         >
-          {deferred ? "Fyll i nu" : "Kund fyller i senare"}
+          {deferred ? "Fyll i nu" : "Hoppa över"}
         </button>
       </div>
       {deferred ? (
@@ -77,6 +78,7 @@ function DeferrableSelect({
 }
 
 export function DetailsStep({ onBack, onComplete }: DetailsStepProps) {
+  const [pinCode, setPinCode] = useState("");
   const [fuse, setFuse] = useState("");
   const [consumption, setConsumption] = useState("");
   const [evModel, setEvModel] = useState("");
@@ -86,6 +88,7 @@ export function DetailsStep({ onBack, onComplete }: DetailsStepProps) {
   const [gridDeferred, setGridDeferred] = useState(false);
 
   const canComplete =
+    pinCode.trim().length === 4 &&
     fuse !== "" &&
     consumption.trim() !== "" &&
     evModel !== "" &&
@@ -118,19 +121,34 @@ export function DetailsStep({ onBack, onComplete }: DetailsStepProps) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="consumption" className="text-xs text-muted-foreground">
-              Årsförbrukning (kWh) — står på elfakturan
-            </Label>
-            <Input
-              id="consumption"
-              type="number"
-              inputMode="numeric"
-              value={consumption}
-              onChange={(e) => setConsumption(e.target.value)}
-              placeholder="t.ex. 18 000"
-              className="h-10 rounded-xl bg-white/50"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="pin-code" className="text-xs text-muted-foreground">Pinkod</Label>
+              <Input
+                id="pin-code"
+                inputMode="numeric"
+                maxLength={4}
+                value={pinCode}
+                onChange={(e) => setPinCode(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                placeholder="4 siffror"
+                className="h-10 rounded-xl bg-white/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="consumption" className="text-xs text-muted-foreground">
+                Förbrukning (kWh/år)
+              </Label>
+              <Input
+                id="consumption"
+                type="number"
+                inputMode="numeric"
+                value={consumption}
+                onChange={(e) => setConsumption(e.target.value)}
+                placeholder="T.ex. 18 000"
+                className="h-10 rounded-xl bg-white/50"
+              />
+              <p className="text-[11px] text-muted-foreground">Står på elfakturan</p>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -177,6 +195,7 @@ export function DetailsStep({ onBack, onComplete }: DetailsStepProps) {
         <Button
           onClick={() =>
             onComplete({
+              pinCode,
               fuse,
               consumption,
               evModel,

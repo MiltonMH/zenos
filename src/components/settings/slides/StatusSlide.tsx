@@ -54,9 +54,9 @@ export function StatusSlide({ chargeLimit, onChargeLimitChange }: StatusSlidePro
             <span className="text-sm font-medium text-foreground">2.1.4</span>
           </div>
           <Button
-            variant="outline"
+            variant="glass"
             size="sm"
-            className="w-full glass-subtle border-white/30 hover:bg-white/20 text-foreground mt-2"
+            className="w-full mt-2"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Starta om laddbox

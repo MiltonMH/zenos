@@ -67,7 +67,7 @@ export function InstallerDashTab({ units, onSelectUnit, onAddArc }: InstallerDas
         )}
       </div>
 
-      <Button onClick={onAddArc} className="w-full h-12 text-base font-medium rounded-2xl shadow-sm gap-2">
+      <Button onClick={onAddArc} variant="glass" className="w-full h-12 text-base font-medium gap-2">
         <Plus className="w-5 h-5" />
         Lägg till laddbox
       </Button>

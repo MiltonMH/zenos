@@ -14,5 +14,7 @@ Detta är styrande för alla UX/UI-beslut i appen — läs detta innan du föres
 - **Interaktivitet ska vara kul, inte bara funktionell.** Appen ska vara tillräckligt lekfull/interaktiv för att folk faktiskt gillar att öppna den — inte bara ett nödvändigt verktyg.
 - **Minimera information i huvudflödet.** Undvik grafer, siffror eller datapunkter som en vanlig kund inte bryr sig om. Om något är "nördigt" eller avancerat hör det hemma i **Inställningar**, inte på Home/Statistik-ytan.
 - **Praktisk tumregel innan du lägger till en graf/siffra/kort:** Skulle en icke-teknisk kund direkt förstå varför detta är här och vad de ska göra med informationen? Om svaret är nej eller "bara om man är intresserad av detaljer" → flytta det bakom Inställningar eller ta bort det.
+- **Undvik scroll så ofta som möjligt.** Scroll är förvirrande UI. Föredra kompakta layouter (t.ex. tvåkolumnsrader för korta fält) framför staplade listor som kräver scroll. Scroll är en sista utväg, inte standard.
+- **Text är svart/mörk (`text-foreground`) som standard.** Reservera `text-primary`/accentfärger för ikoner, aktiva tillstånd (t.ex. aktiv flik), knappar med färgad bakgrund och medvetna "hero"-siffror (t.ex. elpris, procentvärden) — inte för vanlig brödtext eller inline-länkar. En länk ska synas genom understrykning/vikt, inte genom att vara teal.
 
 Detta är ett levande dokument — uppdatera det när Milton förfinar eller ändrar riktningen.
