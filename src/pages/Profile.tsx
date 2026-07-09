@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Crown, Wrench, Pencil, User } from "lucide-react";
+import { Mail, Crown, Wrench, Pencil, User, HardHat } from "lucide-react";
 import lightningIcon from "@/assets/Lightning_Vector1.svg";
 import { CarIcon } from "@/components/icons/CarIcon";
 import { ProfileInfoCard } from "@/components/profile/ProfileInfoCard";
@@ -9,6 +9,7 @@ import { EditProfile } from "./EditProfile";
 import { BackgroundCarousel } from "@/components/profile/BackgroundCarousel";
 import { mockUser } from "@/lib/mock-data";
 import { type BackgroundOption } from "@/hooks/useBackground";
+import { type AppMode } from "@/hooks/useAppMode";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,9 +34,11 @@ const itemVariants = {
 interface ProfileProps {
   selectedBackground: BackgroundOption;
   onBackgroundChange: (bg: BackgroundOption) => void;
+  appMode?: AppMode;
+  onToggleAppMode?: () => void;
 }
 
-export default function Profile({ selectedBackground, onBackgroundChange }: ProfileProps) {
+export default function Profile({ selectedBackground, onBackgroundChange, appMode, onToggleAppMode }: ProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   if (isEditing) {
@@ -121,6 +124,27 @@ export default function Profile({ selectedBackground, onBackgroundChange }: Prof
             }}
           />
         </motion.div>
+
+        {/* Dev-only: switch between customer and installer view. Never shown in production. */}
+        {import.meta.env.DEV && onToggleAppMode && (
+          <motion.div variants={itemVariants}>
+            <button
+              type="button"
+              onClick={onToggleAppMode}
+              className="w-full flex items-center gap-3 p-3 rounded-2xl border border-dashed border-muted-foreground/40 bg-muted/20 hover:bg-muted/30 transition-colors text-left"
+            >
+              <div className="p-2 rounded-lg bg-muted-foreground/10">
+                <HardHat className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-foreground">Utvecklarläge</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Just nu: {appMode === "installer" ? "Installatörsvy" : "Kundvy"} — tryck för att byta
+                </p>
+              </div>
+            </button>
+          </motion.div>
+        )}
 
         {/* Background Picker */}
         <motion.div variants={itemVariants}>
