@@ -15,6 +15,9 @@ interface StatusSlideProps {
   statusFromApi?: boolean;
   versionFromApi?: boolean;
   chargeLimitFromApi?: boolean;
+  chargeLimitDisabled?: boolean;
+  onRestart?: () => void;
+  saving?: boolean;
 }
 
 export function StatusSlide({
@@ -25,6 +28,9 @@ export function StatusSlide({
   statusFromApi = false,
   versionFromApi = false,
   chargeLimitFromApi = false,
+  chargeLimitDisabled = false,
+  onRestart,
+  saving = false,
 }: StatusSlideProps) {
   const { language } = useLanguage();
   const settings = getSettingsTexts(language);
@@ -72,17 +78,31 @@ export function StatusSlide({
               <span className="text-sm font-medium text-foreground">{versionLabel}</span>
             </div>
           </ApiField>
-          <Button variant="glass" size="sm" className="w-full mt-2">
+          <Button
+            type="button"
+            variant="glass"
+            size="sm"
+            className="w-full mt-2"
+            onClick={onRestart}
+          >
             <RefreshCw className="w-4 h-4 mr-2" />
             {settings.status.restartCharger}
           </Button>
         </div>
 
         <ApiField fromApi={chargeLimitFromApi}>
-          <div className="glass-subtle rounded-2xl p-4 space-y-3">
+          <div
+            className={cn(
+              "glass-subtle rounded-2xl p-4 space-y-3",
+              chargeLimitDisabled && "opacity-60",
+            )}
+          >
             <div className="flex items-center gap-2">
               <Battery className="w-4 h-4 text-primary" />
               <h3 className="font-medium text-foreground text-sm">{settings.status.maxChargeLevel}</h3>
+              {saving && (
+                <span className="text-[10px] text-muted-foreground ml-auto">{settings.save.saving}</span>
+              )}
             </div>
             <Slider
               value={chargeLimit}
@@ -90,7 +110,9 @@ export function StatusSlide({
               min={50}
               max={100}
               step={5}
+              disabled={chargeLimitDisabled}
               className="w-full"
+              aria-label={settings.status.maxChargeLevel}
             />
             <div className="text-center">
               <span className="text-3xl font-bold text-primary">{chargeLimit[0]}%</span>

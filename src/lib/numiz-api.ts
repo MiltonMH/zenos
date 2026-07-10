@@ -9,6 +9,7 @@ import {
 } from "@/lib/auth-config";
 import type {
   ChargingSchedule,
+  ChargingSettings,
   Device,
   DeviceView,
   EntitlementView,
@@ -21,6 +22,7 @@ import type {
   InstallationSummary,
   InstallerCompanyMeResponse,
   SiteInstallerResponse,
+  UpdateChargingSettingsRequest,
   ValueSummary,
   Vehicle,
   VehicleSession,
@@ -360,6 +362,21 @@ export async function fetchEntitlements(siteId: string): Promise<EntitlementView
 
 export async function fetchChargingSchedules(vehicleId: string): Promise<ChargingSchedule[]> {
   return numizAuthFetch<ChargingSchedule[]>(`/vehicles/${vehicleId}/charging-schedules`);
+}
+
+export async function fetchChargingSettings(deviceId: string): Promise<ChargingSettings> {
+  return numizAuthFetch<ChargingSettings>(`/devices/${deviceId}/charging-settings`);
+}
+
+export async function updateChargingSettings(
+  deviceId: string,
+  body: UpdateChargingSettingsRequest,
+): Promise<ChargingSettings> {
+  return numizAuthFetch<ChargingSettings>(`/devices/${deviceId}/charging-settings`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 }
 
 export async function fetchInstallerCompanyMe(): Promise<InstallerCompanyMeResponse> {

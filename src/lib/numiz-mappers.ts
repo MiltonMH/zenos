@@ -3,7 +3,10 @@ import type {
   Der,
   Device,
   EntitlementView,
+  ChargingSettings,
+  OptimizationMode,
   PricePoint,
+  SocLimitSource,
   ValueSummary,
   Vehicle,
   VehicleSession,
@@ -87,6 +90,49 @@ export function mapFirmwareVersion(der: Der | null): string | null {
 export function toPercentSlider(value: number, fallback: number): number[] {
   if (Number.isNaN(value)) return [fallback];
   return [Math.round(Math.max(0, Math.min(100, value)))];
+}
+
+const OPTIMIZATION_MODES: readonly OptimizationMode[] = [
+  "savings",
+  "balanced",
+  "protection",
+] as const;
+
+export function mapOptimizationMode(raw: string | null | undefined): OptimizationMode {
+  const normalized = raw?.trim().toLowerCase();
+  if (normalized && (OPTIMIZATION_MODES as readonly string[]).includes(normalized)) {
+    return normalized as OptimizationMode;
+  }
+  return "balanced";
+}
+
+export function mapSocLimitSource(raw: string | null | undefined): SocLimitSource {
+  switch (raw?.trim().toLowerCase()) {
+    case "vehicle":
+      return "vehicle";
+    case "defaults":
+      return "defaults";
+    case "der":
+    default:
+      return "der";
+  }
+}
+
+/** Normalize GET/PUT charging-settings JSON (enum case may vary). */
+export function mapChargingSettings(
+  raw: ChargingSettings & { socLimitSource?: string; optimizationMode?: string },
+): ChargingSettings {
+  return {
+    deviceId: String(raw.deviceId),
+    maxChargeSocPercent: Number(raw.maxChargeSocPercent),
+    minDischargeSocPercent: Number(raw.minDischargeSocPercent),
+    v2hEnabled: Boolean(raw.v2hEnabled),
+    v2gEnabled: Boolean(raw.v2gEnabled),
+    optimizationMode: mapOptimizationMode(raw.optimizationMode),
+    socLimitSource: mapSocLimitSource(raw.socLimitSource),
+    vehicleId: raw.vehicleId ?? null,
+    v2xEffective: Boolean(raw.v2xEffective),
+  };
 }
 
 export function findSessionForDer(

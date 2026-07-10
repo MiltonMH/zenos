@@ -1,80 +1,174 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
 import { useCarousel } from "@/hooks/useCarousel";
 import { useSiteData } from "@/hooks/useSiteData";
+import { useChargingSettings } from "@/hooks/useChargingSettings";
 import { mapDerStatusToSettingsUi, toPercentSlider } from "@/lib/numiz-mappers";
+import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/i18n";
 import { getSettingsTexts } from "@/lib/settings-i18n";
+import type { OptimizationMode } from "@/lib/numiz-types";
 
+/**
+ * Settings state strategy:
+ * - Server SoT: GET/PUT /devices/{id}/charging-settings (useChargingSettings)
+ * - Local UI mirrors server for immediate slider feedback; sliders debounce PUT
+ * - Status/firmware still from useSiteData (read-only)
+ * Styling: existing Tailwind + ApiField borders (blue = API, red = mock/missing)
+ */
 export function SettingsCarousel() {
   const { language } = useLanguage();
-  const settings = getSettingsTexts(language);
-  const { view, hasApiData, session } = useSiteData();
+  const settingsTexts = getSettingsTexts(language);
+  const { view, hasApiData, me, chargerDevice } = useSiteData();
 
-  const [chargeLimit, setChargeLimit] = useState([90]);
-  const [v2hEnabled, setV2hEnabled] = useState(false);
-  const [v2gEnabled, setV2gEnabled] = useState(false);
-  const [dischargeLimit, setDischargeLimit] = useState([50]);
-  const [optimizationMode, setOptimizationMode] = useState("balanced");
-  const [hydrated, setHydrated] = useState(false);
+  const canWrite = me?.role === "SITE_OWNER" || me?.role === "ADMIN";
+  const deviceId = chargerDevice?.id ?? null;
+
+  const {
+    settings,
+    fromApi,
+    socLocked,
+    canWrite: writeEnabled,
+    saving,
+    error,
+    patch,
+    patchImmediate,
+  } = useChargingSettings(deviceId, canWrite);
+
+  const lastErrorToast = useRef<string | null>(null);
+  useEffect(() => {
+    if (!error || error === lastErrorToast.current) return;
+    lastErrorToast.current = error;
+    const description =
+      error === "FORBIDDEN"
+        ? settingsTexts.save.forbidden
+        : error === "UNAUTHORIZED"
+          ? settingsTexts.save.unauthorized
+          : settingsTexts.save.failed;
+    toast({
+      title: settingsTexts.save.errorTitle,
+      description,
+      variant: "destructive",
+    });
+  }, [error, settingsTexts.save]);
 
   useEffect(() => {
-    if (!hasApiData || hydrated) return;
+    if (!error) lastErrorToast.current = null;
+  }, [error]);
 
-    if (view.maxChargeSoc != null) {
-      setChargeLimit(toPercentSlider(view.maxChargeSoc, 90));
-    }
-    if (view.minDischargeSoc != null) {
-      setDischargeLimit(toPercentSlider(view.minDischargeSoc, 50));
-    }
-    if (session?.v2xEnabled) {
-      setV2hEnabled(true);
-    }
-    setHydrated(true);
-  }, [hasApiData, hydrated, view.maxChargeSoc, view.minDischargeSoc, session?.v2xEnabled]);
+  const chargeLimit = toPercentSlider(settings?.maxChargeSocPercent ?? 90, 90);
+  const dischargeLimit = toPercentSlider(settings?.minDischargeSocPercent ?? 50, 50);
+  const v2hEnabled = settings?.v2hEnabled ?? false;
+  const v2gEnabled = settings?.v2gEnabled ?? false;
+  const optimizationMode: OptimizationMode = settings?.optimizationMode ?? "balanced";
+
+  const controlsDisabled = !writeEnabled || !fromApi || !deviceId;
+  const socDisabled = controlsDisabled || socLocked;
 
   const uiStatus = mapDerStatusToSettingsUi(view.derStatus);
   const firmwareVersion = view.chargerVersion;
   const statusFromApi = hasApiData && view.derStatus != null;
   const versionFromApi = view.fromApi.chargerVersion;
-  const chargeLimitFromApi = view.maxChargeSoc != null;
-  const dischargeLimitFromApi = view.minDischargeSoc != null;
-  const v2hFromApi = hasApiData && session != null;
+  const chargeLimitFromApi = fromApi && settings != null;
+  const dischargeLimitFromApi = fromApi && settings != null;
+  const v2hFromApi = fromApi && settings != null;
+  const v2gFromApi = fromApi && settings != null;
+  const modeFromApi = fromApi && settings != null;
+
+  const handleChargeLimitChange = (value: number[]) => {
+    const next = value[0];
+    if (next == null || socDisabled) return;
+    patch({ maxChargeSocPercent: next });
+  };
+
+  const handleDischargeLimitChange = (value: number[]) => {
+    const next = value[0];
+    if (next == null || socDisabled) return;
+    patch({ minDischargeSocPercent: next });
+  };
+
+  const handleV2hChange = (enabled: boolean) => {
+    if (controlsDisabled) return;
+    if (enabled && socLocked) {
+      toast({
+        title: settingsTexts.save.errorTitle,
+        description: settingsTexts.save.unknownVehicle,
+        variant: "destructive",
+      });
+      return;
+    }
+    void patchImmediate({ v2hEnabled: enabled });
+  };
+
+  const handleV2gChange = (enabled: boolean) => {
+    if (controlsDisabled) return;
+    if (enabled && socLocked) {
+      toast({
+        title: settingsTexts.save.errorTitle,
+        description: settingsTexts.save.unknownVehicle,
+        variant: "destructive",
+      });
+      return;
+    }
+    void patchImmediate({ v2gEnabled: enabled });
+  };
+
+  const handleOptimizationModeChange = (mode: string) => {
+    if (controlsDisabled) return;
+    if (mode !== "savings" && mode !== "balanced" && mode !== "protection") return;
+    void patchImmediate({ optimizationMode: mode });
+  };
+
+  const handleRestart = () => {
+    toast({
+      title: settingsTexts.status.restartTitle,
+      description: settingsTexts.status.restartNotReady,
+    });
+  };
 
   const slides = [
     {
       id: "status",
-      label: settings.tabCharging,
+      label: settingsTexts.tabCharging,
       component: (
         <StatusSlide
           chargeLimit={chargeLimit}
-          onChargeLimitChange={setChargeLimit}
+          onChargeLimitChange={handleChargeLimitChange}
           status={uiStatus}
           firmwareVersion={firmwareVersion}
           statusFromApi={statusFromApi}
           versionFromApi={versionFromApi}
           chargeLimitFromApi={chargeLimitFromApi}
+          chargeLimitDisabled={socDisabled}
+          onRestart={handleRestart}
+          saving={saving}
         />
       ),
     },
     {
       id: "v2x",
-      label: settings.tabV2x,
+      label: settingsTexts.tabV2x,
       component: (
         <OptimizationSlide
           v2hEnabled={v2hEnabled}
           v2gEnabled={v2gEnabled}
           dischargeLimit={dischargeLimit}
           optimizationMode={optimizationMode}
-          onV2hChange={setV2hEnabled}
-          onV2gChange={setV2gEnabled}
-          onDischargeLimitChange={setDischargeLimit}
-          onOptimizationModeChange={setOptimizationMode}
+          onV2hChange={handleV2hChange}
+          onV2gChange={handleV2gChange}
+          onDischargeLimitChange={handleDischargeLimitChange}
+          onOptimizationModeChange={handleOptimizationModeChange}
           dischargeLimitFromApi={dischargeLimitFromApi}
           v2hFromApi={v2hFromApi}
+          v2gFromApi={v2gFromApi}
+          modeFromApi={modeFromApi}
+          dischargeDisabled={socDisabled}
+          togglesDisabled={controlsDisabled}
+          v2xEnableLocked={socLocked}
+          saving={saving}
         />
       ),
     },
@@ -100,6 +194,7 @@ export function SettingsCarousel() {
         {slides.map((slide, index) => (
           <button
             key={slide.id}
+            type="button"
             onClick={() => goToSlide(index)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
               index === currentSlide
@@ -137,16 +232,20 @@ export function SettingsCarousel() {
 
         {canGoPrev && (
           <button
+            type="button"
             onClick={goPrev}
             className="absolute left-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            aria-label={settingsTexts.tabCharging}
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         )}
         {canGoNext && (
           <button
+            type="button"
             onClick={goNext}
             className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            aria-label={settingsTexts.tabV2x}
           >
             <ChevronRight className="w-5 h-5" />
           </button>

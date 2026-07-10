@@ -50,6 +50,34 @@ export type InstallerDeviceChargingMode =
   | "offline"
   | "generating";
 
+/** ZenOS Settings optimization mode — matches device_charging_settings. */
+export type OptimizationMode = "savings" | "balanced" | "protection";
+
+/** Effective SoC source from GET/PUT /devices/{id}/charging-settings. */
+export type SocLimitSource = "der" | "vehicle" | "defaults";
+
+/** GET/PUT /devices/{id}/charging-settings */
+export interface ChargingSettings {
+  deviceId: string;
+  maxChargeSocPercent: number;
+  minDischargeSocPercent: number;
+  v2hEnabled: boolean;
+  v2gEnabled: boolean;
+  optimizationMode: OptimizationMode;
+  socLimitSource: SocLimitSource;
+  vehicleId: string | null;
+  v2xEffective: boolean;
+}
+
+/** PUT /devices/{id}/charging-settings — all fields optional (partial). */
+export interface UpdateChargingSettingsRequest {
+  maxChargeSocPercent?: number;
+  minDischargeSocPercent?: number;
+  v2hEnabled?: boolean;
+  v2gEnabled?: boolean;
+  optimizationMode?: OptimizationMode;
+}
+
 export interface InstallerCompanySummary {
   id: string;
   name: string;

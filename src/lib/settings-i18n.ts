@@ -6,6 +6,16 @@ const settingsTexts = {
     tabCharging: "Laddning",
     tabV2x: "V2X",
 
+    save: {
+      saving: "Sparar…",
+      errorTitle: "Kunde inte spara",
+      failed: "Inställningarna sparades inte. Försök igen.",
+      forbidden: "Du har inte behörighet att ändra laddinställningar.",
+      unauthorized: "Sessionen har gått ut — logga in igen.",
+      unknownVehicle:
+        "SoC och V2X kan inte ändras för okänd bil. Anslut en känd bil först.",
+    },
+
     status: {
       title: "Status & Laddning",
       statusLabel: "Status:",
@@ -18,6 +28,8 @@ const settingsTexts = {
       unknown: "Okänd",
       versionLabel: "Version:",
       restartCharger: "Starta om laddbox",
+      restartTitle: "Starta om",
+      restartNotReady: "Omstart är inte tillgänglig ännu (kommer snart).",
       maxChargeLevel: "Max laddningsnivå",
       maxChargeHint: "Laddboxen laddar upp till {percent}%",
     },
@@ -46,6 +58,16 @@ const settingsTexts = {
     tabCharging: "Charging",
     tabV2x: "V2X",
 
+    save: {
+      saving: "Saving…",
+      errorTitle: "Could not save",
+      failed: "Settings were not saved. Please try again.",
+      forbidden: "You do not have permission to change charging settings.",
+      unauthorized: "Session expired — please sign in again.",
+      unknownVehicle:
+        "SoC and V2X cannot be changed for an unknown vehicle. Connect a known car first.",
+    },
+
     status: {
       title: "Status & Charging",
       statusLabel: "Status:",
@@ -58,6 +80,8 @@ const settingsTexts = {
       unknown: "Unknown",
       versionLabel: "Version:",
       restartCharger: "Restart charger",
+      restartTitle: "Restart",
+      restartNotReady: "Restart is not available yet (coming soon).",
       maxChargeLevel: "Max charge level",
       maxChargeHint: "The charger charges up to {percent}%",
     },
