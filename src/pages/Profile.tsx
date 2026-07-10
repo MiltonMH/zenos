@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Crown, Wrench, Pencil, User, HardHat } from "lucide-react";
+import { Mail, Crown, Wrench, Pencil, User, HardHat, LogOut } from "lucide-react";
 import lightningIcon from "@/assets/Lightning_Vector1.svg";
 import { CarIcon } from "@/components/icons/CarIcon";
 import { ProfileInfoCard } from "@/components/profile/ProfileInfoCard";
@@ -36,13 +36,14 @@ interface ProfileProps {
   onBackgroundChange: (bg: BackgroundOption) => void;
   appMode?: AppMode;
   onToggleAppMode?: () => void;
+  onLogout?: () => void;
 }
 
-export default function Profile({ selectedBackground, onBackgroundChange, appMode, onToggleAppMode }: ProfileProps) {
+export default function Profile({ selectedBackground, onBackgroundChange, appMode, onToggleAppMode, onLogout }: ProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   if (isEditing) {
-    return <EditProfile onBack={() => setIsEditing(false)} />;
+    return <EditProfile onBack={() => setIsEditing(false)} onLogout={onLogout} />;
   }
 
   return (
@@ -140,6 +141,29 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
                 <p className="text-xs font-medium text-foreground">Utvecklarläge</p>
                 <p className="text-[11px] text-muted-foreground">
                   Just nu: {appMode === "installer" ? "Installatörsvy" : "Kundvy"} — tryck för att byta
+                </p>
+              </div>
+            </button>
+          </motion.div>
+        )}
+
+        {/* Dev-only: jump straight back to the welcome/login/onboarding flow
+            (incl. Numiz) without digging through Profil → Redigera → Säkerhet.
+            Never shown in production. */}
+        {import.meta.env.DEV && onLogout && (
+          <motion.div variants={itemVariants}>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="w-full flex items-center gap-3 p-3 rounded-2xl border border-dashed border-muted-foreground/40 bg-muted/20 hover:bg-muted/30 transition-colors text-left"
+            >
+              <div className="p-2 rounded-lg bg-muted-foreground/10">
+                <LogOut className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-foreground">Visa inloggning (dev)</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Loggar ut och visar Skapa konto / Logga in / Numiz
                 </p>
               </div>
             </button>

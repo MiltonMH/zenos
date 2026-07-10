@@ -22,8 +22,7 @@ const slideVariants = {
   exit: (direction: number) => ({ y: direction < 0 ? 14 : -14, opacity: 0 }),
 };
 
-const fieldClass =
-  "h-[58px] rounded-[22px] bg-white/55 backdrop-blur-md border border-white/70 text-center text-base font-medium text-foreground shadow-sm";
+const fieldClass = "h-12 rounded-2xl bg-white/50 text-center text-base font-medium text-foreground";
 
 export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: OnboardingFlowProps) {
   const [stepIndex, setStepIndex] = useState(0);

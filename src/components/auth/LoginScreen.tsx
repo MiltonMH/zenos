@@ -10,8 +10,7 @@ interface LoginScreenProps {
   onCreateAccount: () => void;
 }
 
-const fieldClass =
-  "h-[58px] rounded-[22px] bg-white/55 backdrop-blur-md border border-white/70 text-center text-base font-medium text-foreground shadow-sm";
+const fieldClass = "h-12 rounded-2xl bg-white/50 text-center text-base font-medium text-foreground";
 
 export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreenProps) {
   const [email, setEmail] = useState("");
@@ -31,7 +30,11 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 px-6 pt-2 pb-6">
+    // theme-mint: Welcome and Login share the same canonical background image
+    // (see AuthFlow's imageBackgroundScreens) and should match it — always
+    // Numiz's own color, not whatever theme is left over from a previous
+    // session, since we don't know which account is logging in yet anyway.
+    <div className="theme-mint flex flex-col flex-1 min-h-0 px-6 pt-2 pb-6">
       <button
         onClick={onBack}
         className="p-2 -ml-2 self-start text-foreground/70 hover:text-foreground transition-colors"
@@ -80,8 +83,7 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
         <Button
           onClick={handleSubmit}
           disabled={!canSubmit || isSubmitting}
-          size="lg"
-          className="w-full h-[58px] text-base font-medium rounded-full"
+          className="w-full h-12 text-base font-medium rounded-2xl"
         >
           {isSubmitting ? "Loggar in…" : "Logga in"}
         </Button>

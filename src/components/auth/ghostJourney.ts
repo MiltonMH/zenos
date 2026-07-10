@@ -13,16 +13,19 @@ export interface GhostSpot {
   y: number;
   size: number;
   opacity: number;
+  /** "shy" = eyes closed — used for the one beat where the mascot looks away. */
+  expression?: "open" | "shy";
 }
 
 export type GhostStage = "start" | "login" | "flow" | "welcome" | "home";
 
 const frame = { w: 393, h: 852 };
-const pct = (x: number, y: number, size: number, opacity: number): GhostSpot => ({
+const pct = (x: number, y: number, size: number, opacity: number, expression?: "open" | "shy"): GhostSpot => ({
   x: Math.round((x / frame.w) * 10000) / 100,
   y: Math.round((y / frame.h) * 10000) / 100,
   size: Math.round((size / frame.w) * 10000) / 100,
   opacity,
+  expression,
 });
 
 export const GHOST_JOURNEY: Record<GhostStage, GhostSpot> = {
@@ -39,16 +42,18 @@ export const GHOST_JOURNEY: Record<GhostStage, GhostSpot> = {
 };
 
 /**
- * One small resting spot per onboarding question — all close to the base
- * "flow" spot (small, above the field, never in the way) but each a little
- * different, so the mascot visibly re-settles each time you move to a new
- * question instead of sitting dead-still for all six steps.
+ * One resting spot per onboarding question. Unlike the old version (a tight
+ * jitter around one point), these swing genuinely closer/further and
+ * left/right between steps — bigger + more opaque reads as "flying in close
+ * to you", smaller + fainter reads as "drifting further away" — so the
+ * mascot visibly travels each time you move to a new question instead of
+ * just nudging in place. Stays above the field/button either way.
  */
 export const GHOST_FLOW_STEPS: GhostSpot[] = [
-  pct(196, 128, 58, 0.9), // theme
-  pct(160, 108, 52, 0.88), // name
-  pct(232, 118, 62, 0.92), // email
-  pct(168, 132, 54, 0.88), // phone
-  pct(226, 104, 60, 0.9), // address
-  pct(196, 122, 56, 0.9), // password
+  pct(196, 140, 72, 0.95), // theme — front and center, introducing itself
+  pct(112, 108, 48, 0.8), // name — drifts left, a little shy getting to know you
+  pct(292, 132, 68, 0.94), // email — swoops in close on the right, practical
+  pct(96, 168, 42, 0.72), // phone — floats further off, upper-left, smaller
+  pct(302, 92, 40, 0.7), // address — flies far to the upper-right, distant, curious
+  pct(345, 34, 22, 0.32, "shy"), // password — shrinks away to the top-right corner (clear of the back arrow), eyes closed: doesn't want to peek
 ];

@@ -17,5 +17,12 @@ export function useAuthFlow() {
     } catch {}
   }, [isAuthenticated]);
 
-  return { isAuthenticated, completeAuth: () => setIsAuthenticated(true) };
+  const logout = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {}
+    setIsAuthenticated(false);
+  };
+
+  return { isAuthenticated, completeAuth: () => setIsAuthenticated(true), logout };
 }

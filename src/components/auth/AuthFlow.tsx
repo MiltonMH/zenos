@@ -51,7 +51,12 @@ export function AuthFlow({ onComplete, appTheme }: AuthFlowProps) {
     }, HOLD_MS[variant]);
   };
 
-  const ghostGlow = appTheme.themes.find((t) => t.id === appTheme.themeId)?.glow ?? appTheme.themes[0].glow;
+  // Welcome/login always show Numiz's own Mint glow — same reasoning as the
+  // theme-mint class on those two screens (see WelcomeScreen/LoginScreen):
+  // they shouldn't reflect a theme left over from a previous session.
+  const mintGlow = appTheme.themes.find((t) => t.id === "mint")!.glow;
+  const activeGlow = appTheme.themes.find((t) => t.id === appTheme.themeId)?.glow ?? mintGlow;
+  const ghostGlow = imageBackgroundScreens.includes(screen) ? mintGlow : activeGlow;
   const ghostStage: GhostStage =
     screen === "welcome"
       ? "start"
@@ -76,7 +81,14 @@ export function AuthFlow({ onComplete, appTheme }: AuthFlowProps) {
         imageBackgroundScreens.includes(screen) ? "bg-gradient-mesh" : "bg-theme-mesh"
       )}
     >
-      <NumizGhost x={ghostSpot.x} y={ghostSpot.y} size={ghostSpot.size} opacity={ghostSpot.opacity} glow={ghostGlow} />
+      <NumizGhost
+        x={ghostSpot.x}
+        y={ghostSpot.y}
+        size={ghostSpot.size}
+        opacity={ghostSpot.opacity}
+        glow={ghostGlow}
+        expression={ghostSpot.expression ?? "open"}
+      />
 
       <div className="flex-1 flex flex-col safe-top safe-bottom min-h-0">
         <AnimatePresence mode="wait">

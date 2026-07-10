@@ -15,7 +15,7 @@ const queryClient = new QueryClient();
 const App = () => {
   // Initialize native app features (status bar, splash screen)
   useNativeApp();
-  const { isAuthenticated, completeAuth } = useAuthFlow();
+  const { isAuthenticated, completeAuth, logout } = useAuthFlow();
   // Owned once at the root: applies the chosen brand theme (accent + tokens)
   // to <html> so it stays in effect across the auth flow and the real app.
   const appTheme = useAppTheme();
@@ -28,7 +28,7 @@ const App = () => {
       {isAuthenticated ? (
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Index onLogout={logout} />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

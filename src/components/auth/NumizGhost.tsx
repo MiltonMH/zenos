@@ -21,11 +21,13 @@ export interface NumizGhostProps {
   opacity?: number;
   /** Active theme's glow color, e.g. #6fdccb (Mint) */
   glow: string;
+  /** "shy" closes its eyes — used for the one beat where it looks away (e.g. the password step). */
+  expression?: "open" | "shy";
 }
 
 const EASE = "cubic-bezier(.3, 1, .35, 1)"; // soft "glide and land"
 
-export function NumizGhost({ x, y, size, opacity = 0.95, glow }: NumizGhostProps) {
+export function NumizGhost({ x, y, size, opacity = 0.95, glow, expression = "open" }: NumizGhostProps) {
   const wrapper: CSSProperties = {
     position: "absolute",
     left: `${x}%`,
@@ -36,7 +38,7 @@ export function NumizGhost({ x, y, size, opacity = 0.95, glow }: NumizGhostProps
     opacity,
     zIndex: 3,
     pointerEvents: "none", // decorative — never blocks a tap
-    transition: `left 1.1s ${EASE}, top 1.1s ${EASE}, width 1.1s ${EASE}, opacity 0.9s ease`,
+    transition: `left 1.3s ${EASE}, top 1.3s ${EASE}, width 1.3s ${EASE}, opacity 1s ease`,
   };
 
   // The glow sits still behind the body so the light doesn't "shake" with it.
@@ -75,6 +77,21 @@ export function NumizGhost({ x, y, size, opacity = 0.95, glow }: NumizGhostProps
     background: "#ffffff",
   };
 
+  // A closed eye: same footprint as the open one, but a flat-bottomed dome
+  // (mirrors the mouth's technique) reads as a happy squeezed-shut "^". The
+  // eye divs remount whenever `expression` toggles, so the blink keyframe
+  // (a quick scaleY snap-shut) plays once each time — no extra state needed.
+  const closedEye: CSSProperties = {
+    position: "absolute",
+    top: "39%",
+    width: "15%",
+    height: "4%",
+    borderRadius: "999px 999px 0 0",
+    background: "#23262e",
+    transformOrigin: "center",
+    animation: "nmzBlink 0.3s ease-out",
+  };
+
   const mouth: CSSProperties = {
     position: "absolute",
     left: "50%",
@@ -90,12 +107,21 @@ export function NumizGhost({ x, y, size, opacity = 0.95, glow }: NumizGhostProps
     <div style={wrapper} aria-hidden>
       <div style={glowLayer} />
       <div className="numiz-ghost-body" style={body}>
-        <div style={{ ...eye, left: "25%" }}>
-          <div style={glint} />
-        </div>
-        <div style={{ ...eye, right: "25%" }}>
-          <div style={glint} />
-        </div>
+        {expression === "shy" ? (
+          <>
+            <div style={{ ...closedEye, left: "25%" }} />
+            <div style={{ ...closedEye, right: "25%" }} />
+          </>
+        ) : (
+          <>
+            <div style={{ ...eye, left: "25%" }}>
+              <div style={glint} />
+            </div>
+            <div style={{ ...eye, right: "25%" }}>
+              <div style={glint} />
+            </div>
+          </>
+        )}
         <div style={mouth} />
       </div>
     </div>

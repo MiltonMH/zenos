@@ -42,7 +42,11 @@ function SlideIndicators({ currentSlide, onChange }: { currentSlide: "charger" |
   );
 }
 
-export default function Index() {
+interface IndexProps {
+  onLogout?: () => void;
+}
+
+export default function Index({ onLogout }: IndexProps) {
   const [activeTab, setActiveTab] = useState("home");
   const [showSettings, setShowSettings] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
@@ -81,6 +85,7 @@ export default function Index() {
             onBackgroundChange={setSelected}
             appMode={mode}
             onToggleAppMode={toggleMode}
+            onLogout={onLogout}
           />
         );
       case "statistics":

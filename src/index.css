@@ -189,9 +189,19 @@
   }
 
   /* Brand onboarding themes (see Numiz onboarding handoff doc).
-     Mint is the app's existing default palette, so it needs no override —
-     these three swap --primary/--primary-glow/--ring for the accent picked
-     during "Gör appen till din" and stay applied globally afterwards. */
+     Mint IS the app's default :root palette, so nothing needs this class to
+     render Mint — except one case: forcing Mint locally on a subtree (the
+     pre-auth Welcome/Login screens) when some OTHER theme is active globally
+     on <html> (a returning user's saved choice). CSS custom properties are
+     inherited, so a class on a descendant always wins over the ancestor's
+     .theme-* class for everything inside it. */
+  .theme-mint {
+    --primary: 173 50% 45%;
+    --primary-glow: 173 60% 55%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 173 50% 45%;
+  }
+
   .theme-lavendel {
     --primary: 239 84% 66%;
     --primary-glow: 235 90% 82%;
@@ -495,6 +505,13 @@
       transform: translateY(-4px) rotate(1deg) scale(0.98, 1.03);
       border-radius: 50% 50% 50% 50% / 62% 62% 40% 38%;
     }
+  }
+
+  /* One-shot "blink shut" for the mascot's closed-eye ("shy") expression —
+     plays once because the eye elements remount when expression changes. */
+  @keyframes nmzBlink {
+    from { transform: scaleY(0.15); }
+    to { transform: scaleY(1); }
   }
 
   /* Pill toggle styles */

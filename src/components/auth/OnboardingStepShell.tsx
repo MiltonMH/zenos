@@ -66,8 +66,7 @@ export function OnboardingStepShell({
         <Button
           onClick={onContinue}
           disabled={!canContinue || isSubmitting}
-          size="lg"
-          className="w-full h-12 text-base font-medium rounded-full"
+          className="w-full h-12 text-base font-medium rounded-2xl"
         >
           {isSubmitting ? "Ett ögonblick…" : continueLabel}
         </Button>

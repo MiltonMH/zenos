@@ -24,9 +24,10 @@ import { mockUser, fuseOptions, gridCompanies, electricityProviders } from "@/li
 
 interface EditProfileProps {
   onBack: () => void;
+  onLogout?: () => void;
 }
 
-export function EditProfile({ onBack }: EditProfileProps) {
+export function EditProfile({ onBack, onLogout }: EditProfileProps) {
   const [formData, setFormData] = useState({
     name: mockUser.name,
     email: mockUser.email,
@@ -289,7 +290,7 @@ export function EditProfile({ onBack }: EditProfileProps) {
         <Button
           variant="ghost"
           className="w-full h-10 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl"
-          onClick={() => console.log("Logout")}
+          onClick={onLogout}
         >
           <LogOut className="w-4 h-4 mr-2" />
           Logga ut
