@@ -4,6 +4,10 @@ import plugin from "tailwindcss/plugin";
 export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  // Brand theme classes are applied at runtime via `theme-${themeId}` in
+  // useAppTheme.ts, so Tailwind's static content scanner never sees the
+  // literal class names and would otherwise purge these @layer rules.
+  safelist: ["theme-lavendel", "theme-persika", "theme-ocean"],
   prefix: "",
   theme: {
     container: {

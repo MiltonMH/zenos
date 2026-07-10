@@ -73,17 +73,12 @@ export function HomeBatteryWater({ batteryLevel, mode }: HomeBatteryWaterProps) 
             <stop offset="97%" stopColor={sweepColor} stopOpacity="0.28" />
             <stop offset="100%" stopColor={sweepColor} stopOpacity="0" />
           </linearGradient>
+          {/* Static stdDeviation: an animated Gaussian blur forces the browser to
+              recompute the filter every frame for as long as charging is active.
+              The old pulse (0.75→1.05) was subtle enough that a fixed midpoint
+              reads the same while removing a continuous main-thread repaint. */}
           <filter id={`${sweepLayerId}-blur`} x="-10%" y="-10%" width="120%" height="120%">
-            <feGaussianBlur stdDeviation="0.75">
-              <animate
-                attributeName="stdDeviation"
-                values="0.75;0.75;1.05;0.75"
-                keyTimes="0;0.86;0.95;1"
-                dur="3.7s"
-                repeatCount="indefinite"
-                calcMode="linear"
-              />
-            </feGaussianBlur>
+            <feGaussianBlur stdDeviation="0.85" />
           </filter>
         </defs>
 

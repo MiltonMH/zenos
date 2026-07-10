@@ -125,22 +125,21 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
           animate={{ opacity: 1, x: 0 }}
           className={`flex flex-col gap-2 relative z-10 ${usesSharedCable ? "items-end ml-auto" : "items-center"}`}
         >
-          <motion.div
-            animate={mode === "charging" ? undefined : {
-              boxShadow: [
-                `0 0 0 0 ${config.color}00`,
-                `0 0 20px 5px ${config.color}30`,
-                `0 0 0 0 ${config.color}00`,
-              ],
-            }}
-            transition={mode === "charging" ? undefined : {
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+          <div
             className={mode === "charging" ? "relative w-48 max-h-sm:w-36 max-[375px]:w-32 max-[343px]:w-28 max-[320px]:w-24 overflow-hidden" : "relative w-48 h-48 max-h-sm:w-34 max-h-sm:h-34 max-[375px]:w-28 max-[375px]:h-28 max-[343px]:w-24 max-[343px]:h-24 max-[320px]:w-20 max-[320px]:h-20 overflow-visible"}
             style={mode === "v2h" ? { backgroundColor: `${config.color}15` } : undefined}
           >
+            {/* Pulsing glow: a separate layer animating opacity/scale (compositor-only)
+                instead of animating box-shadow directly, which forces a repaint every frame. */}
+            {mode !== "charging" && (
+              <motion.div
+                aria-hidden
+                className="absolute inset-0 rounded-full pointer-events-none"
+                style={{ background: `radial-gradient(circle, ${config.color}40 0%, transparent 72%)` }}
+                animate={{ opacity: [0, 1, 0], scale: [0.85, 1.08, 0.85] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              />
+            )}
             {mode === "charging" && (
               <img
                 src={chargingCarImage}
@@ -165,7 +164,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
                 className="w-full h-full object-contain scale-100 origin-center"
               />
             )}
-          </motion.div>
+          </div>
         </motion.div>
       </div>
 

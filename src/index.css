@@ -187,6 +187,31 @@
     --chart-v2h: 152 62% 50%;
     --chart-spent: 18 84% 64%;
   }
+
+  /* Brand onboarding themes (see Numiz onboarding handoff doc).
+     Mint is the app's existing default palette, so it needs no override —
+     these three swap --primary/--primary-glow/--ring for the accent picked
+     during "Gör appen till din" and stay applied globally afterwards. */
+  .theme-lavendel {
+    --primary: 239 84% 66%;
+    --primary-glow: 235 90% 82%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 239 84% 66%;
+  }
+
+  .theme-persika {
+    --primary: 15 46% 52%;
+    --primary-glow: 17 90% 78%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 15 46% 52%;
+  }
+
+  .theme-ocean {
+    --primary: 200 58% 41%;
+    --primary-glow: 197 70% 72%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 200 58% 41%;
+  }
 }
 
 @layer base {
@@ -211,6 +236,21 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+  }
+
+  /* Pure-CSS soft mesh, no image assets — reflects whichever brand theme
+     (.theme-lavendel etc.) is active on an ancestor, so onboarding steps
+     after the theme is picked (and the app afterwards) preview it live. */
+  .bg-theme-mesh {
+    background-color: hsl(var(--primary-glow) / 0.16);
+    background-image:
+      radial-gradient(120% 90% at 12% -10%, hsl(var(--primary-glow) / 0.55) 0%, transparent 55%),
+      radial-gradient(100% 90% at 100% 8%, hsl(var(--primary) / 0.26) 0%, transparent 55%),
+      radial-gradient(120% 100% at 50% 120%, hsl(var(--primary) / 0.38) 0%, transparent 60%),
+      linear-gradient(160deg, hsl(var(--primary-glow) / 0.35) 0%, hsl(0 0% 100% / 0.65) 45%, hsl(var(--primary-glow) / 0.22) 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: background-color 0.5s ease;
   }
 
   /* Rich dark atmosphere for the Mork background option */
@@ -429,6 +469,31 @@
     }
     50% {
       box-shadow: 0 0 0 6px hsl(var(--primary) / 0);
+    }
+  }
+
+  /* Numiz mascot: hover + lean + squash-stretch + blob-morph, all in one loop.
+     Lives on the BODY layer only (not its glow), so the light behind it holds still. */
+  .numiz-ghost-body {
+    animation: nmzGhost 4.8s ease-in-out infinite;
+  }
+
+  @keyframes nmzGhost {
+    0%, 100% {
+      transform: translateY(0px) rotate(-2deg) scale(1, 1);
+      border-radius: 52% 48% 46% 54% / 62% 64% 38% 40%;
+    }
+    30% {
+      transform: translateY(-7px) rotate(2.5deg) scale(0.96, 1.06);
+      border-radius: 48% 52% 54% 46% / 64% 60% 44% 36%;
+    }
+    55% {
+      transform: translateY(-12px) rotate(-1.5deg) scale(1.06, 0.93);
+      border-radius: 55% 45% 42% 58% / 58% 66% 34% 44%;
+    }
+    80% {
+      transform: translateY(-4px) rotate(1deg) scale(0.98, 1.03);
+      border-radius: 50% 50% 50% 50% / 62% 62% 40% 38%;
     }
   }
 

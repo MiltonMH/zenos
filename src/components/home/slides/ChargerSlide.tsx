@@ -172,12 +172,15 @@ function ActionButton({ icon: Icon, label, sublabel, isActive, isFrosty = false,
       onClick={onClick}
       className={cn(
         "relative flex flex-col items-center justify-center gap-1.5 rounded-2xl max-h-sm:rounded-sm overflow-hidden gradient-stroke-ring",
+        // No backdrop-blur here even when "frosty": these buttons already sit on
+        // top of .glass-main's own blurred backdrop, so re-blurring per-button
+        // added a 3x compositor cost for almost no visible difference.
         isDarkMode
           ? isFrosty
-            ? "bg-primary/10 backdrop-blur-xl shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+            ? "bg-primary/10 shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
             : "bg-primary/10"
           : isFrosty
-            ? "bg-white/45 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_8px_20px_rgba(0,0,0,0.06)]"
+            ? "bg-white/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_8px_20px_rgba(0,0,0,0.06)]"
             : "bg-white/30",
         "w-[98px] h-[100px] max-h-sm:w-[76px] max-h-sm:h-[80px] min-w-0 p-0"
       )}

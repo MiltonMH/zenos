@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff, Copy, Check, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,10 +48,13 @@ export function EditProfile({ onBack }: EditProfileProps) {
     setHasChanges(true);
   };
 
+  const copiedTimeout = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(copiedTimeout.current), []);
+
   const handleCopySerial = () => {
     navigator.clipboard.writeText(formData.serialNumber);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copiedTimeout.current = setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSave = () => {

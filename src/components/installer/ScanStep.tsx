@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScanLine, CheckCircle2, Plug, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,12 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
   const [phase, setPhase] = useState<ScanPhase>("idle");
   const [pin, setPin] = useState("");
 
+  const scanTimeout = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(scanTimeout.current), []);
+
   const handleSimulateScan = () => {
     setPhase("scanning");
-    setTimeout(() => setPhase("found"), 1400);
+    scanTimeout.current = setTimeout(() => setPhase("found"), 1400);
   };
 
   const found = mode === "camera" ? phase === "found" : pin.length === 4;
