@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { HomeHeader } from "@/components/layout/HomeHeader";
 import { ChargerSlide } from "@/components/home/slides/ChargerSlide";
 import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleModal";
@@ -118,6 +119,25 @@ export function InstallerHemTab({
             />
           </motion.div>
         </AnimatePresence>
+
+        {activeIndex > 0 && (
+          <button
+            onClick={() => goTo(activeIndex - 1)}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
+            aria-label="Föregående laddbox"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+        )}
+        {activeIndex < units.length - 1 && (
+          <button
+            onClick={() => goTo(activeIndex + 1)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
+            aria-label="Nästa laddbox"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        )}
       </div>
 
       {units.length > 1 && (

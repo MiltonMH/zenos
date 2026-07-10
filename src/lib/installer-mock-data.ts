@@ -44,18 +44,17 @@ export const initialInstalledUnits: InstalledUnit[] = [
   },
 ];
 
-export const installerFuseOptions = ["16A", "20A", "25A", "32A"];
+export const evModelsByBrand: Record<string, string[]> = {
+  Tesla: ["Tesla Model Y", "Tesla Model 3"],
+  Volvo: ["Volvo EX30", "Volvo XC40 Recharge"],
+  Volkswagen: ["Volkswagen ID.4"],
+  Kia: ["Kia EV6"],
+  Polestar: ["Polestar 2"],
+};
 
-export const evModels = [
-  "Tesla Model Y",
-  "Tesla Model 3",
-  "Volvo EX30",
-  "Volvo XC40 Recharge",
-  "Volkswagen ID.4",
-  "Kia EV6",
-  "Polestar 2",
-  "Annan modell",
-];
+export const evBrands = Object.keys(evModelsByBrand);
+
+export const evModels = Object.values(evModelsByBrand).flat();
 
 // Naive mock check used only to demo the "existing vs. new customer" branch from the spec.
 export function mockCustomerExists(email: string): boolean {

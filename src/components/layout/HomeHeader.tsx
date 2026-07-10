@@ -30,7 +30,7 @@ export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent 
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 items-center justify-center px-4 opacity-0" aria-hidden="true">
+      <div className="flex min-w-0 flex-1 items-center justify-center px-4 opacity-0 pointer-events-none" aria-hidden="true">
         {centerContent ?? (
           <h1 className="text-lg font-semibold text-foreground">
             Hej, {userName}

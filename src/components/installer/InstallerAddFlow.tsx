@@ -2,11 +2,13 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ScanStep } from "./ScanStep";
 import { ConfigureStep } from "./ConfigureStep";
-import { DetailsStep, type InstallerDetails } from "./DetailsStep";
+import { LockedQuestionFlow, type RequiredInstallerDetails } from "./LockedQuestionFlow";
+import { LockedRoomOverlay } from "./LockedRoomOverlay";
+import { OptionalDetailsStep, type OptionalInstallerDetails } from "./OptionalDetailsStep";
 import { DoneStep } from "./DoneStep";
 import type { InstalledUnit } from "@/lib/installer-mock-data";
 
-type FlowStep = "scan" | "configure" | "details" | "done";
+type FlowStep = "scan" | "configure" | "required" | "optional" | "done";
 
 interface CustomerDraft {
   email: string;
@@ -22,9 +24,10 @@ interface InstallerAddFlowProps {
 export function InstallerAddFlow({ onCancel, onComplete }: InstallerAddFlowProps) {
   const [step, setStep] = useState<FlowStep>("scan");
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft | null>(null);
+  const [requiredDetails, setRequiredDetails] = useState<RequiredInstallerDetails | null>(null);
   const [createdUnit, setCreatedUnit] = useState<InstalledUnit | null>(null);
 
-  const handleDetailsComplete = (_details: InstallerDetails) => {
+  const handleOptionalComplete = (_optional: OptionalInstallerDetails) => {
     if (!customerDraft) return;
     const unit: InstalledUnit = {
       id: `arc-${Date.now()}`,
@@ -58,13 +61,25 @@ export function InstallerAddFlow({ onCancel, onComplete }: InstallerAddFlowProps
               onBack={() => setStep("scan")}
               onNext={(data) => {
                 setCustomerDraft(data);
-                setStep("details");
+                setStep("required");
               }}
             />
           )}
 
-          {step === "details" && (
-            <DetailsStep onBack={() => setStep("configure")} onComplete={handleDetailsComplete} />
+          {step === "required" && (
+            <LockedRoomOverlay>
+              <LockedQuestionFlow
+                onBack={() => setStep("configure")}
+                onComplete={(details) => {
+                  setRequiredDetails(details);
+                  setStep("optional");
+                }}
+              />
+            </LockedRoomOverlay>
+          )}
+
+          {step === "optional" && (
+            <OptionalDetailsStep onBack={() => setStep("required")} onComplete={handleOptionalComplete} />
           )}
 
           {step === "done" && createdUnit && (
@@ -73,6 +88,7 @@ export function InstallerAddFlow({ onCancel, onComplete }: InstallerAddFlowProps
               onDone={() => onComplete(createdUnit)}
               onAddAnother={() => {
                 setCustomerDraft(null);
+                setRequiredDetails(null);
                 setCreatedUnit(null);
                 setStep("scan");
               }}
