@@ -32,7 +32,7 @@ export const backgrounds: BackgroundConfig[] = [
   {
     id: "white",
     label: "Ljus",
-    style: "bg-white",
+    style: "bg-lumen",
     preview: "bg-white",
   },
   {

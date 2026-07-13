@@ -44,12 +44,7 @@ export function AppBottomNav({ activeTab, onTabChange, items = defaultNavItems }
                 {isActive && (
                   <motion.div
                     layoutId="activeNavTab"
-                    className="absolute inset-0 rounded-full backdrop-blur-md"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 100%)",
-                      boxShadow: "0 4px 15px -3px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.5)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                    }}
+                    className="active-nav-pill absolute inset-0 rounded-full backdrop-blur-md"
                     transition={{
                       type: "spring",
                       stiffness: 300,

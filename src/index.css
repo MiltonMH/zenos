@@ -288,6 +288,75 @@
     border-color: rgba(164, 194, 230, 0.22);
   }
 
+  /* "Ljus" background option: glassmorphism reads as "glass" because a frosted,
+     saturated surface sits over something with color and light behind it — that's
+     what backdrop-blur + saturate is actually diffusing in "Mörk" (soft glows) and
+     "Mint"/"Färgrik" (gradient/photo). A flat solid page gives blur nothing to work
+     with, so it looked matte instead of glassy. These soft, low-opacity color blooms
+     restore that depth while staying airy and light — plus a clearer light-to-shadow
+     sheen on the glass surfaces themselves (top highlight, soft base) instead of flat
+     translucent white. */
+  .bg-lumen {
+    background-color: hsl(210 28% 97%);
+    background-image:
+      radial-gradient(120% 70% at 8% -12%, rgba(45, 212, 191, 0.18) 0%, rgba(45, 212, 191, 0) 55%),
+      radial-gradient(100% 75% at 105% 8%, rgba(196, 181, 253, 0.18) 0%, rgba(196, 181, 253, 0) 52%),
+      radial-gradient(90% 70% at 50% 118%, rgba(125, 211, 252, 0.14) 0%, rgba(125, 211, 252, 0) 55%);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .bg-lumen .glass-main {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.72) 80%);
+    border-color: rgba(255, 255, 255, 0.85);
+    box-shadow:
+      0 12px 40px rgba(30, 41, 59, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+
+  .bg-lumen .glass-main-energy-active {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.88) 0%,
+        rgba(255, 255, 255, 0.62) 46%,
+        rgba(255, 255, 255, 0.3) 68%,
+        rgba(255, 255, 255, 0.16) 100%
+      );
+  }
+
+  .bg-lumen .glass {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.28) 100%);
+    border-color: rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 8px 32px rgba(30, 41, 59, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .bg-lumen .glass-strong {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.72) 100%);
+    border-color: rgba(255, 255, 255, 0.85);
+    box-shadow:
+      0 14px 46px rgba(30, 41, 59, 0.12),
+      inset 0 2px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .bg-lumen .glass-subtle {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.24) 100%);
+    border-color: rgba(255, 255, 255, 0.65);
+    box-shadow:
+      0 4px 24px rgba(30, 41, 59, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .bg-lumen .active-nav-pill {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 100%);
+    box-shadow: 0 4px 16px -3px rgba(30, 41, 59, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+  }
+
   /* Glass morphism effects - Enhanced for light theme */
   .glass {
     @apply bg-white/30 backdrop-blur-2xl border border-white/50;
@@ -463,6 +532,13 @@
   @keyframes nmzBlink {
     from { transform: scaleY(0.15); }
     to { transform: scaleY(1); }
+  }
+
+  /* Active bottom-nav tab pill — overridden per background theme (e.g. .bg-lumen) below */
+  .active-nav-pill {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.15) 100%);
+    box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   /* Pill toggle styles */

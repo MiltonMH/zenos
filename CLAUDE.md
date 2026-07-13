@@ -17,4 +17,6 @@ Detta är styrande för alla UX/UI-beslut i appen — läs detta innan du föres
 - **Undvik scroll så ofta som möjligt.** Scroll är förvirrande UI. Föredra kompakta layouter (t.ex. tvåkolumnsrader för korta fält) framför staplade listor som kräver scroll. Scroll är en sista utväg, inte standard.
 - **Text är svart/mörk (`text-foreground`) som standard.** Reservera `text-primary`/accentfärger för ikoner, aktiva tillstånd (t.ex. aktiv flik), knappar med färgad bakgrund och medvetna "hero"-siffror (t.ex. elpris, procentvärden) — inte för vanlig brödtext eller inline-länkar. En länk ska synas genom understrykning/vikt, inte genom att vara teal.
 
+För den fullständiga, detaljerade design-referensen (exakta färgtokens, radie-skala, knapp-/fältrecept, animationstimings, kontrastregler och hela specen för maskoten Numiz) — se skillen `numiz-design` (`.claude/skills/numiz-design/SKILL.md`). Det här dokumentet är produktfilosofin (*varför*); den skillen är *hur*.
+
 Detta är ett levande dokument — uppdatera det när Milton förfinar eller ändrar riktningen.

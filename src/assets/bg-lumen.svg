@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 402 874" width="402" height="874">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8F6F2"/>
+      <stop offset="55%" stop-color="#F3F5F6"/>
+      <stop offset="100%" stop-color="#EDF1F2"/>
+    </linearGradient>
+    <linearGradient id="waveA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#E6ECEE" stop-opacity="0.45"/>
+    </linearGradient>
+    <linearGradient id="waveB" x1="0" y1="0" x2="1" y2="0.2">
+      <stop offset="0%" stop-color="#ECE8E0" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#E1EDEB" stop-opacity="0.45"/>
+    </linearGradient>
+    <radialGradient id="teal" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6FDCCB" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#6FDCCB" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="streak" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="36"/>
+    </filter>
+    <filter id="soft2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="64"/>
+    </filter>
+  </defs>
+
+  <rect width="402" height="874" fill="url(#base)"/>
+
+  <!-- subtle Zenion-teal glow, upper right — the one spot of color, for depth -->
+  <ellipse cx="332" cy="86" rx="220" ry="200" fill="url(#teal)" filter="url(#soft2)"/>
+
+  <!-- soft organic wave folds, same layered-depth idea as the Mint/Färgrik backgrounds -->
+  <path d="M0,522 C112,470 182,562 262,520 C332,484 372,542 402,512 L402,874 L0,874 Z" fill="url(#waveA)" filter="url(#soft)"/>
+  <path d="M0,646 C92,604 224,684 302,632 C352,600 382,652 402,632 L402,874 L0,874 Z" fill="url(#waveB)" filter="url(#soft)"/>
+
+  <!-- diagonal light streak/loop, gives the frosted glass above something to catch -->
+  <rect x="-120" y="118" width="660" height="86" fill="url(#streak)" filter="url(#soft)" transform="rotate(-18 201 437)"/>
+</svg>
