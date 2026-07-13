@@ -214,96 +214,91 @@
   }
 
 
-  /* Rich dark atmosphere for the Mork background option */
+  /* Rich dark atmosphere for the "Mork" background option. Used to be a fairly
+     saturated navy (hue ~220 at 22-28% saturation) which read as "blue" rather
+     than "black" — tokens and glass tints below are desaturated toward neutral
+     graphite instead. The actual artwork (soft folds + one brand-teal glow, for
+     depth) comes from bg-noir.svg via the `image` field in useBackground.ts;
+     the background-color here is just the fallback while that loads. */
   .bg-nocturne {
     /* Semantic token overrides so text/icons stay readable in dark mode */
-    --background: 220 24% 10%;
-    --foreground: 210 26% 95%;
-    --card: 220 22% 14%;
-    --card-foreground: 210 26% 95%;
-    --popover: 220 22% 13%;
-    --popover-foreground: 210 26% 95%;
-    --muted: 218 16% 18%;
-    --muted-foreground: 214 14% 72%;
-    --secondary: 216 18% 20%;
-    --secondary-foreground: 210 24% 90%;
-    --accent: 199 70% 56%;
-    --accent-foreground: 220 35% 10%;
-    --border: 218 16% 28%;
-    --input: 218 18% 16%;
+    --background: 220 10% 9%;
+    --foreground: 210 16% 95%;
+    --card: 220 9% 13%;
+    --card-foreground: 210 16% 95%;
+    --popover: 220 9% 12%;
+    --popover-foreground: 210 16% 95%;
+    --muted: 220 8% 17%;
+    --muted-foreground: 214 8% 70%;
+    --secondary: 220 8% 19%;
+    --secondary-foreground: 210 12% 90%;
+    --accent: 178 55% 52%;
+    --accent-foreground: 220 30% 10%;
+    --border: 220 9% 25%;
+    --input: 220 9% 15%;
     --ring: 172 62% 54%;
     --primary: 172 62% 54%;
-    --primary-foreground: 220 35% 10%;
+    --primary-foreground: 220 30% 10%;
 
-    background-color: hsl(222 28% 8%);
-    background-image:
-      radial-gradient(120% 80% at 10% -10%, rgba(74, 222, 207, 0.22) 0%, rgba(74, 222, 207, 0) 58%),
-      radial-gradient(110% 85% at 100% 0%, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0) 52%),
-      radial-gradient(90% 80% at 52% 118%, rgba(14, 116, 144, 0.28) 0%, rgba(14, 116, 144, 0) 58%),
-      linear-gradient(180deg, #121a2b 0%, #0d1423 58%, #0a101d 100%);
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-color: hsl(220 10% 8%);
   }
 
   .bg-nocturne .glass-main {
-    background: linear-gradient(145deg, rgba(25, 36, 58, 0.84) 0%, rgba(23, 34, 56, 0.66) 44%, rgba(15, 24, 44, 0.78) 100%);
-    border: 1.5px solid rgba(138, 171, 210, 0.26);
+    background: linear-gradient(145deg, rgba(28, 29, 33, 0.84) 0%, rgba(25, 26, 30, 0.66) 44%, rgba(17, 18, 21, 0.78) 100%);
+    border: 1.5px solid rgba(160, 168, 178, 0.24);
     box-shadow:
-      0 22px 60px rgba(3, 6, 14, 0.52),
-      inset 0 1px 0 rgba(191, 214, 255, 0.18);
+      0 22px 60px rgba(0, 0, 0, 0.52),
+      inset 0 1px 0 rgba(210, 215, 222, 0.16);
   }
 
   .bg-nocturne .glass-main-energy-active {
     background:
       linear-gradient(
         180deg,
-        rgba(36, 56, 78, 0.86) 0%,
-        rgba(31, 49, 72, 0.68) 46%,
-        rgba(18, 30, 51, 0.54) 70%,
-        rgba(12, 22, 40, 0.44) 100%
+        rgba(39, 41, 46, 0.86) 0%,
+        rgba(33, 35, 40, 0.68) 46%,
+        rgba(20, 21, 24, 0.54) 70%,
+        rgba(13, 14, 16, 0.44) 100%
       );
   }
 
   .bg-nocturne .glass {
     @apply border;
-    background: linear-gradient(145deg, rgba(26, 38, 61, 0.7) 0%, rgba(22, 33, 55, 0.56) 100%);
-    border-color: rgba(170, 199, 235, 0.24);
+    background: linear-gradient(145deg, rgba(29, 30, 34, 0.7) 0%, rgba(24, 25, 29, 0.56) 100%);
+    border-color: rgba(158, 168, 180, 0.22);
     box-shadow:
-      0 10px 34px rgba(4, 9, 20, 0.35),
-      inset 0 1px 0 rgba(194, 216, 255, 0.13);
+      0 10px 34px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(200, 206, 214, 0.12);
   }
 
   .bg-nocturne .glass-strong {
     @apply border;
-    background: linear-gradient(145deg, rgba(34, 49, 77, 0.9) 0%, rgba(26, 38, 62, 0.86) 100%);
-    border-color: rgba(177, 204, 236, 0.3);
+    background: linear-gradient(145deg, rgba(37, 39, 44, 0.9) 0%, rgba(28, 29, 33, 0.86) 100%);
+    border-color: rgba(165, 174, 186, 0.28);
     box-shadow:
-      0 12px 40px rgba(3, 8, 18, 0.44),
-      inset 0 1px 0 rgba(205, 224, 255, 0.2);
+      0 12px 40px rgba(0, 0, 0, 0.44),
+      inset 0 1px 0 rgba(210, 216, 224, 0.18);
   }
 
   .bg-nocturne .glass-subtle {
     @apply border;
-    background: linear-gradient(145deg, rgba(28, 41, 66, 0.58) 0%, rgba(22, 34, 56, 0.48) 100%);
-    border-color: rgba(164, 194, 230, 0.22);
+    background: linear-gradient(145deg, rgba(30, 32, 37, 0.58) 0%, rgba(24, 26, 30, 0.48) 100%);
+    border-color: rgba(150, 160, 172, 0.2);
   }
 
   /* "Ljus" background option: glassmorphism reads as "glass" because a frosted,
      saturated surface sits over something with color and light behind it — that's
      what backdrop-blur + saturate is actually diffusing in "Mörk" (soft glows) and
-     "Mint"/"Färgrik" (gradient/photo). A flat solid page gives blur nothing to work
-     with, so it looked matte instead of glassy. These soft, low-opacity color blooms
-     restore that depth while staying airy and light — plus a clearer light-to-shadow
-     sheen on the glass surfaces themselves (top highlight, soft base) instead of flat
-     translucent white. */
+     "Mint"/"Färgrik" (gradient/photo). A flat solid page gave blur nothing to work
+     with, so it looked matte instead of glassy — fixed by giving it real artwork
+     (bg-lumen.svg: soft folds, a light streak, one brand-teal glow) instead of a
+     solid color. Below: a clearer light-to-shadow sheen on the glass surfaces
+     themselves (top highlight, soft base) instead of flat translucent white. */
   .bg-lumen {
+    /* Fallback while bg-lumen.svg loads — the real artwork (soft folds, light
+       streak, one brand-teal glow, for depth) is set via the `image` field in
+       useBackground.ts / Index.tsx. */
     background-color: hsl(210 28% 97%);
-    background-image:
-      radial-gradient(120% 70% at 8% -12%, rgba(45, 212, 191, 0.18) 0%, rgba(45, 212, 191, 0) 55%),
-      radial-gradient(100% 75% at 105% 8%, rgba(196, 181, 253, 0.18) 0%, rgba(196, 181, 253, 0) 52%),
-      radial-gradient(90% 70% at 50% 118%, rgba(125, 211, 252, 0.14) 0%, rgba(125, 211, 252, 0) 55%);
-    background-repeat: no-repeat;
-    background-size: cover;
   }
 
   .bg-lumen .glass-main {

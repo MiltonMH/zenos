@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import bgColorful from "@/assets/bg-colorful.png";
+import bgLumen from "@/assets/bg-lumen.svg";
+import bgNoir from "@/assets/bg-noir.svg";
 
 // Exactly 4 themes — this IS the app's theme system, not just a backdrop:
 // picking one changes the background everywhere (here and in Profil →
@@ -34,12 +36,14 @@ export const backgrounds: BackgroundConfig[] = [
     label: "Ljus",
     style: "bg-lumen",
     preview: "bg-white",
+    image: bgLumen,
   },
   {
     id: "black",
     label: "Mörk",
     style: "bg-nocturne",
-    preview: "bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950",
+    preview: "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950",
+    image: bgNoir,
   },
 ];
 
