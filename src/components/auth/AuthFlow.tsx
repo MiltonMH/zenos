@@ -6,32 +6,35 @@ import { OnboardingFlow } from "./OnboardingFlow";
 import { DoneScreen } from "./DoneScreen";
 import { NumizGhost } from "./NumizGhost";
 import { GHOST_JOURNEY, GHOST_FLOW_STEPS, type GhostStage } from "./ghostJourney";
-import type { useAppTheme } from "@/hooks/useAppTheme";
+import { useBackground } from "@/hooks/useBackground";
 import { cn } from "@/lib/utils";
 
 interface AuthFlowProps {
   onComplete: () => void;
-  appTheme: ReturnType<typeof useAppTheme>;
 }
 
 type Screen = "welcome" | "login" | "onboarding" | "done";
 
-// Welcome/login keep today's actual background image (per design direction:
-// the very first screen always matches the current app), since no theme has
-// been chosen yet. Once a theme exists (onboarding step 1 onward, and the
-// post-signup/-login landing) the pure-CSS theme mesh takes over so the
-// chosen brand color shows through live.
-const imageBackgroundScreens: Screen[] = ["welcome", "login"];
-
 const HOLD_MS: Record<"created" | "login", number> = { created: 2800, login: 1400 };
 const LAND_MS = 1100;
 
-export function AuthFlow({ onComplete, appTheme }: AuthFlowProps) {
+// The mascot's own color — a constant, not per-background: only "Mörk"
+// swaps the accent token (via .bg-nocturne), and a light mint glow still
+// reads well against a dark backdrop, so there's no need to vary it.
+const NUMIZ_GLOW = "#6fdccb";
+
+export function AuthFlow({ onComplete }: AuthFlowProps) {
   const [screen, setScreen] = useState<Screen>("welcome");
   const [doneVariant, setDoneVariant] = useState<"created" | "login">("created");
   const [newAccountName, setNewAccountName] = useState("");
   const [isLanding, setIsLanding] = useState(false);
   const [onboardingStepIndex, setOnboardingStepIndex] = useState(0);
+
+  // Owned here (not lifted to App.tsx): AuthFlow and Index are never mounted
+  // at the same time, so each having its own useBackground() instance is
+  // safe, and this one gives Welcome/Login/onboarding a live preview as the
+  // theme step is picked — the SAME choice Profil → Bakgrund controls later.
+  const background = useBackground();
 
   const holdTimeout = useRef<ReturnType<typeof setTimeout>>();
   const landTimeout = useRef<ReturnType<typeof setTimeout>>();
@@ -51,12 +54,6 @@ export function AuthFlow({ onComplete, appTheme }: AuthFlowProps) {
     }, HOLD_MS[variant]);
   };
 
-  // Welcome/login always show Numiz's own Mint glow — same reasoning as the
-  // theme-mint class on those two screens (see WelcomeScreen/LoginScreen):
-  // they shouldn't reflect a theme left over from a previous session.
-  const mintGlow = appTheme.themes.find((t) => t.id === "mint")!.glow;
-  const activeGlow = appTheme.themes.find((t) => t.id === appTheme.themeId)?.glow ?? mintGlow;
-  const ghostGlow = imageBackgroundScreens.includes(screen) ? mintGlow : activeGlow;
   const ghostStage: GhostStage =
     screen === "welcome"
       ? "start"
@@ -76,17 +73,19 @@ export function AuthFlow({ onComplete, appTheme }: AuthFlowProps) {
 
   return (
     <div
-      className={cn(
-        "relative min-h-dvh flex flex-col",
-        imageBackgroundScreens.includes(screen) ? "bg-gradient-mesh" : "bg-theme-mesh"
-      )}
+      className={cn("relative min-h-dvh flex flex-col", background.current.style)}
+      style={
+        background.current.image
+          ? { backgroundImage: `url(${background.current.image})`, backgroundSize: "cover", backgroundPosition: "center" }
+          : undefined
+      }
     >
       <NumizGhost
         x={ghostSpot.x}
         y={ghostSpot.y}
         size={ghostSpot.size}
         opacity={ghostSpot.opacity}
-        glow={ghostGlow}
+        glow={NUMIZ_GLOW}
         expression={ghostSpot.expression ?? "open"}
       />
 
@@ -113,7 +112,7 @@ export function AuthFlow({ onComplete, appTheme }: AuthFlowProps) {
             {screen === "onboarding" && (
               <OnboardingFlow
                 onBack={() => setScreen("welcome")}
-                appTheme={appTheme}
+                background={background}
                 onStepChange={setOnboardingStepIndex}
                 onComplete={(name) => enterDone("created", name)}
               />

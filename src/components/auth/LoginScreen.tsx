@@ -10,7 +10,11 @@ interface LoginScreenProps {
   onCreateAccount: () => void;
 }
 
-const fieldClass = "h-12 rounded-2xl bg-white/50 text-center text-base font-medium text-foreground";
+// Fixed slate text, not text-foreground: this field's fill is always light
+// regardless of theme, but "Mörk" flips --foreground to a light color for
+// the rest of the page — which would inherit in here too and produce
+// light-on-light text. A light chip needs its own fixed dark text.
+const fieldClass = "h-12 rounded-2xl bg-white/75 text-center text-base font-medium text-slate-800 placeholder:text-slate-400";
 
 export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreenProps) {
   const [email, setEmail] = useState("");
@@ -30,14 +34,13 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
   };
 
   return (
-    // theme-mint: Welcome and Login share the same canonical background image
-    // (see AuthFlow's imageBackgroundScreens) and should match it — always
-    // Numiz's own color, not whatever theme is left over from a previous
-    // session, since we don't know which account is logging in yet anyway.
-    <div className="theme-mint flex flex-col flex-1 min-h-0 px-6 pt-2 pb-6">
+    <div className="flex flex-col flex-1 min-h-0 px-6 pt-2 pb-6">
+      {/* glass-subtle: floats directly on whichever background is active
+          (incl. the busy "Färgrik" photo), so it needs its own backdrop
+          to stay visible instead of relying on the page behind it. */}
       <button
         onClick={onBack}
-        className="p-2 -ml-2 self-start text-foreground/70 hover:text-foreground transition-colors"
+        className="glass-subtle self-start p-2 -ml-1 rounded-full text-slate-700 hover:text-slate-900 transition-colors"
         aria-label="Tillbaka"
       >
         <ArrowLeft className="w-6 h-6" />
@@ -46,7 +49,9 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
       {/* The mascot floats above this (rendered by AuthFlow, see ghostJourney's
           "login" spot) — this block just needs to sit clear of it. */}
       <div className="flex-1 flex flex-col items-center justify-center gap-6 pt-10">
-        <h1 className="text-xl font-semibold text-foreground">Välkommen tillbaka</h1>
+        <h1 className="text-xl font-semibold text-foreground [text-shadow:0_1px_16px_rgba(255,255,255,0.9)]">
+          Välkommen tillbaka
+        </h1>
 
         <div className="w-full max-w-xs space-y-3">
           <Input
@@ -70,7 +75,7 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
               aria-label={showPassword ? "Dölj lösenord" : "Visa lösenord"}
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -90,7 +95,7 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
         <button
           type="button"
           onClick={onCreateAccount}
-          className="w-full text-center text-sm text-foreground/80 hover:text-foreground underline underline-offset-2"
+          className="inline-block w-full text-center text-sm text-foreground/90 hover:text-foreground underline underline-offset-2 [text-shadow:0_1px_10px_rgba(255,255,255,0.9)]"
         >
           Inget konto? Skapa ett
         </button>

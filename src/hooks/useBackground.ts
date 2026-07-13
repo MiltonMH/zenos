@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import bgColorful from "@/assets/bg-colorful.png";
-import bgAurora from "@/assets/bg-aurora.png";
-import bgMint from "@/assets/bg-mint.png";
 
-export type BackgroundOption = "default" | "black" | "white" | "colorful" | "aurora" | "mint";
+// Exactly 4 themes — this IS the app's theme system, not just a backdrop:
+// picking one changes the background everywhere (here and in Profil →
+// Bakgrund, same underlying choice) and, for "Mörk", the accent/text tokens
+// too (see .bg-nocturne in index.css).
+export type BackgroundOption = "default" | "colorful" | "white" | "black";
 
 export interface BackgroundConfig {
   id: BackgroundOption;
@@ -16,21 +18,9 @@ export interface BackgroundConfig {
 export const backgrounds: BackgroundConfig[] = [
   {
     id: "default",
-    label: "Standard",
+    label: "Mint",
     style: "bg-gradient-mesh",
     preview: "bg-gradient-to-br from-teal-200 to-emerald-100",
-  },
-  {
-    id: "black",
-    label: "Mörk",
-    style: "bg-nocturne",
-    preview: "bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950",
-  },
-  {
-    id: "white",
-    label: "Ljus",
-    style: "bg-white",
-    preview: "bg-white",
   },
   {
     id: "colorful",
@@ -40,18 +30,16 @@ export const backgrounds: BackgroundConfig[] = [
     image: bgColorful,
   },
   {
-    id: "aurora",
-    label: "Aurora",
-    style: "",
-    preview: "",
-    image: bgAurora,
+    id: "white",
+    label: "Ljus",
+    style: "bg-white",
+    preview: "bg-white",
   },
   {
-    id: "mint",
-    label: "Mint",
-    style: "",
-    preview: "",
-    image: bgMint,
+    id: "black",
+    label: "Mörk",
+    style: "bg-nocturne",
+    preview: "bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950",
   },
 ];
 

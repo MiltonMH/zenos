@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect, type CSSProperties } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { OnboardingStepShell } from "./OnboardingStepShell";
-import type { useAppTheme } from "@/hooks/useAppTheme";
+import type { useBackground } from "@/hooks/useBackground";
 import { cn } from "@/lib/utils";
 
 interface OnboardingFlowProps {
   onBack: () => void;
   onComplete: (name: string) => void;
-  appTheme: ReturnType<typeof useAppTheme>;
+  background: ReturnType<typeof useBackground>;
   onStepChange?: (index: number) => void;
 }
 
@@ -22,9 +22,31 @@ const slideVariants = {
   exit: (direction: number) => ({ y: direction < 0 ? 14 : -14, opacity: 0 }),
 };
 
-const fieldClass = "h-12 rounded-2xl bg-white/50 text-center text-base font-medium text-foreground";
+// bg-white/75, not /50: on the busy "Färgrik" background, 50% let too much of
+// the photo bleed through, making typed/placeholder text harder to read.
+//
+// Fixed slate text, not text-foreground/text-muted-foreground: this field's
+// background is always light regardless of which of the 4 themes is active.
+// But "Mörk" overrides --foreground/--muted-foreground to LIGHT colors (for
+// text sitting on ITS dark page background) — which would land here too,
+// since custom properties inherit, producing near-invisible light-on-light
+// text. A chip/field with its own fixed light fill needs its own fixed dark
+// text, independent of the page-level theme.
+const fieldClass = "h-12 rounded-2xl bg-white/75 text-center text-base font-medium text-slate-800 placeholder:text-slate-400";
+// Backgrounds now include a busy photo (Färgrik) and a flat white one (Ljus),
+// so text sitting directly on them needs its own contrast instead of relying
+// on the backdrop. A soft white halo keeps headings readable over the photo's
+// darker patches without changing how they look on light backgrounds. This
+// one DOES use text-foreground (not fixed slate) because it sits directly on
+// the page, not on a light chip — it's meant to flip light-on-dark in Mörk.
+const titleClass = "text-xl font-semibold text-foreground [text-shadow:0_1px_16px_rgba(255,255,255,0.9)]";
+// Hints are small and light-weight, so a halo alone isn't enough — give them
+// the same "chip" backing as the theme swatch labels below, which already
+// reads clearly against any of the four backgrounds. Fixed slate text for the
+// same reason as fieldClass above.
+const hintClass = "text-xs text-slate-600 bg-white/65 backdrop-blur-sm px-3 py-1 rounded-full";
 
-export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: OnboardingFlowProps) {
+export function OnboardingFlow({ onBack, onComplete, background, onStepChange }: OnboardingFlowProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [name, setName] = useState("");
@@ -35,7 +57,7 @@ export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: O
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { themeId, setThemeId, themes } = appTheme;
+  const { selected, setSelected, backgrounds } = background;
 
   const submitTimeout = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => () => clearTimeout(submitTimeout.current), []);
@@ -97,38 +119,48 @@ export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: O
         >
           {key === "theme" && (
             <>
-              <h1 className="text-xl font-semibold text-foreground">Gör appen till din</h1>
+              <h1 className={titleClass}>Gör appen till din</h1>
               <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
-                {themes.map((theme) => {
-                  const isSelected = themeId === theme.id;
+                {backgrounds.map((bg) => {
+                  const isSelected = selected === bg.id;
                   return (
                     <button
-                      key={theme.id}
+                      key={bg.id}
                       type="button"
-                      onClick={() => setThemeId(theme.id)}
+                      onClick={() => setSelected(bg.id)}
                       className={cn(
-                        "relative h-24 rounded-3xl overflow-hidden transition-all duration-300",
-                        isSelected ? "ring ring-offset-2 ring-offset-background scale-[1.05]" : "opacity-90 hover:opacity-100"
+                        "relative h-24 rounded-3xl overflow-hidden transition-all duration-300 border border-black/10",
+                        bg.preview,
+                        isSelected
+                          ? "ring-2 ring-primary ring-offset-2 ring-offset-background scale-[1.05]"
+                          : "opacity-90 hover:opacity-100"
                       )}
-                      style={{
-                        background: `linear-gradient(135deg, ${theme.glow} 0%, ${theme.accent} 100%)`,
-                        ...(isSelected ? ({ "--tw-ring-color": theme.accent } as CSSProperties) : {}),
-                      }}
+                      style={
+                        bg.image
+                          ? { backgroundImage: `url(${bg.image})`, backgroundSize: "cover", backgroundPosition: "center" }
+                          : undefined
+                      }
                     >
-                      <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full bg-white/80 text-xs font-medium text-foreground shadow-sm">
-                        {theme.label}
+                      {/* border-black/10: without it this chip disappears into
+                          its own swatch on "Ljus" (white on white). Fixed
+                          slate text, not text-foreground: see fieldClass —
+                          this chip's fill is always light even when "Mörk"
+                          is the ACTIVE selection and has flipped --foreground
+                          to a light color for the rest of the page. */}
+                      <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full bg-white/85 border border-black/10 text-xs font-medium text-slate-800 shadow-sm">
+                        {bg.label}
                       </span>
                     </button>
                   );
                 })}
               </div>
-              <p className="text-xs text-muted-foreground">Välj ett tema – du kan ändra när du vill</p>
+              <p className={hintClass}>Välj ett tema – du kan ändra när du vill i Profil</p>
             </>
           )}
 
           {key === "name" && (
             <>
-              <h1 className="text-xl font-semibold text-foreground">Vad heter du?</h1>
+              <h1 className={titleClass}>Vad heter du?</h1>
               <div className="w-full max-w-xs">
                 <Input
                   autoFocus
@@ -139,13 +171,13 @@ export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: O
                   className={fieldClass}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">Så vi kan hälsa på dig</p>
+              <p className={hintClass}>Så vi kan hälsa på dig</p>
             </>
           )}
 
           {key === "email" && (
             <>
-              <h1 className="text-xl font-semibold text-foreground">Din mejladress?</h1>
+              <h1 className={titleClass}>Din mejladress?</h1>
               <div className="w-full max-w-xs">
                 <Input
                   type="email"
@@ -158,13 +190,13 @@ export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: O
                   className={fieldClass}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">Hit skickar vi viktiga saker – aldrig skräp</p>
+              <p className={hintClass}>Hit skickar vi viktiga saker – aldrig skräp</p>
             </>
           )}
 
           {key === "phone" && (
             <>
-              <h1 className="text-xl font-semibold text-foreground">Ditt telefonnummer?</h1>
+              <h1 className={titleClass}>Ditt telefonnummer?</h1>
               <div className="w-full max-w-xs">
                 <Input
                   type="tel"
@@ -177,13 +209,13 @@ export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: O
                   className={fieldClass}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">Om vi behöver nå dig</p>
+              <p className={hintClass}>Om vi behöver nå dig</p>
             </>
           )}
 
           {key === "address" && (
             <>
-              <h1 className="text-xl font-semibold text-foreground">Var bor du?</h1>
+              <h1 className={titleClass}>Var bor du?</h1>
               <div className="w-full max-w-xs">
                 <Input
                   autoFocus
@@ -194,13 +226,13 @@ export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: O
                   className={fieldClass}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">Adressen där din laddare finns</p>
+              <p className={hintClass}>Adressen där din laddare finns</p>
             </>
           )}
 
           {key === "password" && (
             <>
-              <h1 className="text-xl font-semibold text-foreground">Välj ett lösenord</h1>
+              <h1 className={titleClass}>Välj ett lösenord</h1>
               <div className="relative w-full max-w-xs">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -213,13 +245,13 @@ export function OnboardingFlow({ onBack, onComplete, appTheme, onStepChange }: O
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
                   aria-label={showPassword ? "Dölj lösenord" : "Visa lösenord"}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground">Minst 8 tecken</p>
+              <p className={hintClass}>Minst 8 tecken</p>
             </>
           )}
         </motion.div>

@@ -187,41 +187,6 @@
     --chart-v2h: 152 62% 50%;
     --chart-spent: 18 84% 64%;
   }
-
-  /* Brand onboarding themes (see Numiz onboarding handoff doc).
-     Mint IS the app's default :root palette, so nothing needs this class to
-     render Mint — except one case: forcing Mint locally on a subtree (the
-     pre-auth Welcome/Login screens) when some OTHER theme is active globally
-     on <html> (a returning user's saved choice). CSS custom properties are
-     inherited, so a class on a descendant always wins over the ancestor's
-     .theme-* class for everything inside it. */
-  .theme-mint {
-    --primary: 173 50% 45%;
-    --primary-glow: 173 60% 55%;
-    --primary-foreground: 0 0% 100%;
-    --ring: 173 50% 45%;
-  }
-
-  .theme-lavendel {
-    --primary: 239 84% 66%;
-    --primary-glow: 235 90% 82%;
-    --primary-foreground: 0 0% 100%;
-    --ring: 239 84% 66%;
-  }
-
-  .theme-persika {
-    --primary: 15 46% 52%;
-    --primary-glow: 17 90% 78%;
-    --primary-foreground: 0 0% 100%;
-    --ring: 15 46% 52%;
-  }
-
-  .theme-ocean {
-    --primary: 200 58% 41%;
-    --primary-glow: 197 70% 72%;
-    --primary-foreground: 0 0% 100%;
-    --ring: 200 58% 41%;
-  }
 }
 
 @layer base {
@@ -248,20 +213,6 @@
     background-repeat: no-repeat;
   }
 
-  /* Pure-CSS soft mesh, no image assets — reflects whichever brand theme
-     (.theme-lavendel etc.) is active on an ancestor, so onboarding steps
-     after the theme is picked (and the app afterwards) preview it live. */
-  .bg-theme-mesh {
-    background-color: hsl(var(--primary-glow) / 0.16);
-    background-image:
-      radial-gradient(120% 90% at 12% -10%, hsl(var(--primary-glow) / 0.55) 0%, transparent 55%),
-      radial-gradient(100% 90% at 100% 8%, hsl(var(--primary) / 0.26) 0%, transparent 55%),
-      radial-gradient(120% 100% at 50% 120%, hsl(var(--primary) / 0.38) 0%, transparent 60%),
-      linear-gradient(160deg, hsl(var(--primary-glow) / 0.35) 0%, hsl(0 0% 100% / 0.65) 45%, hsl(var(--primary-glow) / 0.22) 100%);
-    background-repeat: no-repeat;
-    background-size: cover;
-    transition: background-color 0.5s ease;
-  }
 
   /* Rich dark atmosphere for the Mork background option */
   .bg-nocturne {

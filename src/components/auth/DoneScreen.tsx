@@ -33,11 +33,19 @@ export function DoneScreen({ variant, name, isLanding }: DoneScreenProps) {
             >
               {variant === "created" ? (
                 <>
-                  <h1 className="text-2xl font-semibold text-foreground">Välkommen in{name ? `, ${name}` : ""}!</h1>
-                  <p className="text-sm text-muted-foreground">Numiz tar hand om resten</p>
+                  <h1 className="text-2xl font-semibold text-foreground [text-shadow:0_1px_20px_rgba(255,255,255,0.9)]">
+                    Välkommen in{name ? `, ${name}` : ""}!
+                  </h1>
+                  {/* Fixed slate, not text-muted-foreground: see WelcomeScreen's
+                      tagline chip for why — this fill is always light. */}
+                  <p className="inline-block text-sm text-slate-600 bg-white/65 backdrop-blur-sm px-3 py-1 rounded-full">
+                    Numiz tar hand om resten
+                  </p>
                 </>
               ) : (
-                <h1 className="text-2xl font-semibold text-foreground">Välkommen tillbaka!</h1>
+                <h1 className="text-2xl font-semibold text-foreground [text-shadow:0_1px_20px_rgba(255,255,255,0.9)]">
+                  Välkommen tillbaka!
+                </h1>
               )}
             </motion.div>
           )}

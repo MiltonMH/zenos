@@ -33,20 +33,27 @@ export function OnboardingStepShell({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 px-6 pt-2 pb-6">
+      {/* glass-subtle on both the back button and the dots' track: this shell
+          floats directly on whichever background is active (incl. the busy
+          "Färgrik" photo and the flat white "Ljus"), so the chrome needs its
+          own backdrop instead of relying on the page behind it. Fixed slate
+          icon color, not text-foreground: glass-subtle's fill is always
+          light, even when "Mörk" has flipped --foreground to light for the
+          rest of the page (custom properties inherit into this button too). */}
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="p-2 -ml-2 text-foreground/70 hover:text-foreground transition-colors"
+          className="glass-subtle p-2 -ml-1 rounded-full text-slate-700 hover:text-slate-900 transition-colors"
           aria-label="Tillbaka"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <div className="flex items-center gap-1.5">
+        <div className="glass-subtle flex items-center gap-1.5 rounded-full px-3 py-2">
           {Array.from({ length: stepCount }).map((_, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === stepIndex ? "w-5 bg-primary" : i < stepIndex ? "w-1.5 bg-primary/50" : "w-1.5 bg-primary/20"
+                i === stepIndex ? "w-5 bg-primary" : i < stepIndex ? "w-1.5 bg-primary/50" : "w-1.5 bg-primary/25"
               }`}
             />
           ))}
