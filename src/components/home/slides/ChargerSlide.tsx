@@ -4,6 +4,8 @@ import { Lock, LockOpen, Clock, Home, Unplug, LucideIcon } from "lucide-react";
 import chargerBoxImage from "@/assets/charger-box.png";
 import { EnergyFlowVisualization } from "../EnergyFlowVisualization";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getHomeTexts } from "@/lib/home-i18n";
 
 const CHARGER_LOCK_STORAGE_KEY = "zenos-home-charger-locked";
 
@@ -16,6 +18,8 @@ interface ChargerSlideProps {
 }
 
 export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel, onBatteryLevelChange }: ChargerSlideProps) {
+  const { language } = useLanguage();
+  const home = getHomeTexts(language);
   const isEnergyMode = mode === "charging" || mode === "v2h" || mode === "v2g";
 
   const [isLocked, setIsLocked] = useState(() => {
@@ -40,11 +44,11 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
 
   const getModeLabel = () => {
     switch (mode) {
-      case "idle": return "Idle";
-      case "charging": return "Ladda";
-      case "v2h": return "V2H";
-      case "v2g": return "V2G";
-      case "disconnected": return "Offline";
+      case "idle": return home.mode.idle;
+      case "charging": return home.mode.charging;
+      case "v2h": return home.mode.v2h;
+      case "v2g": return home.mode.v2g;
+      case "disconnected": return home.mode.disconnected;
     }
   };
 
@@ -76,7 +80,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
               {/* Product image */}
               <img
                 src={chargerBoxImage}
-                alt="ZenBox Charger"
+                alt={home.alt.charger}
                 draggable={false}
                 className="relative w-20 mobile-lg:w-36 max-w-[50vw] h-auto"
               />
@@ -93,7 +97,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
               <div className="relative">
                 <img
                   src={chargerBoxImage}
-                  alt="ZenBox Charger"
+                  alt={home.alt.charger}
                   draggable={false}
                   className="relative w-20 mobile-lg:w-36 max-w-[50vw] h-auto grayscale opacity-100"
                 />
@@ -123,8 +127,8 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
       <div className="flex gap-3 w-full justify-center mt-2">
         <ActionButton
           icon={isLocked ? Lock : LockOpen}
-          label="Lås"
-          sublabel={isLocked ? "Låst" : "Olåst"}
+          label={home.lock.label}
+          sublabel={isLocked ? home.lock.locked : home.lock.unlocked}
           isActive={isLocked}
           isFrosty={isEnergyMode}
           iconClassName={isLocked ? "text-primary" : "text-muted-foreground"}
@@ -132,7 +136,7 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
         />
         <ActionButton
           icon={Home}
-          label="Läge"
+          label={home.mode.label}
           sublabel={getModeLabel()}
           isActive={mode !== "idle"}
           isFrosty={isEnergyMode}
@@ -140,8 +144,8 @@ export function ChargerSlide({ mode, onModeChange, onScheduleClick, batteryLevel
         />
         <ActionButton
           icon={Clock}
-          label="Schema"
-          sublabel="Auto"
+          label={home.schedule.label}
+          sublabel={home.schedule.sublabel}
           isActive={true}
           isFrosty={isEnergyMode}
           onClick={onScheduleClick || (() => {})}

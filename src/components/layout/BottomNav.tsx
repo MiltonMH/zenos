@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Home, Zap, Calendar, BarChart3, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getNavTexts } from "@/lib/nav-i18n";
 
 interface NavItem {
   id: string;
@@ -8,20 +10,23 @@ interface NavItem {
   label: string;
 }
 
-const navItems: NavItem[] = [
-  { id: "home", icon: Home, label: "Hem" },
-  { id: "charging", icon: Zap, label: "Ladda" },
-  { id: "schedule", icon: Calendar, label: "Schema" },
-  { id: "stats", icon: BarChart3, label: "Statistik" },
-  { id: "settings", icon: Settings, label: "Inställningar" },
-];
-
 interface BottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+  const { language } = useLanguage();
+  const nav = getNavTexts(language);
+
+  const navItems: NavItem[] = [
+    { id: "home", icon: Home, label: nav.home },
+    { id: "charging", icon: Zap, label: nav.charging },
+    { id: "schedule", icon: Calendar, label: nav.schedule },
+    { id: "stats", icon: BarChart3, label: nav.statistics },
+    { id: "settings", icon: Settings, label: nav.settings },
+  ];
+
   return (
     <motion.nav
       initial={{ y: 100 }}

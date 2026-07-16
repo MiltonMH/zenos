@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { User, Phone, Zap, ShieldCheck, HardHat } from "lucide-react";
 import { ProfileInfoCard } from "@/components/profile/ProfileInfoCard";
 import { mockInstaller } from "@/lib/installer-mock-data";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getInstallerTexts } from "@/lib/installer-i18n";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,6 +31,9 @@ interface InstallerProfilTabProps {
 }
 
 export function InstallerProfilTab({ unitCount, onExitDevMode }: InstallerProfilTabProps) {
+  const { language } = useLanguage();
+  const t = getInstallerTexts(language).profil;
+
   return (
     <div className="flex flex-col flex-1 min-h-0 px-4 pt-6 pb-4">
       <motion.div
@@ -51,19 +56,23 @@ export function InstallerProfilTab({ unitCount, onExitDevMode }: InstallerProfil
         animate="visible"
       >
         <motion.div variants={itemVariants}>
-          <ProfileInfoCard icon={User} label="Kontaktperson" value={mockInstaller.contactName} />
+          <ProfileInfoCard icon={User} label={t.contactPerson} value={mockInstaller.contactName} />
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <ProfileInfoCard icon={Phone} label="Telefon" value={mockInstaller.phone} />
+          <ProfileInfoCard icon={Phone} label={t.phone} value={mockInstaller.phone} />
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <ProfileInfoCard icon={Zap} label="Installationer" value={`${unitCount} st`} />
+          <ProfileInfoCard
+            icon={Zap}
+            label={t.installations}
+            value={formatMessage(t.installationsCount, { count: unitCount })}
+          />
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <ProfileInfoCard icon={ShieldCheck} label="Certifiering" value={mockInstaller.certification} />
+          <ProfileInfoCard icon={ShieldCheck} label={t.certification} value={mockInstaller.certification} />
         </motion.div>
 
         {/* Dev-only: switch back to customer view. Never shown in production. */}
@@ -78,10 +87,8 @@ export function InstallerProfilTab({ unitCount, onExitDevMode }: InstallerProfil
                 <User className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground">Utvecklarläge</p>
-                <p className="text-[11px] text-muted-foreground">
-                  Just nu: Installatörsvy — tryck för att byta till kundvy
-                </p>
+                <p className="text-xs font-medium text-foreground">{t.devModeTitle}</p>
+                <p className="text-[11px] text-muted-foreground">{t.devModeSubtitle}</p>
               </div>
             </button>
           </motion.div>

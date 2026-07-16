@@ -3,9 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Check } from "lucide-react";
 import lightningIcon from "@/assets/Lightning_Vector1.svg";
 import { Button } from "@/components/ui/button";
-import { DaySelector, type DayKey, days } from "@/components/schedule/DaySelector";
+import { DaySelector, type DayKey } from "@/components/schedule/DaySelector";
 import { TimeRangePicker } from "@/components/schedule/TimeRangePicker";
 import { toast } from "sonner";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getScheduleTexts } from "@/lib/schedule-i18n";
+import { getCommonTexts } from "@/lib/common-i18n";
 
 interface ChargingScheduleModalProps {
   isOpen: boolean;
@@ -13,6 +16,9 @@ interface ChargingScheduleModalProps {
 }
 
 export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModalProps) {
+  const { language } = useLanguage();
+  const schedule = getScheduleTexts(language);
+  const common = getCommonTexts(language);
   const [selectedDays, setSelectedDays] = useState<DayKey[]>(["mon", "wed", "fri"]);
   const [timeRange, setTimeRange] = useState({ start: "21:00", end: "06:00" });
 
@@ -23,11 +29,11 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
   };
 
   const handleSave = () => {
-    toast.success("Schema sparat!");
+    toast.success(schedule.toastSaved);
     onClose();
   };
 
-  const getShortLabel = (key: DayKey) => days.find((d) => d.key === key)?.short || key;
+  const getShortLabel = (key: DayKey) => schedule.days[key].short;
 
   return (
     <AnimatePresence>
@@ -56,7 +62,7 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
               <div className="flex items-center justify-between p-4 pb-2">
                 <div className="flex items-center gap-2">
                   <img src={lightningIcon} alt="" className="w-5 h-5" />
-                  <h2 className="font-semibold text-lg">Laddschema</h2>
+                  <h2 className="font-semibold text-lg">{schedule.modalTitle}</h2>
                 </div>
                 <button
                   onClick={onClose}
@@ -70,7 +76,7 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
               <div className="px-4 pb-4 space-y-5">
                 {/* Days */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-3">Välj dagar</p>
+                  <p className="text-sm text-muted-foreground mb-3">{schedule.selectDays}</p>
                   <DaySelector
                     selectedDays={selectedDays}
                     onToggleDay={handleToggleDay}
@@ -80,7 +86,7 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
 
                 {/* Time */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-3">Laddtid</p>
+                  <p className="text-sm text-muted-foreground mb-3">{schedule.chargeTime}</p>
                   <TimeRangePicker
                     startTime={timeRange.start}
                     endTime={timeRange.end}
@@ -92,7 +98,11 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
                 {/* Summary */}
                 {selectedDays.length > 0 && (
                   <p className="text-xs text-center text-muted-foreground">
-                    Laddar {selectedDays.map(getShortLabel).join(", ")} kl {timeRange.start}–{timeRange.end}
+                    {formatMessage(schedule.summary, {
+                      days: selectedDays.map(getShortLabel).join(", "),
+                      start: timeRange.start,
+                      end: timeRange.end,
+                    })}
                   </p>
                 )}
 
@@ -103,7 +113,7 @@ export function ChargingScheduleModal({ isOpen, onClose }: ChargingScheduleModal
                   className="w-full h-11 rounded-xl gap-2"
                 >
                   <Check className="w-4 h-4" />
-                  Spara
+                  {common.save}
                 </Button>
               </div>
             </div>

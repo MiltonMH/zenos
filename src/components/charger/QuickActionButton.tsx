@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getPremiumTexts } from "@/lib/premium-i18n";
 
 interface QuickActionButtonProps {
   icon: LucideIcon;
@@ -21,6 +23,9 @@ export function QuickActionButton({
   isPremium = false,
   onClick,
 }: QuickActionButtonProps) {
+  const { language } = useLanguage();
+  const premium = getPremiumTexts(language);
+
   return (
     <motion.button
       onClick={onClick}
@@ -35,7 +40,7 @@ export function QuickActionButton({
     >
       {isPremium && (
         <span className="absolute -top-1 -right-1 px-2 py-0.5 text-[10px] font-semibold bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full">
-          PREMIUM
+          {premium.badge}
         </span>
       )}
       

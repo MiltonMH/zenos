@@ -1,11 +1,16 @@
 import { ArrowLeft } from "lucide-react";
 import { SettingsCarousel } from "@/components/settings/SettingsCarousel";
+import { useLanguage } from "@/lib/i18n";
+import { getSettingsTexts } from "@/lib/settings-i18n";
 
 interface SettingsProps {
   onBack: () => void;
 }
 
 export default function Settings({ onBack }: SettingsProps) {
+  const { language } = useLanguage();
+  const texts = getSettingsTexts(language);
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -16,7 +21,7 @@ export default function Settings({ onBack }: SettingsProps) {
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-lg font-semibold text-foreground">Inställningar</h1>
+        <h1 className="text-lg font-semibold text-foreground">{texts.title}</h1>
         <div className="w-11" />
       </div>
 

@@ -1,4 +1,6 @@
 import { ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
+import { getCommonTexts } from "@/lib/common-i18n";
 
 interface InstallerStepHeaderProps {
   title: string;
@@ -8,6 +10,9 @@ interface InstallerStepHeaderProps {
 }
 
 export function InstallerStepHeader({ title, onBack, stepIndex, stepCount }: InstallerStepHeaderProps) {
+  const { language } = useLanguage();
+  const common = getCommonTexts(language);
+
   return (
     <div className="flex flex-col gap-3 px-2 pt-2 pb-4">
       <div className="flex items-center justify-between">
@@ -15,7 +20,7 @@ export function InstallerStepHeader({ title, onBack, stepIndex, stepCount }: Ins
           <button
             onClick={onBack}
             className="p-2 -ml-2 text-foreground/80 hover:text-foreground transition-colors"
-            aria-label="Tillbaka"
+            aria-label={common.back}
           >
             <ArrowLeft className="w-6 h-6" />
           </button>

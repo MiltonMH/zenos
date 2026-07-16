@@ -5,6 +5,8 @@ import { HomeHeader } from "@/components/layout/HomeHeader";
 import { ChargerSlide } from "@/components/home/slides/ChargerSlide";
 import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleModal";
 import type { InstalledUnit } from "@/lib/installer-mock-data";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getInstallerTexts } from "@/lib/installer-i18n";
 
 interface InstallerHemTabProps {
   units: InstalledUnit[];
@@ -29,6 +31,8 @@ export function InstallerHemTab({
   onOpenSettings,
   onGoToDash,
 }: InstallerHemTabProps) {
+  const { language } = useLanguage();
+  const t = getInstallerTexts(language).hem;
   const [direction, setDirection] = useState(0);
   const [showSchedule, setShowSchedule] = useState(false);
 
@@ -72,9 +76,9 @@ export function InstallerHemTab({
   if (!unit) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 text-center">
-        <p className="text-sm text-muted-foreground">Inga installationer än.</p>
+        <p className="text-sm text-muted-foreground">{t.emptyTitle}</p>
         <button onClick={onGoToDash} className="text-sm font-medium text-foreground underline underline-offset-2">
-          Gå till Dash för att lägga till en
+          {t.emptyCta}
         </button>
       </div>
     );
@@ -124,7 +128,7 @@ export function InstallerHemTab({
           <button
             onClick={() => goTo(activeIndex - 1)}
             className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
-            aria-label="Föregående laddbox"
+            aria-label={t.ariaPreviousCharger}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -133,7 +137,7 @@ export function InstallerHemTab({
           <button
             onClick={() => goTo(activeIndex + 1)}
             className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
-            aria-label="Nästa laddbox"
+            aria-label={t.ariaNextCharger}
           >
             <ChevronRight className="w-6 h-6" />
           </button>
@@ -146,7 +150,7 @@ export function InstallerHemTab({
             <button
               key={u.id}
               onClick={() => goTo(i)}
-              aria-label={`Visa ${u.customerName}`}
+              aria-label={formatMessage(t.ariaShowCustomer, { name: u.customerName })}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 i === activeIndex ? "w-5 bg-primary" : "w-1.5 bg-primary/25"
               }`}

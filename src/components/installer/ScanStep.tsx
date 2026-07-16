@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { InstallerStepHeader } from "./InstallerStepHeader";
 import { PinCodeInput } from "./PinCodeInput";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getInstallerTexts } from "@/lib/installer-i18n";
 
 interface ScanStepProps {
   onBack: () => void;
@@ -15,6 +17,8 @@ type ScanPhase = "idle" | "scanning" | "found";
 type ScanMode = "camera" | "pin";
 
 export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
+  const { language } = useLanguage();
+  const t = getInstallerTexts(language).scan;
   const [mode, setMode] = useState<ScanMode>("camera");
   const [phase, setPhase] = useState<ScanPhase>("idle");
   const [pin, setPin] = useState("");
@@ -31,7 +35,7 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 px-4 pt-2 pb-4">
-      <InstallerStepHeader title="Skanna QR" onBack={onBack} stepIndex={0} stepCount={3} />
+      <InstallerStepHeader title={t.title} onBack={onBack} stepIndex={0} stepCount={3} />
 
       <div className="flex-1 flex flex-col items-center justify-center gap-6">
         <AnimatePresence mode="wait">
@@ -80,7 +84,7 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
               </div>
 
               <p className="text-sm text-muted-foreground text-center max-w-[240px]">
-                {phase === "found" ? "Laddbox hittad" : "Rikta kameran mot QR-koden på laddboxen"}
+                {phase === "found" ? t.cameraFound : t.cameraHint}
               </p>
 
               {phase !== "found" && (
@@ -91,7 +95,7 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
                     disabled={phase === "scanning"}
                     className="w-full h-11"
                   >
-                    {phase === "scanning" ? "Skannar…" : "Simulera skanning"}
+                    {phase === "scanning" ? t.scanning : t.simulateScan}
                   </Button>
                   <button
                     type="button"
@@ -99,7 +103,7 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
                     className="w-full flex items-center justify-center gap-1.5 text-sm font-medium text-foreground underline underline-offset-2"
                   >
                     <KeyRound className="w-3.5 h-3.5" />
-                    Ange pinkod istället
+                    {t.enterPinInstead}
                   </button>
                 </div>
               )}
@@ -112,18 +116,16 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center gap-6"
             >
-              <p className="text-base font-semibold text-foreground text-center">Vad är laddboxens pinkod?</p>
+              <p className="text-base font-semibold text-foreground text-center">{t.pinPrompt}</p>
               <PinCodeInput value={pin} onChange={setPin} />
-              <p className="text-sm text-muted-foreground text-center max-w-[240px]">
-                Den sitter på en dekal utanpå laddboxen — bra att veta om kameran krånglar
-              </p>
+              <p className="text-sm text-muted-foreground text-center max-w-[240px]">{t.pinHint}</p>
               {!found && (
                 <button
                   type="button"
                   onClick={() => setMode("camera")}
                   className="text-sm font-medium text-foreground underline underline-offset-2"
                 >
-                  Skanna QR istället
+                  {t.scanQrInstead}
                 </button>
               )}
             </motion.div>
@@ -144,13 +146,15 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
                     <Plug className="w-4 h-4 text-primary" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground">Zenion Arc</p>
-                    <p className="text-xs text-muted-foreground">Serienr ZEN-2026-QF81K</p>
+                    <p className="text-sm font-medium text-foreground">{t.productName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatMessage(t.serialTemplate, { serial: "ZEN-2026-QF81K" })}
+                    </p>
                   </div>
                 </div>
               </GlassCard>
               <Button onClick={onConfigure} className="w-full h-11 rounded-xl">
-                Konfigurera
+                {t.configure}
               </Button>
             </motion.div>
           )}

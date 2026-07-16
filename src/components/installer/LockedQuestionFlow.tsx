@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { LockedQuestionShell } from "./LockedQuestionShell";
 import { evBrands, evModelsByBrand, evModels } from "@/lib/installer-mock-data";
+import { useLanguage } from "@/lib/i18n";
+import { getInstallerTexts } from "@/lib/installer-i18n";
 
 export interface RequiredInstallerDetails {
   fuse: string;
@@ -35,6 +37,8 @@ const pillClass = (isSelected: boolean) =>
   }`;
 
 export function LockedQuestionFlow({ onBack, onComplete }: LockedQuestionFlowProps) {
+  const { language } = useLanguage();
+  const t = getInstallerTexts(language).locked;
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [fuse, setFuse] = useState("");
@@ -91,8 +95,8 @@ export function LockedQuestionFlow({ onBack, onComplete }: LockedQuestionFlowPro
               onBack={goBack}
               stepIndex={0}
               stepCount={questionKeys.length}
-              prompt="Vilken säkring har kunden?"
-              hint="Står på elcentralen"
+              prompt={t.fusePrompt}
+              hint={t.fuseHint}
               canContinue={canContinue}
               onContinue={goNext}
             >
@@ -103,7 +107,7 @@ export function LockedQuestionFlow({ onBack, onComplete }: LockedQuestionFlowPro
                     <InputOTPSlot index={1} className="h-16 w-14 text-2xl rounded-2xl border-2 bg-white/50" />
                   </InputOTPGroup>
                 </InputOTP>
-                <span className="text-2xl font-semibold text-muted-foreground">A</span>
+                <span className="text-2xl font-semibold text-muted-foreground">{t.fuseUnit}</span>
               </div>
             </LockedQuestionShell>
           )}
@@ -113,20 +117,20 @@ export function LockedQuestionFlow({ onBack, onComplete }: LockedQuestionFlowPro
               onBack={goBack}
               stepIndex={1}
               stepCount={questionKeys.length}
-              prompt="Hur mycket förbrukar kunden per år?"
-              hint="Står på elfakturan"
+              prompt={t.consumptionPrompt}
+              hint={t.consumptionHint}
               canContinue={canContinue}
               onContinue={goNext}
             >
               <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">kWh/år</p>
+                <p className="text-sm font-medium text-muted-foreground">{t.consumptionUnit}</p>
                 <input
                   type="tel"
                   inputMode="numeric"
                   autoFocus
                   value={consumption}
                   onChange={(e) => setConsumption(e.target.value.replace(/\D/g, ""))}
-                  placeholder="0"
+                  placeholder={t.consumptionPlaceholder}
                   className="w-full bg-transparent text-center text-4xl font-semibold text-foreground placeholder:text-muted-foreground/30 focus:outline-none"
                 />
               </div>
@@ -138,7 +142,7 @@ export function LockedQuestionFlow({ onBack, onComplete }: LockedQuestionFlowPro
               onBack={goBack}
               stepIndex={2}
               stepCount={questionKeys.length}
-              prompt="Vilken elbil har kunden?"
+              prompt={t.evPrompt}
               canContinue={canContinue}
               onContinue={goNext}
             >
@@ -151,7 +155,7 @@ export function LockedQuestionFlow({ onBack, onComplete }: LockedQuestionFlowPro
                     setEvModel(e.target.value);
                     setSelectedBrand(null);
                   }}
-                  placeholder="Sök eller välj märke…"
+                  placeholder={t.evSearchPlaceholder}
                   className="w-full bg-transparent text-lg font-semibold text-foreground placeholder:text-muted-foreground/40 focus:outline-none text-center border-b-2 border-primary/25 pb-2"
                 />
 
@@ -176,7 +180,7 @@ export function LockedQuestionFlow({ onBack, onComplete }: LockedQuestionFlowPro
                         onClick={() => setSelectedBrand(null)}
                         className="text-xs font-medium text-foreground underline underline-offset-2"
                       >
-                        ← Alla märken
+                        {t.evAllBrands}
                       </button>
                       <div className="space-y-1.5 max-h-[32vh] overflow-y-auto scrollbar-hide">
                         {evModelsByBrand[selectedBrand].map((model) => (

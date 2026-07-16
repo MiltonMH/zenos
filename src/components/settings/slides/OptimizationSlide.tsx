@@ -5,6 +5,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getSettingsTexts } from "@/lib/settings-i18n";
 
 interface OptimizationSlideProps {
   v2hEnabled: boolean;
@@ -27,16 +29,19 @@ export function OptimizationSlide({
   onDischargeLimitChange, 
   onOptimizationModeChange 
 }: OptimizationSlideProps) {
+  const { language } = useLanguage();
+  const settings = getSettingsTexts(language);
+  const opt = settings.optimization;
   const showWarning = !v2hEnabled && !v2gEnabled;
 
   return (
     <div className="px-4 py-2 pb-8">
-      <h2 className="text-base font-semibold text-foreground text-center mb-4">V2H & V2G</h2>
+      <h2 className="text-base font-semibold text-foreground text-center mb-4">{opt.title}</h2>
       
       <div className="space-y-3">
         {/* Discharge Limit - TOP */}
         <div className="glass-subtle rounded-2xl p-3 space-y-2">
-          <h3 className="font-medium text-foreground text-xs">Max urladdning</h3>
+          <h3 className="font-medium text-foreground text-xs">{opt.maxDischarge}</h3>
           <Slider
             value={dischargeLimit}
             onValueChange={onDischargeLimitChange}
@@ -47,7 +52,7 @@ export function OptimizationSlide({
           />
           <div className="flex items-center justify-between">
             <p className="text-[11px] text-muted-foreground">
-              Laddar aldrig ur under
+              {opt.neverDischargeBelow}
             </p>
             <span className="text-lg font-bold text-primary">{dischargeLimit[0]}%</span>
           </div>
@@ -67,8 +72,8 @@ export function OptimizationSlide({
             <RadioGroupItem value="savings" id="savings" className="shrink-0" />
             <span className="text-base">💰</span>
             <div className="flex-1 min-w-0">
-              <span className="font-medium text-xs text-foreground">Maximal Besparing</span>
-              <p className="text-[10px] text-muted-foreground truncate">Mest pengar • Mer slitage</p>
+              <span className="font-medium text-xs text-foreground">{opt.modeSavingsTitle}</span>
+              <p className="text-[10px] text-muted-foreground truncate">{opt.modeSavingsSubtitle}</p>
             </div>
           </Label>
 
@@ -85,10 +90,10 @@ export function OptimizationSlide({
             <Scale className="w-4 h-4 text-primary shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1">
-                <span className="font-medium text-xs text-foreground">Balanserad</span>
-                <Badge className="bg-success/20 text-success border-0 text-[9px] px-1 py-0">REC</Badge>
+                <span className="font-medium text-xs text-foreground">{opt.modeBalancedTitle}</span>
+                <Badge className="bg-success/20 text-success border-0 text-[9px] px-1 py-0">{opt.modeBalancedBadge}</Badge>
               </div>
-              <p className="text-[10px] text-muted-foreground truncate">Bra ekonomi • Skyddar batteriet</p>
+              <p className="text-[10px] text-muted-foreground truncate">{opt.modeBalancedSubtitle}</p>
             </div>
           </Label>
 
@@ -104,8 +109,8 @@ export function OptimizationSlide({
             <RadioGroupItem value="protection" id="protection" className="shrink-0" />
             <Shield className="w-4 h-4 text-primary shrink-0" />
             <div className="flex-1 min-w-0">
-              <span className="font-medium text-xs text-foreground">Batteriskydd</span>
-              <p className="text-[10px] text-muted-foreground truncate">Längsta liv • Mindre V2X</p>
+              <span className="font-medium text-xs text-foreground">{opt.modeProtectionTitle}</span>
+              <p className="text-[10px] text-muted-foreground truncate">{opt.modeProtectionSubtitle}</p>
             </div>
           </Label>
         </RadioGroup>
@@ -116,7 +121,7 @@ export function OptimizationSlide({
             <div className="flex items-center gap-2">
               <span className="text-sm">⚠️</span>
               <p className="text-[11px] text-warning-foreground">
-                V2H och V2G avstängda. Bilen laddar bara.
+                {opt.warningBothOff}
               </p>
             </div>
           </div>
@@ -130,8 +135,8 @@ export function OptimizationSlide({
                 <Home className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <h3 className="font-medium text-foreground text-sm leading-tight">V2H - Hemmet</h3>
-                <p className="text-[11px] text-muted-foreground">Ladda ur till hemmet</p>
+                <h3 className="font-medium text-foreground text-sm leading-tight">{opt.v2hTitle}</h3>
+                <p className="text-[11px] text-muted-foreground">{opt.v2hSubtitle}</p>
               </div>
             </div>
             <Switch checked={v2hEnabled} onCheckedChange={onV2hChange} />
@@ -147,10 +152,10 @@ export function OptimizationSlide({
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-medium text-foreground text-sm leading-tight">V2G - Elnätet</h3>
-                  <Badge className="bg-primary/20 text-primary border-0 text-[10px] px-1.5 py-0">PRO</Badge>
+                  <h3 className="font-medium text-foreground text-sm leading-tight">{opt.v2gTitle}</h3>
+                  <Badge className="bg-primary/20 text-primary border-0 text-[10px] px-1.5 py-0">{opt.v2gBadge}</Badge>
                 </div>
-                <p className="text-[11px] text-muted-foreground">Sälj och tjäna pengar</p>
+                <p className="text-[11px] text-muted-foreground">{opt.v2gSubtitle}</p>
               </div>
             </div>
             <Switch checked={v2gEnabled} onCheckedChange={onV2gChange} />

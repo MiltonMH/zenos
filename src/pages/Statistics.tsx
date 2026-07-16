@@ -23,15 +23,40 @@ import {
   getStatsForPeriod,
   type Period
 } from "@/lib/statistics-data";
+import { useLanguage } from "@/lib/i18n";
+import { getStatisticsTexts, type StatisticsTexts } from "@/lib/statistics-i18n";
+
+const dayLabelBySv: Record<string, keyof StatisticsTexts["days"]> = {
+  Mån: "mon",
+  Tis: "tue",
+  Ons: "wed",
+  Tor: "thu",
+  Fre: "fri",
+  Lör: "sat",
+  Sön: "sun",
+};
 
 export default function Statistics() {
+  const { language } = useLanguage();
+  const texts = getStatisticsTexts(language);
   const [period, setPeriod] = useState<Period>("V");
   const periods: Period[] = ["D", "V", "M", "Å"];
+
+  const localizeDay = (day: string) => {
+    const key = dayLabelBySv[day];
+    return key ? texts.days[key] : day;
+  };
+
+  const localizeRelativeDate = (date: string) => {
+    if (date === "Idag") return texts.relative.today;
+    if (date === "Igår") return texts.relative.yesterday;
+    return date;
+  };
 
   const getChartData = () => {
     switch (period) {
       case "D": return dailyData;
-      case "V": return weeklyData;
+      case "V": return weeklyData.map((row) => ({ ...row, day: localizeDay(row.day) }));
       case "M": return monthlyData;
       case "Å": return yearlyData;
     }
@@ -52,20 +77,11 @@ export default function Statistics() {
   const stats = getStatsForPeriod(period);
   const avgPrice = stats.cost / stats.charged;
 
-  const getPeriodLabel = () => {
-    switch (period) {
-      case "D": return "Idag";
-      case "V": return "Denna vecka";
-      case "M": return "Denna månad";
-      case "Å": return "Detta år";
-    }
-  };
-
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-4 pt-6 pb-2">
-        <h1 className="text-xl font-semibold text-foreground text-center">Statistik</h1>
+        <h1 className="text-xl font-semibold text-foreground text-center">{texts.title}</h1>
       </div>
 
       {/* Period Toggle */}
@@ -84,7 +100,7 @@ export default function Statistics() {
                   transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
                 />
               )}
-              <span className="relative z-10">{p}</span>
+              <span className="relative z-10">{texts.periodShort[p]}</span>
             </button>
           ))}
         </div>
@@ -100,10 +116,10 @@ export default function Statistics() {
           >
             <GlassCard className="p-3" variant="subtle">
               <div className="flex items-center gap-2 mb-1">
-                <img src={lightningIcon} alt="Laddat" className="w-4 h-4" />
-                <span className="text-xs text-muted-foreground">Laddat</span>
+                <img src={lightningIcon} alt={texts.alt.charged} className="w-4 h-4" />
+                <span className="text-xs text-muted-foreground">{texts.stat.charged}</span>
               </div>
-              <div className="text-l font-medium text-foreground">{stats.charged} kWh</div>
+              <div className="text-l font-medium text-foreground">{stats.charged} {texts.unit.kWh}</div>
             </GlassCard>
           </motion.div>
 
@@ -114,10 +130,10 @@ export default function Statistics() {
           >
             <GlassCard className="p-3" variant="subtle">
               <div className="flex items-center gap-2 mb-1">
-                <img src={batteryIcon} alt="V2H" className="w-4 h-4" />
-                <span className="text-xs text-muted-foreground">V2H</span>
+                <img src={batteryIcon} alt={texts.alt.v2h} className="w-4 h-4" />
+                <span className="text-xs text-muted-foreground">{texts.stat.v2h}</span>
               </div>
-              <div className="text-l font-medium text-foreground">{stats.v2h} kWh</div>
+              <div className="text-l font-medium text-foreground">{stats.v2h} {texts.unit.kWh}</div>
             </GlassCard>
           </motion.div>
 
@@ -129,9 +145,9 @@ export default function Statistics() {
             <GlassCard className="p-3" variant="subtle">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingDown className="w-4 h-4 text-destructive" />
-                <span className="text-xs text-muted-foreground">Kostnad</span>
+                <span className="text-xs text-muted-foreground">{texts.stat.cost}</span>
               </div>
-              <div className="text-l font-medium text-foreground">{stats.cost} kr</div>
+              <div className="text-l font-medium text-foreground">{stats.cost} {texts.unit.kr}</div>
             </GlassCard>
           </motion.div>
 
@@ -143,9 +159,9 @@ export default function Statistics() {
             <GlassCard className="p-3" variant="subtle">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-4 h-4 text-accent" />
-                <span className="text-xs text-muted-foreground">Snittpris</span>
+                <span className="text-xs text-muted-foreground">{texts.stat.avgPrice}</span>
               </div>
-              <div className="text-l font-medium text-foreground">{avgPrice.toFixed(2)} kr/kWh</div>
+              <div className="text-l font-medium text-foreground">{avgPrice.toFixed(2)} {texts.unit.krPerKwh}</div>
             </GlassCard>
           </motion.div>
         </div>
@@ -157,7 +173,7 @@ export default function Statistics() {
           transition={{ delay: 0.2 }}
         >
           <GlassCard className="p-4" variant="subtle">
-            <h3 className="text-sm font-medium text-foreground mb-3">Energiförbrukning</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">{texts.chart.energyTitle}</h3>
             <div className="h-[140px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -181,7 +197,7 @@ export default function Statistics() {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                    unit=" kWh"
+                    unit={` ${texts.unit.kWh}`}
                   />
                   <Area
                     type="monotone"
@@ -203,11 +219,11 @@ export default function Statistics() {
             <div className="flex justify-center gap-4 mt-2">
               <div className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                <span className="text-xs text-muted-foreground">Laddat</span>
+                <span className="text-xs text-muted-foreground">{texts.stat.charged}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-success" />
-                <span className="text-xs text-muted-foreground">V2H</span>
+                <span className="text-xs text-muted-foreground">{texts.stat.v2h}</span>
               </div>
             </div>
           </GlassCard>
@@ -220,7 +236,9 @@ export default function Statistics() {
           transition={{ delay: 0.25 }}
         >
           <GlassCard className="p-4" variant="subtle">
-            <h3 className="text-sm font-medium text-foreground mb-3">Kostnad per {period === "V" ? "dag" : "vecka"}</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">
+              {period === "V" ? texts.chart.costPerDay : texts.chart.costPerWeek}
+            </h3>
             <div className="h-[100px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -234,7 +252,7 @@ export default function Statistics() {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-                    unit=" kr"
+                    unit={` ${texts.unit.kr}`}
                   />
                   <Bar dataKey="cost" radius={[4, 4, 0, 0]}>
                     {data.map((entry, index) => (
@@ -258,7 +276,7 @@ export default function Statistics() {
           transition={{ delay: 0.3 }}
         >
           <GlassCard className="p-4" variant="subtle">
-            <h3 className="text-sm font-medium text-foreground mb-3">Laddningshistorik</h3>
+            <h3 className="text-sm font-medium text-foreground mb-3">{texts.history.title}</h3>
             <div className="space-y-2">
               {chargingHistory.map((session, index) => (
                 <motion.div
@@ -274,22 +292,22 @@ export default function Statistics() {
                     {session.type === "charging" ? (
                       <Plug className={`w-4 h-4 ${session.type === "charging" ? "text-primary" : "text-success"}`} />
                     ) : (
-                      <img src={batteryIcon} alt="V2H" className="w-4 h-4" />
+                      <img src={batteryIcon} alt={texts.alt.v2h} className="w-4 h-4" />
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-foreground">{session.date}</span>
+                      <span className="text-xs font-medium text-foreground">{localizeRelativeDate(session.date)}</span>
                       <span className="text-[10px] text-muted-foreground">{session.time}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs text-muted-foreground">
-                        {session.energy} kWh
+                        {session.energy} {texts.unit.kWh}
                       </span>
                       <span className="text-[10px] text-muted-foreground/60">•</span>
                       <span className="text-xs text-muted-foreground">
-                        {session.priceAvg.toFixed(2)} kr/kWh
+                        {session.priceAvg.toFixed(2)} {texts.unit.krPerKwh}
                       </span>
                     </div>
                   </div>
@@ -297,11 +315,11 @@ export default function Statistics() {
                   <div className="text-right">
                     {session.type === "charging" ? (
                       <span className="text-sm font-semibold text-foreground">
-                        {session.cost.toFixed(0)} kr
+                        {session.cost.toFixed(0)} {texts.unit.kr}
                       </span>
                     ) : (
                       <span className="text-xs font-medium text-success">
-                        Sparat
+                        {texts.saved}
                       </span>
                     )}
                   </div>

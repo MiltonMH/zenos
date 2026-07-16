@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Home, Car, Zap, Building2 } from "lucide-react";
+import { Home, Car, Zap, Building2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getHomeTexts } from "@/lib/home-i18n";
 
 type FlowDirection = "grid-to-car" | "car-to-home" | "car-to-grid" | "idle";
 
@@ -10,30 +12,33 @@ interface EnergyFlowCardProps {
   power: number;
 }
 
-const flowConfig = {
-  "grid-to-car": {
-    from: { icon: Zap, label: "Elnät" },
-    to: { icon: Car, label: "Bil" },
-    color: "energy-charging",
-  },
-  "car-to-home": {
-    from: { icon: Car, label: "Bil" },
-    to: { icon: Home, label: "Hem" },
-    color: "energy-v2h",
-  },
-  "car-to-grid": {
-    from: { icon: Car, label: "Bil" },
-    to: { icon: Building2, label: "Elnät" },
-    color: "energy-v2g",
-  },
-  idle: {
-    from: { icon: Car, label: "Bil" },
-    to: { icon: Home, label: "Hem" },
-    color: "muted",
-  },
-};
-
 export function EnergyFlowCard({ direction, power }: EnergyFlowCardProps) {
+  const { language } = useLanguage();
+  const home = getHomeTexts(language);
+
+  const flowConfig = {
+    "grid-to-car": {
+      from: { icon: Zap, label: home.energyFlowCard.nodeGrid },
+      to: { icon: Car, label: home.energyFlowCard.nodeCar },
+      color: "energy-charging",
+    },
+    "car-to-home": {
+      from: { icon: Car, label: home.energyFlowCard.nodeCar },
+      to: { icon: Home, label: home.energyFlowCard.nodeHome },
+      color: "energy-v2h",
+    },
+    "car-to-grid": {
+      from: { icon: Car, label: home.energyFlowCard.nodeCar },
+      to: { icon: Building2, label: home.energyFlowCard.nodeGrid },
+      color: "energy-v2g",
+    },
+    idle: {
+      from: { icon: Car, label: home.energyFlowCard.nodeCar },
+      to: { icon: Home, label: home.energyFlowCard.nodeHome },
+      color: "muted",
+    },
+  };
+
   const config = flowConfig[direction];
   const FromIcon = config.from.icon;
   const ToIcon = config.to.icon;
@@ -41,7 +46,7 @@ export function EnergyFlowCard({ direction, power }: EnergyFlowCardProps) {
 
   return (
     <GlassCard className="relative overflow-hidden">
-      <h3 className="text-sm font-medium text-muted-foreground mb-4">Energiflöde</h3>
+      <h3 className="text-sm font-medium text-muted-foreground mb-4">{home.energyFlowCard.title}</h3>
       
       <div className="flex items-center justify-between">
         {/* From */}
@@ -113,7 +118,7 @@ export function EnergyFlowCard({ direction, power }: EnergyFlowCardProps) {
           className="text-center mt-4"
         >
           <span className="text-2xl font-semibold">{power.toFixed(1)}</span>
-          <span className="text-muted-foreground ml-1">kW</span>
+          <span className="text-muted-foreground ml-1">{home.unit.kW}</span>
         </motion.div>
       )}
     </GlassCard>

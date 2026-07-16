@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Home, BarChart2, User, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getNavTexts } from "@/lib/nav-i18n";
 
 export interface NavItem {
   id: string;
@@ -8,19 +10,24 @@ export interface NavItem {
   label: string;
 }
 
-const defaultNavItems: NavItem[] = [
-  { id: "home", icon: Home, label: "Hem" },
-  { id: "statistics", icon: BarChart2, label: "Statistik" },
-  { id: "profile", icon: User, label: "Profil" },
-];
-
 interface AppBottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   items?: NavItem[];
 }
 
-export function AppBottomNav({ activeTab, onTabChange, items = defaultNavItems }: AppBottomNavProps) {
+export function AppBottomNav({ activeTab, onTabChange, items }: AppBottomNavProps) {
+  const { language } = useLanguage();
+  const nav = getNavTexts(language);
+
+  const defaultNavItems: NavItem[] = [
+    { id: "home", icon: Home, label: nav.home },
+    { id: "statistics", icon: BarChart2, label: nav.statistics },
+    { id: "profile", icon: User, label: nav.profile },
+  ];
+
+  const resolvedItems = items ?? defaultNavItems;
+
   return (
     <motion.nav
       initial={{ y: 100 }}
@@ -31,7 +38,7 @@ export function AppBottomNav({ activeTab, onTabChange, items = defaultNavItems }
         className="relative glass-main !py-2"
       >
         <div className="flex items-center justify-around relative z-10">
-          {items.map((item) => {
+          {resolvedItems.map((item) => {
             const isActive = activeTab === item.id;
             const Icon = item.icon;
 

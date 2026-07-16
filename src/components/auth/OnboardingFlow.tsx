@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { OnboardingStepShell } from "./OnboardingStepShell";
-import type { useBackground } from "@/hooks/useBackground";
+import type { useBackground, BackgroundOption } from "@/hooks/useBackground";
+import { useLanguage } from "@/lib/i18n";
+import { getOnboardingTexts } from "@/lib/onboarding-i18n";
 import { cn } from "@/lib/utils";
 
 interface OnboardingFlowProps {
@@ -47,6 +49,8 @@ const titleClass = "text-xl font-semibold text-foreground [text-shadow:0_1px_16p
 const hintClass = "text-xs text-slate-600 bg-white/65 backdrop-blur-sm px-3 py-1 rounded-full";
 
 export function OnboardingFlow({ onBack, onComplete, background, onStepChange }: OnboardingFlowProps) {
+  const { language } = useLanguage();
+  const i18n = getOnboardingTexts(language);
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [name, setName] = useState("");
@@ -67,6 +71,9 @@ export function OnboardingFlow({ onBack, onComplete, background, onStepChange }:
   }, [stepIndex, onStepChange]);
 
   const key: StepKey = stepKeys[stepIndex];
+
+  const themeLabel = (id: BackgroundOption) =>
+    i18n.themeLabels[id as keyof typeof i18n.themeLabels] ?? id;
 
   const goBack = () => {
     if (stepIndex === 0) {
@@ -104,7 +111,7 @@ export function OnboardingFlow({ onBack, onComplete, background, onStepChange }:
       canContinue={canContinue[key]}
       isSubmitting={key === "password" ? isSubmitting : false}
       onContinue={goNext}
-      continueLabel={key === "password" ? "Skapa konto" : "Fortsätt"}
+      continueLabel={key === "password" ? i18n.createAccount : i18n.continue}
     >
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
@@ -119,7 +126,7 @@ export function OnboardingFlow({ onBack, onComplete, background, onStepChange }:
         >
           {key === "theme" && (
             <>
-              <h1 className={titleClass}>Gör appen till din</h1>
+              <h1 className={titleClass}>{i18n.themeTitle}</h1>
               <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
                 {backgrounds.map((bg) => {
                   const isSelected = selected === bg.id;
@@ -148,91 +155,91 @@ export function OnboardingFlow({ onBack, onComplete, background, onStepChange }:
                           is the ACTIVE selection and has flipped --foreground
                           to a light color for the rest of the page. */}
                       <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full bg-white/85 border border-black/10 text-xs font-medium text-slate-800 shadow-sm">
-                        {bg.label}
+                        {themeLabel(bg.id)}
                       </span>
                     </button>
                   );
                 })}
               </div>
-              <p className={hintClass}>Välj ett tema – du kan ändra när du vill i Profil</p>
+              <p className={hintClass}>{i18n.themeHint}</p>
             </>
           )}
 
           {key === "name" && (
             <>
-              <h1 className={titleClass}>Vad heter du?</h1>
+              <h1 className={titleClass}>{i18n.nameTitle}</h1>
               <div className="w-full max-w-xs">
                 <Input
                   autoFocus
-                  placeholder="För- och efternamn"
+                  placeholder={i18n.namePlaceholder}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && canContinue.name && goNext()}
                   className={fieldClass}
                 />
               </div>
-              <p className={hintClass}>Så vi kan hälsa på dig</p>
+              <p className={hintClass}>{i18n.nameHint}</p>
             </>
           )}
 
           {key === "email" && (
             <>
-              <h1 className={titleClass}>Din mejladress?</h1>
+              <h1 className={titleClass}>{i18n.emailTitle}</h1>
               <div className="w-full max-w-xs">
                 <Input
                   type="email"
                   inputMode="email"
                   autoFocus
-                  placeholder="namn@mejl.se"
+                  placeholder={i18n.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && canContinue.email && goNext()}
                   className={fieldClass}
                 />
               </div>
-              <p className={hintClass}>Hit skickar vi viktiga saker – aldrig skräp</p>
+              <p className={hintClass}>{i18n.emailHint}</p>
             </>
           )}
 
           {key === "phone" && (
             <>
-              <h1 className={titleClass}>Ditt telefonnummer?</h1>
+              <h1 className={titleClass}>{i18n.phoneTitle}</h1>
               <div className="w-full max-w-xs">
                 <Input
                   type="tel"
                   inputMode="tel"
                   autoFocus
-                  placeholder="070-123 45 67"
+                  placeholder={i18n.phonePlaceholder}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && canContinue.phone && goNext()}
                   className={fieldClass}
                 />
               </div>
-              <p className={hintClass}>Om vi behöver nå dig</p>
+              <p className={hintClass}>{i18n.phoneHint}</p>
             </>
           )}
 
           {key === "address" && (
             <>
-              <h1 className={titleClass}>Var bor du?</h1>
+              <h1 className={titleClass}>{i18n.addressTitle}</h1>
               <div className="w-full max-w-xs">
                 <Input
                   autoFocus
-                  placeholder="Gata, postnummer, ort"
+                  placeholder={i18n.addressPlaceholder}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && canContinue.address && goNext()}
                   className={fieldClass}
                 />
               </div>
-              <p className={hintClass}>Adressen där din laddare finns</p>
+              <p className={hintClass}>{i18n.addressHint}</p>
             </>
           )}
 
           {key === "password" && (
             <>
-              <h1 className={titleClass}>Välj ett lösenord</h1>
+              <h1 className={titleClass}>{i18n.passwordTitle}</h1>
               <div className="relative w-full max-w-xs">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -246,12 +253,12 @@ export function OnboardingFlow({ onBack, onComplete, background, onStepChange }:
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
-                  aria-label={showPassword ? "Dölj lösenord" : "Visa lösenord"}
+                  aria-label={showPassword ? i18n.hidePassword : i18n.showPassword}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className={hintClass}>Minst 8 tecken</p>
+              <p className={hintClass}>{i18n.passwordHint}</p>
             </>
           )}
         </motion.div>

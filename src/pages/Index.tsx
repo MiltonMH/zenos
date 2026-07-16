@@ -15,14 +15,12 @@ import { useAppMode } from "@/hooks/useAppMode";
 import { useInstallerApp, type InstallerTab } from "@/hooks/useInstallerApp";
 import { InstallerRoot } from "@/components/installer/InstallerRoot";
 import { cn } from "@/lib/utils";
-
-const installerNavItems: NavItem[] = [
-  { id: "hem", icon: Home, label: "Hem" },
-  { id: "dash", icon: LayoutGrid, label: "Dash" },
-  { id: "profil", icon: User, label: "Profil" },
-];
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getNavTexts } from "@/lib/nav-i18n";
 
 function SlideIndicators({ currentSlide, onChange }: { currentSlide: "charger" | "stats" | "price"; onChange: (slide: "charger" | "stats" | "price") => void }) {
+  const { language } = useLanguage();
+  const nav = getNavTexts(language);
   const slides = ["charger", "stats", "price"] as const;
 
   return (
@@ -35,7 +33,7 @@ function SlideIndicators({ currentSlide, onChange }: { currentSlide: "charger" |
           className={`h-2 rounded-full transition-all duration-300 ${
             currentSlide === slide ? "w-3 bg-primary" : "w-2 bg-primary/30"
           }`}
-          aria-label={`Visa ${slide}`}
+          aria-label={formatMessage(nav.ariaShowSlide, { slide })}
         />
       ))}
     </div>
@@ -53,6 +51,14 @@ export default function Index({ onLogout }: IndexProps) {
   const [chargingMode, setChargingMode] = useState<"idle" | "charging" | "v2h" | "v2g" | "disconnected">("idle");
   const [batteryLevel, setBatteryLevel] = useState(50);
   const [activeHomeSlide, setActiveHomeSlide] = useState<"charger" | "stats" | "price">("charger");
+  const { language } = useLanguage();
+  const nav = getNavTexts(language);
+
+  const installerNavItems: NavItem[] = [
+    { id: "hem", icon: Home, label: nav.home },
+    { id: "dash", icon: LayoutGrid, label: nav.dash },
+    { id: "profil", icon: User, label: nav.profile },
+  ];
 
   const isEnergyHomeView =
     activeTab === "home" &&

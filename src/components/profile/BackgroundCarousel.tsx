@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, ChevronLeft, ChevronRight, Paintbrush } from "lucide-react";
 import { backgrounds, type BackgroundOption } from "@/hooks/useBackground";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getProfileTexts } from "@/lib/profile-i18n";
 
 interface BackgroundCarouselProps {
   selected: BackgroundOption;
@@ -10,6 +12,9 @@ interface BackgroundCarouselProps {
 }
 
 export function BackgroundCarousel({ selected, onSelect }: BackgroundCarouselProps) {
+  const { language } = useLanguage();
+  const texts = getProfileTexts(language).background;
+
   const [currentIndex, setCurrentIndex] = useState(() =>
     Math.max(0, backgrounds.findIndex((b) => b.id === selected))
   );
@@ -23,6 +28,7 @@ export function BackgroundCarousel({ selected, onSelect }: BackgroundCarouselPro
   };
 
   const bg = backgrounds[currentIndex];
+  const label = texts[bg.id];
 
   const variants = {
     enter: (d: number) => ({ x: d > 0 ? 200 : -200, opacity: 0 }),
@@ -34,7 +40,7 @@ export function BackgroundCarousel({ selected, onSelect }: BackgroundCarouselPro
     <div className="glass-subtle rounded-2xl p-4 space-y-3">
       <div className="flex items-center gap-2 mb-1">
         <Paintbrush className="w-4 h-4 text-primary" />
-        <h3 className="font-medium text-foreground text-sm">Bakgrund</h3>
+        <h3 className="font-medium text-foreground text-sm">{texts.title}</h3>
       </div>
 
       {/* Carousel */}
@@ -66,7 +72,7 @@ export function BackgroundCarousel({ selected, onSelect }: BackgroundCarouselPro
             )}
           >
             {bg.image ? (
-              <img src={bg.image} alt={bg.label} className="absolute inset-0 w-full h-full object-cover rounded-2xl" />
+              <img src={bg.image} alt={label} className="absolute inset-0 w-full h-full object-cover rounded-2xl" />
             ) : (
               <div className={cn("absolute inset-0 rounded-2xl", bg.preview)} />
             )}
@@ -83,7 +89,7 @@ export function BackgroundCarousel({ selected, onSelect }: BackgroundCarouselPro
                 bg.id === "black" ? "text-white" : "text-foreground"
               )}
             >
-              {bg.label}
+              {label}
             </span>
           </motion.button>
         </AnimatePresence>

@@ -10,6 +10,9 @@ import { BackgroundCarousel } from "@/components/profile/BackgroundCarousel";
 import { mockUser } from "@/lib/mock-data";
 import { type BackgroundOption } from "@/hooks/useBackground";
 import { type AppMode } from "@/hooks/useAppMode";
+import { formatMessage, useLanguage, type AppLanguage } from "@/lib/i18n";
+import { getProfileTexts } from "@/lib/profile-i18n";
+import { cn } from "@/lib/utils";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,10 +44,14 @@ interface ProfileProps {
 
 export default function Profile({ selectedBackground, onBackgroundChange, appMode, onToggleAppMode, onLogout }: ProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const { language, setLanguage } = useLanguage();
+  const texts = getProfileTexts(language);
 
   if (isEditing) {
     return <EditProfile onBack={() => setIsEditing(false)} onLogout={onLogout} />;
   }
+
+  const modeLabel = appMode === "installer" ? texts.devMode.installerView : texts.devMode.customerView;
 
   return (
     <div className="flex flex-col h-full px-4 pt-6 pb-4">
@@ -74,7 +81,7 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
         <motion.div variants={itemVariants}>
           <ProfileInfoCard
             icon={Mail}
-            label="E-post"
+            label={texts.email}
             value={mockUser.email}
           />
         </motion.div>
@@ -82,14 +89,14 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
         <motion.div variants={itemVariants}>
           <ProfileInfoCard
             icon={Crown}
-            label="Prenumeration"
-            value={mockUser.isPremium ? "Premium" : "Gratis"}
+            label={texts.subscription}
+            value={mockUser.isPremium ? texts.subscriptionPremium : texts.subscriptionFree}
             badge={{
-              text: mockUser.isPremium ? "Premium" : "Gratis",
+              text: mockUser.isPremium ? texts.subscriptionPremium : texts.subscriptionFree,
               variant: mockUser.isPremium ? "premium" : "free",
             }}
             action={{
-              label: mockUser.isPremium ? "Hantera" : "Uppgradera",
+              label: mockUser.isPremium ? texts.subscriptionManage : texts.subscriptionUpgrade,
               onClick: () => console.log("Subscription action"),
               variant: mockUser.isPremium ? "secondary" : "default",
             }}
@@ -99,16 +106,16 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
         <motion.div variants={itemVariants}>
           <ProfileInfoCard
             icon={lightningIcon}
-            label="Laddbox"
+            label={texts.charger}
             value={mockUser.charger.model}
-            secondaryValue={`Version ${mockUser.charger.version}`}
+            secondaryValue={formatMessage(texts.versionTemplate, { version: mockUser.charger.version })}
           />
         </motion.div>
 
         <motion.div variants={itemVariants}>
           <ProfileInfoCard
             icon={CarIcon}
-            label="Bil"
+            label={texts.car}
             value={mockUser.carModel}
           />
         </motion.div>
@@ -116,10 +123,10 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
         <motion.div variants={itemVariants}>
           <ProfileInfoCard
             icon={Wrench}
-            label="Installatör"
+            label={texts.installer}
             value={mockUser.installer}
             action={{
-              label: "Kontakta",
+              label: texts.contactInstaller,
               onClick: () => console.log("Contact installer"),
               variant: "secondary",
             }}
@@ -138,9 +145,9 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
                 <HardHat className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground">Utvecklarläge</p>
+                <p className="text-xs font-medium text-foreground">{texts.devMode.title}</p>
                 <p className="text-[11px] text-muted-foreground">
-                  Just nu: {appMode === "installer" ? "Installatörsvy" : "Kundvy"} — tryck för att byta
+                  {formatMessage(texts.devMode.subtitle, { mode: modeLabel })}
                 </p>
               </div>
             </button>
@@ -161,14 +168,48 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
                 <LogOut className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground">Visa inloggning (dev)</p>
+                <p className="text-xs font-medium text-foreground">{texts.devLogin.title}</p>
                 <p className="text-[11px] text-muted-foreground">
-                  Loggar ut och visar Skapa konto / Logga in / Numiz
+                  {texts.devLogin.subtitle}
                 </p>
               </div>
             </button>
           </motion.div>
         )}
+
+        {/* Language switcher */}
+        <motion.div variants={itemVariants}>
+          <div className="glass p-3.5 rounded-2xl flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground">{texts.language}</p>
+            </div>
+            <div className="pill-toggle relative shrink-0">
+              {([
+                { id: "sv" as AppLanguage, label: texts.swedish },
+                { id: "en" as AppLanguage, label: texts.english },
+              ]).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setLanguage(opt.id)}
+                  className={cn(
+                    "pill-toggle-item relative z-10 px-3",
+                    language === opt.id ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {language === opt.id && (
+                    <motion.span
+                      layoutId="profile-language-indicator"
+                      className="absolute inset-0 rounded-full bg-primary/20 border border-primary/35 shadow-sm"
+                      transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
+                    />
+                  )}
+                  <span className="relative z-10 text-xs font-medium">{opt.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </motion.div>
 
         {/* Background Picker */}
         <motion.div variants={itemVariants}>
@@ -191,7 +232,7 @@ export default function Profile({ selectedBackground, onBackgroundChange, appMod
           className="w-full h-11 text-sm font-medium rounded-2xl shadow-sm"
         >
           <Pencil className="w-4 h-4 mr-2" />
-          Redigera Profil
+          {texts.editProfile}
         </Button>
       </motion.div>
     </div>

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useNativeApp } from "@/hooks/useNativeApp";
 import { useAuthFlow } from "@/hooks/useAuthFlow";
+import { LanguageProvider } from "@/lib/i18n";
 import { AuthFlow } from "@/components/auth/AuthFlow";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -18,21 +19,23 @@ const App = () => {
 
   return (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      {isAuthenticated ? (
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index onLogout={logout} />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      ) : (
-        <AuthFlow onComplete={completeAuth} />
-      )}
-    </TooltipProvider>
+    <LanguageProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {isAuthenticated ? (
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index onLogout={logout} />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        ) : (
+          <AuthFlow onComplete={completeAuth} />
+        )}
+      </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
   );
 };

@@ -7,6 +7,8 @@ import { LockedRoomOverlay } from "./LockedRoomOverlay";
 import { OptionalDetailsStep, type OptionalInstallerDetails } from "./OptionalDetailsStep";
 import { DoneStep } from "./DoneStep";
 import type { InstalledUnit } from "@/lib/installer-mock-data";
+import { useLanguage } from "@/lib/i18n";
+import { getInstallerTexts } from "@/lib/installer-i18n";
 
 type FlowStep = "scan" | "configure" | "required" | "optional" | "done";
 
@@ -22,6 +24,8 @@ interface InstallerAddFlowProps {
 }
 
 export function InstallerAddFlow({ onCancel, onComplete }: InstallerAddFlowProps) {
+  const { language } = useLanguage();
+  const t = getInstallerTexts(language).dash;
   const [step, setStep] = useState<FlowStep>("scan");
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft | null>(null);
   const [requiredDetails, setRequiredDetails] = useState<RequiredInstallerDetails | null>(null);
@@ -33,7 +37,7 @@ export function InstallerAddFlow({ onCancel, onComplete }: InstallerAddFlowProps
       id: `arc-${Date.now()}`,
       customerName: customerDraft.email,
       address: customerDraft.address,
-      installedDate: "Idag",
+      installedDate: t.installedToday,
       status: customerDraft.customerExists ? "active" : "awaiting_customer",
       chargingMode: "idle",
       batteryLevel: 0,

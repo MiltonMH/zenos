@@ -4,8 +4,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
 import { useCarousel } from "@/hooks/useCarousel";
+import { useLanguage } from "@/lib/i18n";
+import { getSettingsTexts } from "@/lib/settings-i18n";
 
 export function SettingsCarousel() {
+  const { language } = useLanguage();
+  const settings = getSettingsTexts(language);
+
   // Settings state
   const [chargeLimit, setChargeLimit] = useState([90]);
   const [v2hEnabled, setV2hEnabled] = useState(false);
@@ -16,7 +21,7 @@ export function SettingsCarousel() {
   const slides = [
     {
       id: "status",
-      label: "Laddning",
+      label: settings.tabCharging,
       component: (
         <StatusSlide
           chargeLimit={chargeLimit}
@@ -26,7 +31,7 @@ export function SettingsCarousel() {
     },
     {
       id: "v2x",
-      label: "V2X",
+      label: settings.tabV2x,
       component: (
         <OptimizationSlide
           v2hEnabled={v2hEnabled}

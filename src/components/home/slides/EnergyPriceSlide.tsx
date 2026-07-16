@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getHomeTexts } from "@/lib/home-i18n";
 
 type Tab = "today" | "tomorrow";
 
@@ -33,6 +35,8 @@ const todayPrices = [
 ];
 
 export function EnergyPriceSlide() {
+  const { language } = useLanguage();
+  const home = getHomeTexts(language);
   const [tab, setTab] = useState<Tab>("today");
 
   const priceData = todayPrices;
@@ -73,7 +77,7 @@ export function EnergyPriceSlide() {
   return (
     <div className="h-full flex flex-col items-center px-4 pt-0 pb-3 max-h-sm:pb-2 overflow-y-auto">
       {/* Title */}
-      <h2 className="text-lg font-semibold text-foreground mb-2 mt-1">Elpris idag</h2>
+      <h2 className="text-lg font-semibold text-foreground mb-2 mt-1">{home.energyPrice.title}</h2>
 
       {/* Tab Toggle */}
       <div className="pill-toggle mb-3">
@@ -88,7 +92,7 @@ export function EnergyPriceSlide() {
               transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
             />
           )}
-          <span className="relative z-10">idag</span>
+          <span className="relative z-10">{home.energyPrice.tabToday}</span>
         </button>
         <button
           onClick={() => setTab("tomorrow")}
@@ -101,7 +105,7 @@ export function EnergyPriceSlide() {
               transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
             />
           )}
-          <span className="relative z-10">imorgon</span>
+          <span className="relative z-10">{home.energyPrice.tabTomorrow}</span>
         </button>
       </div>
 
@@ -114,10 +118,10 @@ export function EnergyPriceSlide() {
         >
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingDown className="w-3.5 h-3.5 text-success" />
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Lägst</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{home.energyPrice.lowest}</span>
           </div>
-          <div className="text-lg font-bold text-success">{minPrice.toFixed(2)} kr</div>
-          <div className="text-xs text-muted-foreground">kl {formatHour(minHour)}</div>
+          <div className="text-lg font-bold text-success">{minPrice.toFixed(2)} {home.unit.kr}</div>
+          <div className="text-xs text-muted-foreground">{formatMessage(home.energyPrice.atTime, { time: formatHour(minHour) })}</div>
         </motion.div>
 
         <motion.div
@@ -128,10 +132,10 @@ export function EnergyPriceSlide() {
         >
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingUp className="w-3.5 h-3.5 text-destructive" />
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Högst</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{home.energyPrice.highest}</span>
           </div>
-          <div className="text-lg font-bold text-destructive">{maxPrice.toFixed(2)} kr</div>
-          <div className="text-xs text-muted-foreground">kl {formatHour(maxHour)}</div>
+          <div className="text-lg font-bold text-destructive">{maxPrice.toFixed(2)} {home.unit.kr}</div>
+          <div className="text-xs text-muted-foreground">{formatMessage(home.energyPrice.atTime, { time: formatHour(maxHour) })}</div>
         </motion.div>
       </div>
 
@@ -140,8 +144,8 @@ export function EnergyPriceSlide() {
         <div className="relative glass-subtle rounded-2xl p-4 w-full max-w-[300px]">
           {/* Current price label */}
           <div className="absolute top-3 right-4 text-right">
-            <div className="text-[10px] text-muted-foreground">Just nu</div>
-            <div className="text-base font-bold text-primary">{currentPrice.toFixed(2)} kr/kWh</div>
+            <div className="text-[10px] text-muted-foreground">{home.energyPrice.justNow}</div>
+            <div className="text-base font-bold text-primary">{currentPrice.toFixed(2)} {home.unit.krPerKwh}</div>
           </div>
 
           {/* Chart area */}

@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
+import { getScheduleTexts } from "@/lib/schedule-i18n";
 
 export type DayKey = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 
@@ -10,17 +12,18 @@ interface DaySelectorProps {
   showLabels?: boolean;
 }
 
-export const days: { key: DayKey; label: string; short: string; letter: string }[] = [
-  { key: "mon", label: "Måndag", short: "Mån", letter: "M" },
-  { key: "tue", label: "Tisdag", short: "Tis", letter: "T" },
-  { key: "wed", label: "Onsdag", short: "Ons", letter: "O" },
-  { key: "thu", label: "Torsdag", short: "Tor", letter: "T" },
-  { key: "fri", label: "Fredag", short: "Fre", letter: "F" },
-  { key: "sat", label: "Lördag", short: "Lör", letter: "L" },
-  { key: "sun", label: "Söndag", short: "Sön", letter: "S" },
-];
+const DAY_KEYS: DayKey[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 export function DaySelector({ selectedDays, onToggleDay, showLabels = false }: DaySelectorProps) {
+  const { language } = useLanguage();
+  const schedule = getScheduleTexts(language);
+  const days = DAY_KEYS.map((key) => ({
+    key,
+    label: schedule.days[key].label,
+    short: schedule.days[key].short,
+    letter: schedule.days[key].letter,
+  }));
+
   return (
     <div className="flex justify-between gap-1">
       {days.map((day) => {
@@ -37,6 +40,7 @@ export function DaySelector({ selectedDays, onToggleDay, showLabels = false }: D
                 : "bg-muted/50 text-muted-foreground hover:bg-muted"
             )}
             whileTap={{ scale: 0.9 }}
+            aria-label={showLabels ? day.label : undefined}
           >
             <AnimatePresence mode="wait">
               {isSelected ? (

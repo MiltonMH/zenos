@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Sparkles, ChevronRight, Zap, Home, TrendingUp } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getPremiumTexts } from "@/lib/premium-i18n";
 
 interface PremiumBannerProps {
   daysLeft?: number;
@@ -8,6 +10,8 @@ interface PremiumBannerProps {
 }
 
 export function PremiumBanner({ daysLeft, onUpgrade }: PremiumBannerProps) {
+  const { language } = useLanguage();
+  const premium = getPremiumTexts(language);
   const isTrial = daysLeft !== undefined && daysLeft > 0;
 
   return (
@@ -28,27 +32,29 @@ export function PremiumBanner({ daysLeft, onUpgrade }: PremiumBannerProps) {
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-5 h-5 text-primary" />
             <span className="text-sm font-semibold text-primary">
-              {isTrial ? `${daysLeft} dagar kvar av Premium` : "Uppgradera till Premium"}
+              {isTrial
+                ? formatMessage(premium.trialHeader, { days: daysLeft! })
+                : premium.upgradeHeader}
             </span>
           </div>
 
           {/* Features */}
           <h3 className="text-lg font-semibold mb-2">
-            {isTrial ? "Fortsätt njuta av alla funktioner" : "Lås upp smarta funktioner"}
+            {isTrial ? premium.trialTitle : premium.upgradeTitle}
           </h3>
           
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background/50 text-xs">
               <Zap className="w-3 h-3 text-energy-charging" />
-              AI-optimering
+              {premium.featureAi}
             </div>
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background/50 text-xs">
               <Home className="w-3 h-3 text-energy-v2h" />
-              Smart V2H
+              {premium.featureV2h}
             </div>
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background/50 text-xs">
               <TrendingUp className="w-3 h-3 text-energy-v2g" />
-              V2G-intäkter
+              {premium.featureV2g}
             </div>
           </div>
 
@@ -57,13 +63,13 @@ export function PremiumBanner({ daysLeft, onUpgrade }: PremiumBannerProps) {
             onClick={onUpgrade}
             className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors"
           >
-            {isTrial ? "Behåll Premium" : "Prova gratis i 60 dagar"}
+            {isTrial ? premium.ctaKeep : premium.ctaTrial}
             <ChevronRight className="w-4 h-4" />
           </button>
 
           {!isTrial && (
             <p className="text-center text-xs text-muted-foreground mt-2">
-              Sedan 129 SEK/månad • Avsluta när som helst
+              {premium.pricingFootnote}
             </p>
           )}
         </div>

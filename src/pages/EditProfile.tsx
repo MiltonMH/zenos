@@ -19,8 +19,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { GlassCard } from "@/components/ui/glass-card";
-import { cn } from "@/lib/utils";
 import { mockUser, fuseOptions, gridCompanies, electricityProviders } from "@/lib/mock-data";
+import { useLanguage } from "@/lib/i18n";
+import { getProfileTexts } from "@/lib/profile-i18n";
 
 interface EditProfileProps {
   onBack: () => void;
@@ -28,6 +29,9 @@ interface EditProfileProps {
 }
 
 export function EditProfile({ onBack, onLogout }: EditProfileProps) {
+  const { language } = useLanguage();
+  const texts = getProfileTexts(language).edit;
+
   const [formData, setFormData] = useState({
     name: mockUser.name,
     email: mockUser.email,
@@ -75,7 +79,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
           <ArrowLeft className="w-6 h-6" />
         </button>
         
-        <h1 className="text-lg font-semibold text-foreground">Redigera Profil</h1>
+        <h1 className="text-lg font-semibold text-foreground">{texts.title}</h1>
         
         <div className="w-10" /> {/* Spacer for centering */}
       </div>
@@ -87,11 +91,11 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
           <AccordionItem value="personal" className="border-0">
             <GlassCard className="p-0 overflow-hidden">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <span className="text-sm font-medium">Personuppgifter</span>
+                <span className="text-sm font-medium">{texts.sectionPersonal}</span>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-xs text-muted-foreground">Namn</Label>
+                  <Label htmlFor="name" className="text-xs text-muted-foreground">{texts.fieldName}</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -100,7 +104,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-xs text-muted-foreground">E-post</Label>
+                  <Label htmlFor="email" className="text-xs text-muted-foreground">{texts.fieldEmail}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -110,7 +114,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-xs text-muted-foreground">Telefon</Label>
+                  <Label htmlFor="phone" className="text-xs text-muted-foreground">{texts.fieldPhone}</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -120,7 +124,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="address" className="text-xs text-muted-foreground">Adress</Label>
+                  <Label htmlFor="address" className="text-xs text-muted-foreground">{texts.fieldAddress}</Label>
                   <Textarea
                     id="address"
                     value={formData.address}
@@ -136,15 +140,15 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
           <AccordionItem value="charger" className="border-0">
             <GlassCard className="p-0 overflow-hidden">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <span className="text-sm font-medium">Laddbox</span>
+                <span className="text-sm font-medium">{texts.sectionCharger}</span>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">Laddboxmodell</Label>
+                  <Label className="text-xs text-muted-foreground">{texts.fieldChargerModel}</Label>
                   <p className="text-sm text-muted-foreground/70 py-2">{formData.chargerModel}</p>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">Serienummer</Label>
+                  <Label className="text-xs text-muted-foreground">{texts.fieldSerialNumber}</Label>
                   <div className="flex items-center gap-2">
                     <p className="text-sm text-muted-foreground/70 py-2 flex-1">{formData.serialNumber}</p>
                     <Button
@@ -162,7 +166,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">Pinkod</Label>
+                  <Label className="text-xs text-muted-foreground">{texts.fieldPinCode}</Label>
                   <div className="flex items-center gap-2">
                     <p className="text-sm text-muted-foreground/70 py-2 flex-1 font-mono">
                       {showPin ? formData.pinCode : "••••"}
@@ -182,7 +186,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">Säkring på hemmet</Label>
+                  <Label className="text-xs text-muted-foreground">{texts.fieldHomeFuse}</Label>
                   <Select
                     value={formData.fuse}
                     onValueChange={(value) => handleChange("fuse", value)}
@@ -207,11 +211,11 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
           <AccordionItem value="electricity" className="border-0">
             <GlassCard className="p-0 overflow-hidden">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <span className="text-sm font-medium">Elnät + Elhandel</span>
+                <span className="text-sm font-medium">{texts.sectionElectricity}</span>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">Elnätsbolag</Label>
+                  <Label className="text-xs text-muted-foreground">{texts.fieldGridCompany}</Label>
                   <Select
                     value={formData.gridCompany}
                     onValueChange={(value) => handleChange("gridCompany", value)}
@@ -229,7 +233,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">Elhandelsbolag</Label>
+                  <Label className="text-xs text-muted-foreground">{texts.fieldElectricityProvider}</Label>
                   <Select
                     value={formData.electricityProvider}
                     onValueChange={(value) => handleChange("electricityProvider", value)}
@@ -254,7 +258,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
           <AccordionItem value="security" className="border-0">
             <GlassCard className="p-0 overflow-hidden">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                <span className="text-sm font-medium">Säkerhet</span>
+                <span className="text-sm font-medium">{texts.sectionSecurity}</span>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-3">
                 <Button
@@ -262,14 +266,14 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                   className="w-full h-10 rounded-xl justify-start"
                   onClick={() => console.log("Change password")}
                 >
-                  Byt lösenord
+                  {texts.changePassword}
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full h-10 rounded-xl justify-start"
                   onClick={() => console.log("Share charger")}
                 >
-                  Dela laddbox
+                  {texts.shareCharger}
                 </Button>
               </AccordionContent>
             </GlassCard>
@@ -285,7 +289,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
           className="w-full h-12 text-base font-medium rounded-2xl"
           size="lg"
         >
-          Spara
+          {texts.save}
         </Button>
         <Button
           variant="ghost"
@@ -293,7 +297,7 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
           onClick={onLogout}
         >
           <LogOut className="w-4 h-4 mr-2" />
-          Logga ut
+          {texts.logOut}
         </Button>
       </div>
     </div>

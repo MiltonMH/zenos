@@ -3,7 +3,7 @@
 ## Vad appen är
 Numiz är en app för hemmaladdning/energihantering (laddning, V2H, V2G) byggd med Vite + React + TypeScript, shadcn-ui, Tailwind och Capacitor (för mobil). Se README.md för grundläggande kommandon.
 
-Kör lokalt: `npm install && npm run dev` (Vite väljer ledig port, t.ex. 8080/8081).
+Kör lokalt: `npm install && npm run dev` (Vite väljer ledig port, t.ex. 8090/8091).
 
 ## Design- och produktfilosofi
 

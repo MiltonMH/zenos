@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargerSlide } from "./slides/ChargerSlide";
 import { MonthStatsSlide } from "./slides/MonthStatsSlide";
 import { EnergyPriceSlide } from "./slides/EnergyPriceSlide";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getHomeTexts } from "@/lib/home-i18n";
 
 const slideIds = ["charger", "stats", "price"] as const;
 type SlideId = typeof slideIds[number];
@@ -20,6 +22,8 @@ interface HomeCarouselProps {
 }
 
 export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChange, onBatteryLevelChange, onScheduleClick, activeSlide, onSlideChange }: HomeCarouselProps) {
+  const { language } = useLanguage();
+  const home = getHomeTexts(language);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -126,7 +130,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
       <div className={`flex justify-center ${isChargerSlide ? "mb-4 max-h-sm:mb-0 min-h-7" : "hidden"}`}>
         {isChargerSlide ? (
           <h1 className="text-lg font-semibold text-foreground">
-            Hej, {userName}
+            {formatMessage(home.greeting, { name: userName })}
           </h1>
         ) : null}
       </div>
@@ -157,7 +161,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
           <button
             onClick={goPrev}
             className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
-            aria-label="Föregående slide"
+            aria-label={home.ariaPreviousSlide}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -166,7 +170,7 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
           <button
             onClick={goNext}
             className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/60 backdrop-blur-sm text-foreground/65 hover:text-foreground transition-colors"
-            aria-label="Nästa slide"
+            aria-label={home.ariaNextSlide}
           >
             <ChevronRight className="w-6 h-6" />
           </button>

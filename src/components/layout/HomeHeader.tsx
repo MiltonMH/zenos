@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
 import { Settings, Wifi } from "lucide-react";
+import { formatMessage, useLanguage } from "@/lib/i18n";
+import { getHomeTexts } from "@/lib/home-i18n";
 
 interface HomeHeaderProps {
   userName: string;
@@ -9,12 +11,16 @@ interface HomeHeaderProps {
 }
 
 export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent }: HomeHeaderProps) {
+  const { language } = useLanguage();
+  const home = getHomeTexts(language);
+  const greeting = formatMessage(home.greeting, { name: userName });
+
   return (
     <div className="relative flex items-center justify-between px-6 py-4">
       <button
         type="button"
         onClick={onSettingsClick}
-        aria-label="Öppna inställningar"
+        aria-label={home.ariaOpenSettings}
         className="p-2.5 glass-subtle gradient-stroke-ring rounded-full shadow-sm text-foreground/80 hover:text-foreground transition-colors"
       >
         <Settings className="w-6 h-6" />
@@ -24,7 +30,7 @@ export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent 
         <div className="pointer-events-auto">
           {centerContent ?? (
             <h1 className="text-lg font-semibold text-foreground">
-              Hej, {userName}
+              {greeting}
             </h1>
           )}
         </div>
@@ -33,7 +39,7 @@ export function HomeHeader({ userName, isOnline, onSettingsClick, centerContent 
       <div className="flex min-w-0 flex-1 items-center justify-center px-4 opacity-0 pointer-events-none" aria-hidden="true">
         {centerContent ?? (
           <h1 className="text-lg font-semibold text-foreground">
-            Hej, {userName}
+            {greeting}
           </h1>
         )}
       </div>

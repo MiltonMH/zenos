@@ -2,6 +2,9 @@ import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n";
+import { getCommonTexts } from "@/lib/common-i18n";
+import { getInstallerTexts } from "@/lib/installer-i18n";
 
 interface LockedQuestionShellProps {
   onBack: () => void;
@@ -25,16 +28,20 @@ export function LockedQuestionShell({
   hint,
   canContinue,
   onContinue,
-  continueLabel = "Fortsätt",
+  continueLabel,
   children,
 }: LockedQuestionShellProps) {
+  const { language } = useLanguage();
+  const common = getCommonTexts(language);
+  const t = getInstallerTexts(language).locked;
+
   return (
     <div className="flex flex-col flex-1 min-h-0 px-6 pt-2 pb-6">
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
           className="p-2 -ml-2 text-foreground/70 hover:text-foreground transition-colors"
-          aria-label="Tillbaka"
+          aria-label={common.back}
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
@@ -71,7 +78,7 @@ export function LockedQuestionShell({
             transition={{ duration: 0.25 }}
           >
             <Button onClick={onContinue} className="w-full h-12 text-base font-medium rounded-2xl">
-              {continueLabel}
+              {continueLabel ?? t.continue}
             </Button>
           </motion.div>
         )}

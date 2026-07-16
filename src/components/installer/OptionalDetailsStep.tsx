@@ -11,6 +11,8 @@ import {
 import { GlassCard } from "@/components/ui/glass-card";
 import { InstallerStepHeader } from "./InstallerStepHeader";
 import { gridCompanies, electricityProviders } from "@/lib/mock-data";
+import { useLanguage } from "@/lib/i18n";
+import { getInstallerTexts } from "@/lib/installer-i18n";
 
 export interface OptionalInstallerDetails {
   electricityProvider: string | null;
@@ -29,6 +31,10 @@ function DeferrableSelect({
   onChange,
   deferred,
   onToggleDefer,
+  fillInNow,
+  skip,
+  deferredHint,
+  selectPlaceholder,
 }: {
   label: string;
   value: string;
@@ -36,6 +42,10 @@ function DeferrableSelect({
   onChange: (v: string) => void;
   deferred: boolean;
   onToggleDefer: () => void;
+  fillInNow: string;
+  skip: string;
+  deferredHint: string;
+  selectPlaceholder: string;
 }) {
   return (
     <div className="space-y-2">
@@ -46,17 +56,17 @@ function DeferrableSelect({
           onClick={onToggleDefer}
           className="text-[11px] font-medium text-foreground underline underline-offset-2 decoration-foreground/30 hover:decoration-foreground"
         >
-          {deferred ? "Fyll i nu" : "Hoppa över"}
+          {deferred ? fillInNow : skip}
         </button>
       </div>
       {deferred ? (
         <div className="h-10 rounded-xl bg-muted/40 flex items-center px-3">
-          <span className="text-xs text-muted-foreground">Kunden fyller i detta själv</span>
+          <span className="text-xs text-muted-foreground">{deferredHint}</span>
         </div>
       ) : (
         <Select value={value} onValueChange={onChange}>
           <SelectTrigger className="h-10 rounded-xl bg-white/50">
-            <SelectValue placeholder="Välj…" />
+            <SelectValue placeholder={selectPlaceholder} />
           </SelectTrigger>
           <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
             {options.map((option) => (
@@ -72,6 +82,8 @@ function DeferrableSelect({
 }
 
 export function OptionalDetailsStep({ onBack, onComplete }: OptionalDetailsStepProps) {
+  const { language } = useLanguage();
+  const t = getInstallerTexts(language).optional;
   const [electricityProvider, setElectricityProvider] = useState("");
   const [gridCompany, setGridCompany] = useState("");
   const [providerDeferred, setProviderDeferred] = useState(false);
@@ -81,28 +93,34 @@ export function OptionalDetailsStep({ onBack, onComplete }: OptionalDetailsStepP
 
   return (
     <div className="flex flex-col flex-1 min-h-0 px-4 pt-2 pb-4">
-      <InstallerStepHeader title="Elavtal" onBack={onBack} stepIndex={2} stepCount={3} />
+      <InstallerStepHeader title={t.title} onBack={onBack} stepIndex={2} stepCount={3} />
 
       <div className="flex-1 min-h-0 space-y-3">
         <GlassCard className="p-4 space-y-4" variant="subtle">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            Om du inte har uppgifterna kan kunden fylla i själv
-          </p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t.intro}</p>
           <DeferrableSelect
-            label="Elhandelsbolag"
+            label={t.fieldElectricityProvider}
             value={electricityProvider}
             options={electricityProviders}
             onChange={setElectricityProvider}
             deferred={providerDeferred}
             onToggleDefer={() => setProviderDeferred((v) => !v)}
+            fillInNow={t.fillInNow}
+            skip={t.skip}
+            deferredHint={t.deferredHint}
+            selectPlaceholder={t.selectPlaceholder}
           />
           <DeferrableSelect
-            label="Elnätsbolag"
+            label={t.fieldGridCompany}
             value={gridCompany}
             options={gridCompanies}
             onChange={setGridCompany}
             deferred={gridDeferred}
             onToggleDefer={() => setGridDeferred((v) => !v)}
+            fillInNow={t.fillInNow}
+            skip={t.skip}
+            deferredHint={t.deferredHint}
+            selectPlaceholder={t.selectPlaceholder}
           />
         </GlassCard>
       </div>
@@ -118,7 +136,7 @@ export function OptionalDetailsStep({ onBack, onComplete }: OptionalDetailsStepP
           disabled={!canComplete}
           className="w-full h-12 text-base font-medium rounded-2xl"
         >
-          Slutför installation
+          {t.complete}
         </Button>
       </div>
     </div>

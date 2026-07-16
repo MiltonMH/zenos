@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n";
+import { getOnboardingTexts } from "@/lib/onboarding-i18n";
 
 interface OnboardingStepShellProps {
   onBack: () => void;
@@ -26,9 +28,12 @@ export function OnboardingStepShell({
   canContinue,
   isSubmitting,
   onContinue,
-  continueLabel = "Fortsätt",
+  continueLabel,
   children,
 }: OnboardingStepShellProps) {
+  const { language } = useLanguage();
+  const i18n = getOnboardingTexts(language);
+  const resolvedContinue = continueLabel ?? i18n.continue;
   const isActive = canContinue && !isSubmitting;
 
   return (
@@ -44,7 +49,7 @@ export function OnboardingStepShell({
         <button
           onClick={onBack}
           className="glass-subtle p-2 -ml-1 rounded-full text-slate-700 hover:text-slate-900 transition-colors"
-          aria-label="Tillbaka"
+          aria-label={i18n.back}
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
@@ -75,7 +80,7 @@ export function OnboardingStepShell({
           disabled={!canContinue || isSubmitting}
           className="w-full h-12 text-base font-medium rounded-2xl"
         >
-          {isSubmitting ? "Ett ögonblick…" : continueLabel}
+          {isSubmitting ? i18n.creating : resolvedContinue}
         </Button>
       </motion.div>
     </div>

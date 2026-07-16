@@ -6,6 +6,8 @@ import chargingCarImage from "@/assets/EX30-cutout.png";
 import electricTowerImage from "@/assets/electric-tower.png";
 import houseImage from "@/assets/houseZenOS2.png";
 import ElectricCable from "@/components/charger/ElectricCable";
+import { useLanguage } from "@/lib/i18n";
+import { getHomeTexts } from "@/lib/home-i18n";
 
 type ActiveMode = "charging" | "v2h" | "v2g";
 
@@ -17,19 +19,16 @@ interface EnergyFlowVisualizationProps {
 const modeConfig = {
   charging: {
     color: "hsl(var(--energy-charging))",
-    label: "Laddar",
     minPower: 4,
     maxPower: 8,
   },
   v2h: {
     color: "hsl(var(--energy-v2h))",
-    label: "Vehicle-to-Home",
     minPower: 2,
     maxPower: 4,
   },
   v2g: {
     color: "hsl(var(--energy-v2g))",
-    label: "Vehicle-to-Grid",
     minPower: 2,
     maxPower: 6,
   },
@@ -59,6 +58,8 @@ function useDynamicPower(minPower: number, maxPower: number) {
 }
 
 export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisualizationProps) {
+  const { language } = useLanguage();
+  const home = getHomeTexts(language);
   const config = modeConfig[mode];
   const power = useDynamicPower(config.minPower, config.maxPower);
   const hidePowerIndicator = mode === "charging" && (batteryLevel ?? 0) >= 100;
@@ -92,7 +93,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             <div className="relative">
               <img
                 src={chargerBoxImage}
-                alt="ZenBox Charger"
+                alt={home.alt.charger}
                 draggable={false}
                 className="w-24 max-h-sm:w-20 max-[375px]:w-18 max-[343px]:w-16 max-[320px]:w-14 h-auto opacity-100"
               />
@@ -101,7 +102,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             <div className="relative w-48 max-h-sm:w-36 max-[375px]:w-30 max-[343px]:w-28 max-[320px]:w-24 overflow-hidden shrink-0">
               <img
                 src={chargingCarImage}
-                alt="Volvo EX30"
+                alt={home.energyFlow.altCar}
                 draggable={false}
                 className="w-80 max-h-sm:w-56 max-[375px]:w-48 max-[343px]:w-40 max-[320px]:w-32 h-auto max-w-none opacity-100 -scale-x-100 -ml-24 max-h-sm:-ml-10 max-[375px]:-ml-12 max-[343px]:-ml-10 max-[320px]:-ml-4"
               />
@@ -143,7 +144,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             {mode === "charging" && (
               <img
                 src={chargingCarImage}
-                alt="Volvo EX30"
+                alt={home.energyFlow.altCar}
                 draggable={false}
                 className="w-80 max-h-sm:w-56 max-[375px]:w-48 max-[343px]:w-40 max-[320px]:w-32 h-auto pr-0 max-w-none opacity-100 -ml-4 max-h-sm:-ml-2 max-[375px]:-ml-2 max-[343px]:-ml-1 max-[320px]:-ml-0.5"
               />
@@ -151,7 +152,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             {mode === "v2h" && (
               <img
                 src={houseImage}
-                alt="Hus"
+                alt={home.energyFlow.altHouse}
                 draggable={false}
                 className="w-full h-full object-contain"
               />
@@ -159,7 +160,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
             {mode === "v2g" && (
               <img
                 src={electricTowerImage}
-                alt="Elnät"
+                alt={home.energyFlow.altGrid}
                 draggable={false}
                 className="w-full h-full object-contain scale-100 origin-center"
               />
@@ -183,7 +184,7 @@ export function EnergyFlowVisualization({ mode, batteryLevel }: EnergyFlowVisual
           >
             {power.toFixed(1)}
           </motion.span>
-          <span className="text-lg max-h-sm:text-base text-[#404040] ml-1">kW</span>
+          <span className="text-lg max-h-sm:text-base text-[#404040] ml-1">{home.unit.kW}</span>
         </motion.div>
       )}
     </div>

@@ -1,4 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/lib/i18n";
+import { getOnboardingTexts } from "@/lib/onboarding-i18n";
 
 interface DoneScreenProps {
   variant: "created" | "login";
@@ -14,6 +16,9 @@ interface DoneScreenProps {
 // it always lands just under the ghost regardless of screen size, rather
 // than relying on flex-centering two independently-positioned elements.
 export function DoneScreen({ variant, name, isLanding }: DoneScreenProps) {
+  const { language } = useLanguage();
+  const i18n = getOnboardingTexts(language);
+
   return (
     <div className="relative flex-1">
       {/* Static centering lives on this plain div — a motion.div here would fight
@@ -34,17 +39,18 @@ export function DoneScreen({ variant, name, isLanding }: DoneScreenProps) {
               {variant === "created" ? (
                 <>
                   <h1 className="text-2xl font-semibold text-foreground [text-shadow:0_1px_20px_rgba(255,255,255,0.9)]">
-                    Välkommen in{name ? `, ${name}` : ""}!
+                    {i18n.doneCreatedTitle}
+                    {name ? `, ${name}` : ""}!
                   </h1>
                   {/* Fixed slate, not text-muted-foreground: see WelcomeScreen's
                       tagline chip for why — this fill is always light. */}
                   <p className="inline-block text-sm text-slate-600 bg-white/65 backdrop-blur-sm px-3 py-1 rounded-full">
-                    Numiz tar hand om resten
+                    {i18n.doneCreatedSubtitle}
                   </p>
                 </>
               ) : (
                 <h1 className="text-2xl font-semibold text-foreground [text-shadow:0_1px_20px_rgba(255,255,255,0.9)]">
-                  Välkommen tillbaka!
+                  {i18n.doneLoginTitle}
                 </h1>
               )}
             </motion.div>

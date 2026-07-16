@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { getStatsForPeriod, type Period } from "@/lib/statistics-data";
+import { useLanguage } from "@/lib/i18n";
+import { getHomeTexts } from "@/lib/home-i18n";
 
 export function MonthStatsSlide() {
+  const { language } = useLanguage();
+  const home = getHomeTexts(language);
   const [period, setPeriod] = useState<Period>("M");
   const periods: Period[] = ["D", "V", "M", "Å"];
 
   const periodStats = getStatsForPeriod(period);
 
   const stats = {
-    charged: { value: periodStats.charged, unit: "kWh", colorClass: "bg-chart-charged" },
-    v2h: { value: periodStats.v2h, unit: "kWh", colorClass: "bg-chart-v2h" },
-    spent: { value: periodStats.cost, unit: "kr", colorClass: "bg-chart-spent" },
+    charged: { value: periodStats.charged, unit: home.unit.kWh, colorClass: "bg-chart-charged" },
+    v2h: { value: periodStats.v2h, unit: home.unit.kWh, colorClass: "bg-chart-v2h" },
+    spent: { value: periodStats.cost, unit: home.unit.kr, colorClass: "bg-chart-spent" },
   };
 
   // Bar heights based on values (normalized)
@@ -22,19 +26,10 @@ export function MonthStatsSlide() {
     spent: (stats.spent.value / maxValue) * 100,
   };
 
-  const getPeriodLabel = () => {
-    switch (period) {
-      case "D": return "Idag";
-      case "V": return "Denna vecka";
-      case "M": return "Denna månad";
-      case "Å": return "Detta år";
-    }
-  };
-
   return (
     <div className="h-full flex flex-col items-center px-6 pt-3 pb-3 max-h-sm:pb-2">
       {/* Title */}
-      <h2 className="text-xl font-semibold text-foreground mb-3">{getPeriodLabel()}</h2>
+      <h2 className="text-xl font-semibold text-foreground mb-3">{home.period[period]}</h2>
 
       {/* Period Toggle */}
       <div className="pill-toggle mb-4">
@@ -73,19 +68,19 @@ export function MonthStatsSlide() {
       <div className="w-full max-w-[280px] space-y-2 mb-4">
         <StatRow
           colorClass="bg-chart-charged"
-          label="Laddat"
+          label={home.stat.charged}
           value={stats.charged.value}
           unit={stats.charged.unit}
         />
         <StatRow
           colorClass="bg-chart-v2h"
-          label="V2H"
+          label={home.stat.v2h}
           value={stats.v2h.value}
           unit={stats.v2h.unit}
         />
         <StatRow
           colorClass="bg-chart-spent"
-          label="Kostnad"
+          label={home.stat.cost}
           value={stats.spent.value}
           unit={stats.spent.unit}
         />
