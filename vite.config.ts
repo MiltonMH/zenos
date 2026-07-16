@@ -11,6 +11,13 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    proxy: {
+      "/numiz-api": {
+        target: process.env.VITE_NUMIZ_API_URL ?? "http://localhost:8080",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/numiz-api/, ""),
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

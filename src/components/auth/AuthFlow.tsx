@@ -10,7 +10,7 @@ import { useBackground } from "@/hooks/useBackground";
 import { cn } from "@/lib/utils";
 
 interface AuthFlowProps {
-  onComplete: () => void;
+  onComplete: (variant: "created" | "login") => void;
 }
 
 type Screen = "welcome" | "login" | "onboarding" | "done";
@@ -50,7 +50,7 @@ export function AuthFlow({ onComplete }: AuthFlowProps) {
     setScreen("done");
     holdTimeout.current = setTimeout(() => {
       setIsLanding(true);
-      landTimeout.current = setTimeout(onComplete, LAND_MS);
+      landTimeout.current = setTimeout(() => onComplete(variant), LAND_MS);
     }, HOLD_MS[variant]);
   };
 

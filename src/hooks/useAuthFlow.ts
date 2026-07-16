@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "numiz-auth-onboarded";
 
+/** Local onboarding completion (create-account path without backend register). */
 export function useAuthFlow() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+  const [isOnboarded, setIsOnboarded] = useState(() => {
     try {
       return localStorage.getItem(STORAGE_KEY) === "true";
     } catch {
@@ -13,16 +14,24 @@ export function useAuthFlow() {
 
   useEffect(() => {
     try {
-      if (isAuthenticated) localStorage.setItem(STORAGE_KEY, "true");
-    } catch {}
-  }, [isAuthenticated]);
+      if (isOnboarded) localStorage.setItem(STORAGE_KEY, "true");
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [isOnboarded]);
 
-  const logout = () => {
+  const clearOnboarded = () => {
     try {
       localStorage.removeItem(STORAGE_KEY);
-    } catch {}
-    setIsAuthenticated(false);
+    } catch {
+      // Ignore storage errors.
+    }
+    setIsOnboarded(false);
   };
 
-  return { isAuthenticated, completeAuth: () => setIsAuthenticated(true), logout };
+  return {
+    isOnboarded,
+    completeAuth: () => setIsOnboarded(true),
+    clearOnboarded,
+  };
 }

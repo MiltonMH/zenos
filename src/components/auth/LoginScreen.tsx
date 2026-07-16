@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { SsoButton } from "@/components/auth/SsoButton";
+import { useAuth } from "@/hooks/useAuth";
+import type { SsoProvider } from "@/lib/auth-config";
 import { useLanguage } from "@/lib/i18n";
 import { getLoginTexts } from "@/lib/login-i18n";
+import { fetchAuthProviders } from "@/lib/numiz-api";
+import { cn } from "@/lib/utils";
 
 interface LoginScreenProps {
   onBack: () => void;
@@ -16,25 +20,64 @@ interface LoginScreenProps {
 // regardless of theme, but "Mörk" flips --foreground to a light color for
 // the rest of the page — which would inherit in here too and produce
 // light-on-light text. A light chip needs its own fixed dark text.
-const fieldClass = "h-12 rounded-2xl bg-white/75 text-center text-base font-medium text-slate-800 placeholder:text-slate-400";
+const fieldClass =
+  "h-12 rounded-2xl bg-white/75 text-center text-base font-medium text-slate-800 placeholder:text-slate-400";
+const DEFAULT_SSO_PROVIDERS = { google: false, apple: false };
 
 export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreenProps) {
+  const { login, startSsoLogin } = useAuth();
   const { language } = useLanguage();
   const i18n = getLoginTexts(language);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [enabledProviders, setEnabledProviders] = useState(DEFAULT_SSO_PROVIDERS);
+  const [ssoLoading, setSsoLoading] = useState<SsoProvider | null>(null);
 
   const canSubmit = email.trim() !== "" && password.trim() !== "";
+  const showSso = enabledProviders.google || enabledProviders.apple;
 
-  const submitTimeout = useRef<ReturnType<typeof setTimeout>>();
-  useEffect(() => () => clearTimeout(submitTimeout.current), []);
+  useEffect(() => {
+    fetchAuthProviders()
+      .then((providers) => {
+        setEnabledProviders({
+          google: Boolean(providers.google?.client_id),
+          apple: Boolean(providers.apple?.client_id),
+        });
+      })
+      .catch(() => {
+        setEnabledProviders(DEFAULT_SSO_PROVIDERS);
+      });
+  }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit || isSubmitting) return;
+    setError("");
     setIsSubmitting(true);
-    submitTimeout.current = setTimeout(onLoggedIn, 500);
+
+    try {
+      await login(email, password);
+      onLoggedIn();
+    } catch {
+      setError(i18n.invalidCredentials);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSsoLogin = async (provider: SsoProvider) => {
+    setError("");
+    setSsoLoading(provider);
+
+    try {
+      await startSsoLogin(provider);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : i18n.ssoStartFailed;
+      setError(message);
+      setSsoLoading(null);
+    }
   };
 
   return (
@@ -62,6 +105,7 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
             type="email"
             inputMode="email"
             autoFocus
+            autoComplete="username"
             placeholder={i18n.emailPlaceholder}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -70,10 +114,13 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               placeholder={i18n.passwordPlaceholder}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void handleSubmit();
+              }}
               className={cn(fieldClass, "pr-11")}
             />
             <button
@@ -85,17 +132,48 @@ export function LoginScreen({ onBack, onLoggedIn, onCreateAccount }: LoginScreen
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
+
+          {error && (
+            <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-xl text-center">
+              {error}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="space-y-4">
         <Button
-          onClick={handleSubmit}
+          onClick={() => void handleSubmit()}
           disabled={!canSubmit || isSubmitting}
           className="w-full h-12 text-base font-medium rounded-2xl"
         >
           {isSubmitting ? i18n.signingIn : i18n.signIn}
         </Button>
+
+        {showSso && (
+          <div className="space-y-2">
+            <p className="text-center text-xs text-muted-foreground">{i18n.or}</p>
+            {enabledProviders.google && (
+              <SsoButton
+                provider="google"
+                label={i18n.continueWithGoogle}
+                onClick={() => void handleSsoLogin("google")}
+                disabled={isSubmitting}
+                loading={ssoLoading === "google"}
+              />
+            )}
+            {enabledProviders.apple && (
+              <SsoButton
+                provider="apple"
+                label={i18n.continueWithApple}
+                onClick={() => void handleSsoLogin("apple")}
+                disabled={isSubmitting}
+                loading={ssoLoading === "apple"}
+              />
+            )}
+          </div>
+        )}
+
         <button
           type="button"
           onClick={onCreateAccount}
