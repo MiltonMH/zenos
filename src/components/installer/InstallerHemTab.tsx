@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { HomeHeader } from "@/components/layout/HomeHeader";
+import { DataSourceField } from "@/components/ui/data-source-field";
 import { ChargerSlide } from "@/components/home/slides/ChargerSlide";
 import { ChargingScheduleModal } from "@/components/schedule/ChargingScheduleModal";
 import type { InstalledUnit } from "@/lib/installer-mock-data";
@@ -11,6 +12,7 @@ import { getInstallerTexts } from "@/lib/installer-i18n";
 interface InstallerHemTabProps {
   units: InstalledUnit[];
   activeIndex: number;
+  fromApi: boolean;
   onActiveIndexChange: (index: number) => void;
   onUpdateUnit: (patch: Partial<InstalledUnit>) => void;
   onOpenSettings: () => void;
@@ -26,6 +28,7 @@ const variants = {
 export function InstallerHemTab({
   units,
   activeIndex,
+  fromApi,
   onActiveIndexChange,
   onUpdateUnit,
   onOpenSettings,
@@ -114,13 +117,15 @@ export function InstallerHemTab({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="absolute inset-0"
           >
-            <ChargerSlide
-              mode={unit.chargingMode}
-              onModeChange={(mode) => onUpdateUnit({ chargingMode: mode })}
-              onScheduleClick={() => setShowSchedule(true)}
-              batteryLevel={unit.batteryLevel}
-              onBatteryLevelChange={(level) => onUpdateUnit({ batteryLevel: level })}
-            />
+            <DataSourceField fromApi={fromApi} className="h-full">
+              <ChargerSlide
+                mode={unit.chargingMode}
+                onModeChange={(mode) => onUpdateUnit({ chargingMode: mode })}
+                onScheduleClick={() => setShowSchedule(true)}
+                batteryLevel={unit.batteryLevel}
+                onBatteryLevelChange={(level) => onUpdateUnit({ batteryLevel: level })}
+              />
+            </DataSourceField>
           </motion.div>
         </AnimatePresence>
 

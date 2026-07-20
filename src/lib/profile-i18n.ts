@@ -54,6 +54,16 @@ const profileTexts = {
       subtitle: "Just nu: {mode} — tryck för att byta",
       installerView: "Installatörsvy",
       customerView: "Kundvy",
+      forbiddenTitle: "Ingen installatörsåtkomst",
+      forbiddenDescription:
+        "Ditt konto har inte behörighet till installatörsflödet (403).",
+      switchErrorTitle: "Kunde inte byta vy",
+      noCustomerSiteTitle: "Installatörsvy",
+      noCustomerSiteDescription:
+        "Du har ingen kundsite — appen öppnar installatörsflödet.",
+      noCustomerSiteSwitchTitle: "Ingen kundsite",
+      noCustomerSiteSwitchDescription:
+        "Du har ingen kundsite att visa — stannar i installatörsvyn.",
     },
     devLogin: {
       title: "Visa inloggning (dev)",
@@ -113,6 +123,16 @@ const profileTexts = {
       subtitle: "Currently: {mode} — tap to switch",
       installerView: "Installer view",
       customerView: "Customer view",
+      forbiddenTitle: "No installer access",
+      forbiddenDescription:
+        "Your account is not authorized for the installer flow (403).",
+      switchErrorTitle: "Could not switch view",
+      noCustomerSiteTitle: "Installer view",
+      noCustomerSiteDescription:
+        "You have no customer site — opening the installer flow.",
+      noCustomerSiteSwitchTitle: "No customer site",
+      noCustomerSiteSwitchDescription:
+        "You have no customer site to show — staying in installer view.",
     },
     devLogin: {
       title: "Show login (dev)",

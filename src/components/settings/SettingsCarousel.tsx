@@ -1,22 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatusSlide } from "./slides/StatusSlide";
 import { OptimizationSlide } from "./slides/OptimizationSlide";
 import { useCarousel } from "@/hooks/useCarousel";
+import { useSiteData } from "@/hooks/useSiteData";
+import { mapDerStatusToSettingsUi, toPercentSlider } from "@/lib/numiz-mappers";
 import { useLanguage } from "@/lib/i18n";
 import { getSettingsTexts } from "@/lib/settings-i18n";
 
 export function SettingsCarousel() {
   const { language } = useLanguage();
   const settings = getSettingsTexts(language);
+  const { view, hasApiData, session } = useSiteData();
 
-  // Settings state
   const [chargeLimit, setChargeLimit] = useState([90]);
   const [v2hEnabled, setV2hEnabled] = useState(false);
   const [v2gEnabled, setV2gEnabled] = useState(false);
   const [dischargeLimit, setDischargeLimit] = useState([50]);
   const [optimizationMode, setOptimizationMode] = useState("balanced");
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    if (!hasApiData || hydrated) return;
+
+    if (view.maxChargeSoc != null) {
+      setChargeLimit(toPercentSlider(view.maxChargeSoc, 90));
+    }
+    if (view.minDischargeSoc != null) {
+      setDischargeLimit(toPercentSlider(view.minDischargeSoc, 50));
+    }
+    if (session?.v2xEnabled) {
+      setV2hEnabled(true);
+    }
+    setHydrated(true);
+  }, [hasApiData, hydrated, view.maxChargeSoc, view.minDischargeSoc, session?.v2xEnabled]);
+
+  const uiStatus = mapDerStatusToSettingsUi(view.derStatus);
+  const firmwareVersion = view.chargerVersion;
+  const statusFromApi = hasApiData && view.derStatus != null;
+  const versionFromApi = view.fromApi.chargerVersion;
+  const chargeLimitFromApi = view.maxChargeSoc != null;
+  const dischargeLimitFromApi = view.minDischargeSoc != null;
+  const v2hFromApi = hasApiData && session != null;
 
   const slides = [
     {
@@ -26,8 +52,13 @@ export function SettingsCarousel() {
         <StatusSlide
           chargeLimit={chargeLimit}
           onChargeLimitChange={setChargeLimit}
+          status={uiStatus}
+          firmwareVersion={firmwareVersion}
+          statusFromApi={statusFromApi}
+          versionFromApi={versionFromApi}
+          chargeLimitFromApi={chargeLimitFromApi}
         />
-      )
+      ),
     },
     {
       id: "v2x",
@@ -42,8 +73,10 @@ export function SettingsCarousel() {
           onV2gChange={setV2gEnabled}
           onDischargeLimitChange={setDischargeLimit}
           onOptimizationModeChange={setOptimizationMode}
+          dischargeLimitFromApi={dischargeLimitFromApi}
+          v2hFromApi={v2hFromApi}
         />
-      )
+      ),
     },
   ];
 
@@ -63,7 +96,6 @@ export function SettingsCarousel() {
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      {/* Tab indicators */}
       <div className="flex justify-center gap-2 px-4 py-3">
         {slides.map((slide, index) => (
           <button
@@ -80,7 +112,6 @@ export function SettingsCarousel() {
         ))}
       </div>
 
-      {/* Carousel content */}
       <div
         className="flex-1 relative overflow-hidden min-h-0"
         onPointerDown={handleTouchStart}
@@ -104,7 +135,6 @@ export function SettingsCarousel() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation arrows */}
         {canGoPrev && (
           <button
             onClick={goPrev}

@@ -10,7 +10,7 @@ import { getInstallerTexts } from "@/lib/installer-i18n";
 
 interface ScanStepProps {
   onBack: () => void;
-  onConfigure: () => void;
+  onConfigure: (hardwareId: string) => void;
 }
 
 type ScanPhase = "idle" | "scanning" | "found";
@@ -22,16 +22,22 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
   const [mode, setMode] = useState<ScanMode>("camera");
   const [phase, setPhase] = useState<ScanPhase>("idle");
   const [pin, setPin] = useState("");
+  const [hardwareId, setHardwareId] = useState("");
 
   const scanTimeout = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => () => clearTimeout(scanTimeout.current), []);
 
   const handleSimulateScan = () => {
     setPhase("scanning");
-    scanTimeout.current = setTimeout(() => setPhase("found"), 1400);
+    scanTimeout.current = setTimeout(() => {
+      setHardwareId(`ZEN-DEV-${Date.now().toString(36).toUpperCase()}`);
+      setPhase("found");
+    }, 1400);
   };
 
   const found = mode === "camera" ? phase === "found" : pin.length === 4;
+  const displaySerial =
+    hardwareId || (pin.length === 4 ? `ZEN-PIN-${pin}` : "ZEN-2026-QF81K");
 
   return (
     <div className="flex flex-col flex-1 min-h-0 px-4 pt-2 pb-4">
@@ -148,12 +154,19 @@ export function ScanStep({ onBack, onConfigure }: ScanStepProps) {
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground">{t.productName}</p>
                     <p className="text-xs text-muted-foreground">
-                      {formatMessage(t.serialTemplate, { serial: "ZEN-2026-QF81K" })}
+                      {formatMessage(t.serialTemplate, { serial: displaySerial })}
                     </p>
                   </div>
                 </div>
               </GlassCard>
-              <Button onClick={onConfigure} className="w-full h-11 rounded-xl">
+              <Button
+                onClick={() =>
+                  onConfigure(
+                    hardwareId || (pin.length === 4 ? `ZEN-PIN-${pin}` : displaySerial),
+                  )
+                }
+                className="w-full h-11 rounded-xl"
+              >
                 {t.configure}
               </Button>
             </motion.div>

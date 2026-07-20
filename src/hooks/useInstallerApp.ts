@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { initialInstalledUnits, type InstalledUnit } from "@/lib/installer-mock-data";
+import type { InstalledUnit } from "@/lib/installer-mock-data";
 
 export type InstallerTab = "hem" | "dash" | "profil";
 export type InstallerOverlay = "settings" | "add" | null;
 
-export function useInstallerApp() {
+export function useInstallerApp(units: InstalledUnit[]) {
   const [tab, setTab] = useState<InstallerTab>("hem");
   const [overlay, setOverlay] = useState<InstallerOverlay>(null);
-  const [units, setUnits] = useState<InstalledUnit[]>(initialInstalledUnits);
   const [activeUnitIndex, setActiveUnitIndex] = useState(0);
 
-  const currentUnit: InstalledUnit | undefined = units[activeUnitIndex];
+  const safeIndex = units.length === 0 ? 0 : Math.min(activeUnitIndex, units.length - 1);
+  const currentUnit: InstalledUnit | undefined = units[safeIndex];
 
-  const updateCurrentUnit = (patch: Partial<InstalledUnit>) => {
-    setUnits((prev) => prev.map((u, i) => (i === activeUnitIndex ? { ...u, ...patch } : u)));
+  const updateCurrentUnit = (_patch: Partial<InstalledUnit>) => {
+    // Runtime fields are read-only when backed by the installer API.
   };
 
   const openUnit = (index: number) => {
@@ -21,22 +21,15 @@ export function useInstallerApp() {
     setTab("hem");
   };
 
-  const addUnit = (unit: InstalledUnit) => {
-    setUnits((prev) => [unit, ...prev]);
-    setActiveUnitIndex(0);
-  };
-
   return {
     tab,
     setTab,
     overlay,
     setOverlay,
-    units,
-    activeUnitIndex,
+    activeUnitIndex: safeIndex,
     setActiveUnitIndex,
     currentUnit,
     updateCurrentUnit,
     openUnit,
-    addUnit,
   };
 }

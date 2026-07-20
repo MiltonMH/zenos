@@ -19,7 +19,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { GlassCard } from "@/components/ui/glass-card";
+import { DataSourceField } from "@/components/ui/data-source-field";
 import { mockUser, fuseOptions, gridCompanies, electricityProviders } from "@/lib/mock-data";
+import { useSiteData } from "@/hooks/useSiteData";
 import { useLanguage } from "@/lib/i18n";
 import { getProfileTexts } from "@/lib/profile-i18n";
 
@@ -31,22 +33,42 @@ interface EditProfileProps {
 export function EditProfile({ onBack, onLogout }: EditProfileProps) {
   const { language } = useLanguage();
   const texts = getProfileTexts(language).edit;
+  const { view, hasApiData } = useSiteData();
+  const { fromApi } = view;
 
   const [formData, setFormData] = useState({
-    name: mockUser.name,
-    email: mockUser.email,
-    phone: mockUser.phone,
-    address: mockUser.address,
-    chargerModel: mockUser.charger.model,
-    serialNumber: mockUser.charger.serialNumber,
-    pinCode: mockUser.charger.pinCode,
-    fuse: mockUser.fuse,
-    gridCompany: mockUser.gridCompany,
-    electricityProvider: mockUser.electricityProvider,
+    name: view.displayName ?? view.firstName ?? (hasApiData ? "" : mockUser.name),
+    email: view.email ?? (hasApiData ? "" : mockUser.email),
+    phone: view.phone ?? (hasApiData ? "" : mockUser.phone),
+    address: view.address ?? mockUser.address,
+    chargerModel: view.chargerModel ?? mockUser.charger.model,
+    serialNumber: view.chargerSerial ?? mockUser.charger.serialNumber,
+    pinCode: view.chargerPinCode ?? mockUser.charger.pinCode,
+    fuse: view.fuse ?? mockUser.fuse,
+    gridCompany: view.gridCompany ?? mockUser.gridCompany,
+    electricityProvider: view.electricityProvider ?? mockUser.electricityProvider,
   });
   const [hasChanges, setHasChanges] = useState(false);
   const [showPin, setShowPin] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Re-hydrate when API data arrives after first paint (unless user already edited).
+  useEffect(() => {
+    if (hasChanges) return;
+    setFormData((prev) => ({
+      ...prev,
+      name: view.displayName ?? view.firstName ?? (hasApiData ? "" : prev.name),
+      email: view.email ?? (hasApiData ? "" : prev.email),
+      phone: view.phone ?? (hasApiData ? "" : prev.phone),
+      address: view.address ?? prev.address,
+      chargerModel: view.chargerModel ?? prev.chargerModel,
+      serialNumber: view.chargerSerial ?? prev.serialNumber,
+      pinCode: view.chargerPinCode ?? prev.pinCode,
+      fuse: view.fuse ?? prev.fuse,
+      gridCompany: view.gridCompany ?? prev.gridCompany,
+      electricityProvider: view.electricityProvider ?? prev.electricityProvider,
+    }));
+  }, [view, hasApiData, hasChanges]);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -94,44 +116,52 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                 <span className="text-sm font-medium">{texts.sectionPersonal}</span>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-xs text-muted-foreground">{texts.fieldName}</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => handleChange("name", e.target.value)}
-                    className="h-10 rounded-xl bg-white/50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-xs text-muted-foreground">{texts.fieldEmail}</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    className="h-10 rounded-xl bg-white/50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-xs text-muted-foreground">{texts.fieldPhone}</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
-                    className="h-10 rounded-xl bg-white/50"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="address" className="text-xs text-muted-foreground">{texts.fieldAddress}</Label>
-                  <Textarea
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => handleChange("address", e.target.value)}
-                    className="min-h-[80px] rounded-xl bg-white/50 resize-none"
-                  />
-                </div>
+                <DataSourceField fromApi={fromApi.displayName || fromApi.email}>
+                  <div className="space-y-2 p-2">
+                    <Label htmlFor="name" className="text-xs text-muted-foreground">{texts.fieldName}</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => handleChange("name", e.target.value)}
+                      className="h-10 rounded-xl bg-white/50"
+                    />
+                  </div>
+                </DataSourceField>
+                <DataSourceField fromApi={fromApi.email}>
+                  <div className="space-y-2 p-2">
+                    <Label htmlFor="email" className="text-xs text-muted-foreground">{texts.fieldEmail}</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      className="h-10 rounded-xl bg-white/50"
+                    />
+                  </div>
+                </DataSourceField>
+                <DataSourceField fromApi={fromApi.phone}>
+                  <div className="space-y-2 p-2">
+                    <Label htmlFor="phone" className="text-xs text-muted-foreground">{texts.fieldPhone}</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      className="h-10 rounded-xl bg-white/50"
+                    />
+                  </div>
+                </DataSourceField>
+                <DataSourceField fromApi={fromApi.address}>
+                  <div className="space-y-2 p-2">
+                    <Label htmlFor="address" className="text-xs text-muted-foreground">{texts.fieldAddress}</Label>
+                    <Textarea
+                      id="address"
+                      value={formData.address}
+                      onChange={(e) => handleChange("address", e.target.value)}
+                      className="min-h-[80px] rounded-xl bg-white/50 resize-none"
+                    />
+                  </div>
+                </DataSourceField>
               </AccordionContent>
             </GlassCard>
           </AccordionItem>
@@ -143,66 +173,74 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                 <span className="text-sm font-medium">{texts.sectionCharger}</span>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">{texts.fieldChargerModel}</Label>
-                  <p className="text-sm text-muted-foreground/70 py-2">{formData.chargerModel}</p>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">{texts.fieldSerialNumber}</Label>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm text-muted-foreground/70 py-2 flex-1">{formData.serialNumber}</p>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={handleCopySerial}
-                      className="h-8 w-8 p-0"
-                    >
-                      {copied ? (
-                        <Check className="w-4 h-4 text-success" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </Button>
+                <DataSourceField fromApi={fromApi.chargerModel}>
+                  <div className="space-y-2 p-2">
+                    <Label className="text-xs text-muted-foreground">{texts.fieldChargerModel}</Label>
+                    <p className="text-sm text-muted-foreground/70 py-2">{formData.chargerModel}</p>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">{texts.fieldPinCode}</Label>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm text-muted-foreground/70 py-2 flex-1 font-mono">
-                      {showPin ? formData.pinCode : "••••"}
-                    </p>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setShowPin(!showPin)}
-                      className="h-8 w-8 p-0"
-                    >
-                      {showPin ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </Button>
+                </DataSourceField>
+                <DataSourceField fromApi={fromApi.chargerSerial}>
+                  <div className="space-y-2 p-2">
+                    <Label className="text-xs text-muted-foreground">{texts.fieldSerialNumber}</Label>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-muted-foreground/70 py-2 flex-1">{formData.serialNumber}</p>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleCopySerial}
+                        className="h-8 w-8 p-0"
+                      >
+                        {copied ? (
+                          <Check className="w-4 h-4 text-success" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">{texts.fieldHomeFuse}</Label>
-                  <Select
-                    value={formData.fuse}
-                    onValueChange={(value) => handleChange("fuse", value)}
-                  >
-                    <SelectTrigger className="h-10 rounded-xl bg-white/50">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
-                      {fuseOptions.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                </DataSourceField>
+                <DataSourceField fromApi={fromApi.chargerPinCode}>
+                  <div className="space-y-2 p-2">
+                    <Label className="text-xs text-muted-foreground">{texts.fieldPinCode}</Label>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-muted-foreground/70 py-2 flex-1 font-mono">
+                        {showPin ? formData.pinCode : "••••"}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowPin(!showPin)}
+                        className="h-8 w-8 p-0"
+                      >
+                        {showPin ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </DataSourceField>
+                <DataSourceField fromApi={fromApi.fuse}>
+                  <div className="space-y-2 p-2">
+                    <Label className="text-xs text-muted-foreground">{texts.fieldHomeFuse}</Label>
+                    <Select
+                      value={formData.fuse}
+                      onValueChange={(value) => handleChange("fuse", value)}
+                    >
+                      <SelectTrigger className="h-10 rounded-xl bg-white/50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
+                        {fuseOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </DataSourceField>
               </AccordionContent>
             </GlassCard>
           </AccordionItem>
@@ -214,42 +252,46 @@ export function EditProfile({ onBack, onLogout }: EditProfileProps) {
                 <span className="text-sm font-medium">{texts.sectionElectricity}</span>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">{texts.fieldGridCompany}</Label>
-                  <Select
-                    value={formData.gridCompany}
-                    onValueChange={(value) => handleChange("gridCompany", value)}
-                  >
-                    <SelectTrigger className="h-10 rounded-xl bg-white/50">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
-                      {gridCompanies.map((company) => (
-                        <SelectItem key={company} value={company}>
-                          {company}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">{texts.fieldElectricityProvider}</Label>
-                  <Select
-                    value={formData.electricityProvider}
-                    onValueChange={(value) => handleChange("electricityProvider", value)}
-                  >
-                    <SelectTrigger className="h-10 rounded-xl bg-white/50">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
-                      {electricityProviders.map((provider) => (
-                        <SelectItem key={provider} value={provider}>
-                          {provider}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <DataSourceField fromApi={fromApi.gridCompany}>
+                  <div className="space-y-2 p-2">
+                    <Label className="text-xs text-muted-foreground">{texts.fieldGridCompany}</Label>
+                    <Select
+                      value={formData.gridCompany}
+                      onValueChange={(value) => handleChange("gridCompany", value)}
+                    >
+                      <SelectTrigger className="h-10 rounded-xl bg-white/50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
+                        {gridCompanies.map((company) => (
+                          <SelectItem key={company} value={company}>
+                            {company}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </DataSourceField>
+                <DataSourceField fromApi={fromApi.electricityProvider}>
+                  <div className="space-y-2 p-2">
+                    <Label className="text-xs text-muted-foreground">{texts.fieldElectricityProvider}</Label>
+                    <Select
+                      value={formData.electricityProvider}
+                      onValueChange={(value) => handleChange("electricityProvider", value)}
+                    >
+                      <SelectTrigger className="h-10 rounded-xl bg-white/50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white rounded-xl border shadow-lg z-50">
+                        {electricityProviders.map((provider) => (
+                          <SelectItem key={provider} value={provider}>
+                            {provider}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </DataSourceField>
               </AccordionContent>
             </GlassCard>
           </AccordionItem>

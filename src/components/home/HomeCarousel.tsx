@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargerSlide } from "./slides/ChargerSlide";
 import { MonthStatsSlide } from "./slides/MonthStatsSlide";
 import { EnergyPriceSlide } from "./slides/EnergyPriceSlide";
+import { DataSourceField } from "@/components/ui/data-source-field";
 import { formatMessage, useLanguage } from "@/lib/i18n";
 import { getHomeTexts } from "@/lib/home-i18n";
 
@@ -12,6 +13,8 @@ type SlideId = typeof slideIds[number];
 
 interface HomeCarouselProps {
   userName: string;
+  /** True when greeting name came from Numiz API (/users/me). */
+  userNameFromApi?: boolean;
   batteryLevel: number;
   chargingMode: "idle" | "charging" | "v2h" | "v2g" | "disconnected";
   onModeChange: (mode: "idle" | "charging" | "v2h" | "v2g" | "disconnected") => void;
@@ -21,7 +24,17 @@ interface HomeCarouselProps {
   onSlideChange?: (slideId: SlideId) => void;
 }
 
-export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChange, onBatteryLevelChange, onScheduleClick, activeSlide, onSlideChange }: HomeCarouselProps) {
+export function HomeCarousel({
+  userName,
+  userNameFromApi = false,
+  batteryLevel,
+  chargingMode,
+  onModeChange,
+  onBatteryLevelChange,
+  onScheduleClick,
+  activeSlide,
+  onSlideChange,
+}: HomeCarouselProps) {
   const { language } = useLanguage();
   const home = getHomeTexts(language);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -129,9 +142,11 @@ export function HomeCarousel({ userName, batteryLevel, chargingMode, onModeChang
     <div className="relative flex-1 flex flex-col">
       <div className={`flex justify-center ${isChargerSlide ? "mb-4 max-h-sm:mb-0 min-h-7" : "hidden"}`}>
         {isChargerSlide ? (
-          <h1 className="text-lg font-semibold text-foreground">
-            {formatMessage(home.greeting, { name: userName })}
-          </h1>
+          <DataSourceField fromApi={userNameFromApi} className="px-3 py-0.5">
+            <h1 className="text-lg font-semibold text-foreground">
+              {formatMessage(home.greeting, { name: userName })}
+            </h1>
+          </DataSourceField>
         ) : null}
       </div>
 

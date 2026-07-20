@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Home, LayoutGrid, User } from "lucide-react";
 import { HomeHeader } from "@/components/layout/HomeHeader";
@@ -10,10 +10,15 @@ import Profile from "./Profile";
 import Settings from "./Settings";
 import Statistics from "./Statistics";
 import { mockUser } from "@/lib/mock-data";
+import { useSiteData } from "@/hooks/useSiteData";
 import { useBackground } from "@/hooks/useBackground";
 import { useAppMode } from "@/hooks/useAppMode";
 import { useInstallerApp, type InstallerTab } from "@/hooks/useInstallerApp";
+import { useInstallerData } from "@/hooks/useInstallerData";
+import { toast } from "@/hooks/use-toast";
 import { InstallerRoot } from "@/components/installer/InstallerRoot";
+import { NumizForbiddenError, verifyInstallerAccess } from "@/lib/numiz-api";
+import { getProfileTexts } from "@/lib/profile-i18n";
 import { cn } from "@/lib/utils";
 import { formatMessage, useLanguage } from "@/lib/i18n";
 import { getNavTexts } from "@/lib/nav-i18n";
@@ -53,6 +58,7 @@ export default function Index({ onLogout }: IndexProps) {
   const [activeHomeSlide, setActiveHomeSlide] = useState<"charger" | "stats" | "price">("charger");
   const { language } = useLanguage();
   const nav = getNavTexts(language);
+  const profileTexts = getProfileTexts(language);
 
   const installerNavItems: NavItem[] = [
     { id: "hem", icon: Home, label: nav.home },
@@ -70,8 +76,112 @@ export default function Index({ onLogout }: IndexProps) {
   };
   const displayBatteryLevel = chargingMode === "charging" ? 80 : batteryLevel;
   const { selected, setSelected, current } = useBackground();
-  const { mode, toggleMode } = useAppMode();
-  const installer = useInstallerApp();
+  const { mode, setMode } = useAppMode();
+  const [switchingAppMode, setSwitchingAppMode] = useState(false);
+  const { me, site, loading: siteLoading, view } = useSiteData();
+  const canUseInstallerApis = me?.role === "INSTALLER" || me?.role === "ADMIN";
+  const installerData = useInstallerData(mode === "installer" && canUseInstallerApis);
+  const installer = useInstallerApp(installerData.units);
+  const autoInstallerModeHandled = useRef(false);
+  const userName = view.firstName || mockUser.firstName;
+  const userNameFromApi = view.fromApi.displayName || view.fromApi.email;
+
+  useEffect(() => {
+    if (siteLoading || !me) return;
+    if (mode !== "installer") return;
+    if (canUseInstallerApis) return;
+    setMode("customer");
+  }, [siteLoading, me, mode, canUseInstallerApis, setMode]);
+
+  useEffect(() => {
+    if (siteLoading || autoInstallerModeHandled.current) return;
+    if (me?.role !== "INSTALLER" || site !== null) return;
+
+    autoInstallerModeHandled.current = true;
+
+    async function openInstallerFlow() {
+      try {
+        await verifyInstallerAccess();
+        setMode("installer");
+        toast({
+          title: profileTexts.devMode.noCustomerSiteTitle,
+          description: profileTexts.devMode.noCustomerSiteDescription,
+        });
+      } catch (error) {
+        if (error instanceof NumizForbiddenError) {
+          toast({
+            title: profileTexts.devMode.forbiddenTitle,
+            description: profileTexts.devMode.forbiddenDescription,
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: profileTexts.devMode.switchErrorTitle,
+          description: error instanceof Error ? error.message : "REQUEST_FAILED",
+          variant: "destructive",
+        });
+      }
+    }
+
+    void openInstallerFlow();
+  }, [siteLoading, me?.role, site, setMode, profileTexts.devMode]);
+
+  const trySwitchToCustomerView = (): boolean => {
+    if (siteLoading) return false;
+
+    if (!site) {
+      toast({
+        title: profileTexts.devMode.noCustomerSiteSwitchTitle,
+        description: profileTexts.devMode.noCustomerSiteSwitchDescription,
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    setMode("customer");
+    return true;
+  };
+
+  const handleToggleAppMode = async () => {
+    if (mode === "installer") {
+      trySwitchToCustomerView();
+      return;
+    }
+
+    if (!canUseInstallerApis) {
+      toast({
+        title: profileTexts.devMode.forbiddenTitle,
+        description: profileTexts.devMode.forbiddenDescription,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSwitchingAppMode(true);
+    try {
+      await verifyInstallerAccess();
+      setMode("installer");
+    } catch (error) {
+      if (error instanceof NumizForbiddenError) {
+        toast({
+          title: profileTexts.devMode.forbiddenTitle,
+          description: profileTexts.devMode.forbiddenDescription,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: profileTexts.devMode.switchErrorTitle,
+        description: error instanceof Error ? error.message : "REQUEST_FAILED",
+        variant: "destructive",
+      });
+    } finally {
+      setSwitchingAppMode(false);
+    }
+  };
 
   const isInstallerEnergyActive =
     installer.tab === "hem" &&
@@ -90,7 +200,8 @@ export default function Index({ onLogout }: IndexProps) {
             selectedBackground={selected}
             onBackgroundChange={setSelected}
             appMode={mode}
-            onToggleAppMode={toggleMode}
+            onToggleAppMode={handleToggleAppMode}
+            switchingAppMode={switchingAppMode}
             onLogout={onLogout}
           />
         );
@@ -102,7 +213,7 @@ export default function Index({ onLogout }: IndexProps) {
         return (
           <>
             <HomeHeader
-              userName={mockUser.firstName}
+              userName={userName}
               isOnline={true}
               onSettingsClick={() => setShowSettings(true)}
               centerContent={
@@ -110,7 +221,8 @@ export default function Index({ onLogout }: IndexProps) {
               }
             />
             <HomeCarousel
-              userName={mockUser.firstName}
+              userName={userName}
+              userNameFromApi={userNameFromApi}
               batteryLevel={displayBatteryLevel}
               chargingMode={chargingMode}
               onModeChange={setChargingMode}
@@ -124,7 +236,7 @@ export default function Index({ onLogout }: IndexProps) {
     }
   };
 
-  if (mode === "installer") {
+  if (mode === "installer" && canUseInstallerApis) {
     return (
       <div
         className={cn("min-h-dvh flex flex-col", current.style)}
@@ -150,7 +262,14 @@ export default function Index({ onLogout }: IndexProps) {
               />
             )}
             <div className="relative z-10 flex-1 flex flex-col min-h-0">
-              <InstallerRoot installer={installer} onExitDevMode={toggleMode} />
+              <InstallerRoot
+                installer={installer}
+                installerData={installerData}
+                selectedBackground={selected}
+                onBackgroundChange={setSelected}
+                onExitDevMode={trySwitchToCustomerView}
+                onLogout={onLogout}
+              />
             </div>
           </motion.div>
         </div>

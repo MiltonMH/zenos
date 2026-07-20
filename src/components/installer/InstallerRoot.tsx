@@ -1,4 +1,6 @@
 import Settings from "@/pages/Settings";
+import type { BackgroundOption } from "@/hooks/useBackground";
+import type { UseInstallerDataResult } from "@/hooks/useInstallerData";
 import { InstallerHemTab } from "./InstallerHemTab";
 import { InstallerDashTab } from "./InstallerDashTab";
 import { InstallerProfilTab } from "./InstallerProfilTab";
@@ -7,22 +9,33 @@ import type { useInstallerApp } from "@/hooks/useInstallerApp";
 
 interface InstallerRootProps {
   installer: ReturnType<typeof useInstallerApp>;
+  installerData: UseInstallerDataResult;
+  selectedBackground: BackgroundOption;
+  onBackgroundChange: (bg: BackgroundOption) => void;
   onExitDevMode: () => void;
+  onLogout?: () => void;
 }
 
-export function InstallerRoot({ installer, onExitDevMode }: InstallerRootProps) {
+export function InstallerRoot({
+  installer,
+  installerData,
+  selectedBackground,
+  onBackgroundChange,
+  onExitDevMode,
+  onLogout,
+}: InstallerRootProps) {
   const {
     tab,
     overlay,
     setOverlay,
-    units,
     activeUnitIndex,
     setActiveUnitIndex,
     updateCurrentUnit,
-    addUnit,
     openUnit,
     setTab,
   } = installer;
+
+  const units = installerData.units;
 
   if (overlay === "settings") {
     return <Settings onBack={() => setOverlay(null)} />;
@@ -31,25 +44,44 @@ export function InstallerRoot({ installer, onExitDevMode }: InstallerRootProps) 
   if (overlay === "add") {
     return (
       <InstallerAddFlow
+        companyName={installerData.company.companyName}
         onCancel={() => setOverlay(null)}
-        onComplete={(unit) => {
-          addUnit(unit);
+        onComplete={(result) => {
+          installerData.addUnitFromApi(result.unit);
           setOverlay(null);
         }}
+        createInstallation={installerData.createInstallation}
       />
     );
   }
 
   switch (tab) {
     case "dash":
-      return <InstallerDashTab units={units} onSelectUnit={openUnit} onAddArc={() => setOverlay("add")} />;
+      return (
+        <InstallerDashTab
+          units={units}
+          fromApi={installerData.company.fromApi.installations}
+          onSelectUnit={openUnit}
+          onAddArc={() => setOverlay("add")}
+        />
+      );
     case "profil":
-      return <InstallerProfilTab unitCount={units.length} onExitDevMode={onExitDevMode} />;
+      return (
+        <InstallerProfilTab
+          company={installerData.company}
+          unitCount={units.length}
+          selectedBackground={selectedBackground}
+          onBackgroundChange={onBackgroundChange}
+          onExitDevMode={onExitDevMode}
+          onLogout={onLogout}
+        />
+      );
     default:
       return (
         <InstallerHemTab
           units={units}
           activeIndex={activeUnitIndex}
+          fromApi={installerData.company.fromApi.installations}
           onActiveIndexChange={setActiveUnitIndex}
           onUpdateUnit={updateCurrentUnit}
           onOpenSettings={() => setOverlay("settings")}

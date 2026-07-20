@@ -2,17 +2,19 @@ import { motion } from "framer-motion";
 import { Plus, MapPin, CheckCircle2, Clock, WifiOff } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
+import { DataSourceField } from "@/components/ui/data-source-field";
 import type { InstalledUnit } from "@/lib/installer-mock-data";
 import { formatMessage, useLanguage } from "@/lib/i18n";
 import { getInstallerTexts } from "@/lib/installer-i18n";
 
 interface InstallerDashTabProps {
   units: InstalledUnit[];
+  fromApi: boolean;
   onSelectUnit: (index: number) => void;
   onAddArc: () => void;
 }
 
-export function InstallerDashTab({ units, onSelectUnit, onAddArc }: InstallerDashTabProps) {
+export function InstallerDashTab({ units, fromApi, onSelectUnit, onAddArc }: InstallerDashTabProps) {
   const { language } = useLanguage();
   const t = getInstallerTexts(language).dash;
 
@@ -34,7 +36,8 @@ export function InstallerDashTab({ units, onSelectUnit, onAddArc }: InstallerDas
             transition={{ delay: index * 0.05 }}
             className="w-full text-left"
           >
-            <GlassCard className="p-4" variant="subtle">
+            <DataSourceField fromApi={fromApi}>
+              <GlassCard className="p-4" variant="subtle">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{unit.customerName}</p>
@@ -65,7 +68,8 @@ export function InstallerDashTab({ units, onSelectUnit, onAddArc }: InstallerDas
                   {t.statusOffline}
                 </div>
               )}
-            </GlassCard>
+              </GlassCard>
+            </DataSourceField>
           </motion.button>
         ))}
 

@@ -2,17 +2,24 @@ import { motion } from "framer-motion";
 import { CheckCircle2, Mail, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
-import { mockInstaller } from "@/lib/installer-mock-data";
 import { formatMessage, useLanguage } from "@/lib/i18n";
 import { getInstallerTexts } from "@/lib/installer-i18n";
 
 interface DoneStepProps {
+  companyName: string;
   customerExists: boolean;
+  customerPassword: string | null;
   onDone: () => void;
   onAddAnother: () => void;
 }
 
-export function DoneStep({ customerExists, onDone, onAddAnother }: DoneStepProps) {
+export function DoneStep({
+  companyName,
+  customerExists,
+  customerPassword,
+  onDone,
+  onAddAnother,
+}: DoneStepProps) {
   const { language } = useLanguage();
   const t = getInstallerTexts(language).done;
 
@@ -38,14 +45,18 @@ export function DoneStep({ customerExists, onDone, onAddAnother }: DoneStepProps
             <UserPlus className="w-4 h-4 text-primary" />
           </div>
           <p className="text-xs text-foreground">
-            {formatMessage(t.infoInstaller, { company: mockInstaller.companyName })}
+            {formatMessage(t.infoInstaller, { company: companyName })}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10 shrink-0">
             <Mail className="w-4 h-4 text-primary" />
           </div>
-          <p className="text-xs text-foreground">{t.infoContact}</p>
+          <p className="text-xs text-foreground">
+            {customerPassword
+              ? formatMessage(t.infoPassword, { password: customerPassword })
+              : t.infoContact}
+          </p>
         </div>
       </GlassCard>
 

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useNativeApp } from "@/hooks/useNativeApp";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { SiteDataProvider } from "@/hooks/useSiteData";
 import { useAuthFlow } from "@/hooks/useAuthFlow";
 import { LanguageProvider } from "@/lib/i18n";
 import { AuthFlow } from "@/components/auth/AuthFlow";
@@ -66,7 +67,14 @@ function AppRoutes() {
         <Route path="/auth/callback/:provider" element={<OAuthCallbackPage />} />
         {showApp ? (
           <>
-            <Route path="/" element={<Index onLogout={handleLogout} />} />
+            <Route
+              path="/"
+              element={
+                <SiteDataProvider>
+                  <Index onLogout={handleLogout} />
+                </SiteDataProvider>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </>
         ) : (

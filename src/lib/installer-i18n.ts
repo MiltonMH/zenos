@@ -20,6 +20,8 @@ const installerTexts = {
       statusOffline: "Offline",
       empty: "Inga installationer än.",
       addCharger: "Lägg till laddbox",
+      addSubmitting: "Skapar installation…",
+      addErrorTitle: "Installationen misslyckades",
     },
 
     profil: {
@@ -107,6 +109,7 @@ const installerTexts = {
         "Kunden ser automatiskt {company} som installatör i sin app.",
       infoContact:
         "Installatörens kontaktuppgifter läggs till automatiskt — kunden behöver inte fylla i det.",
+      infoPassword: "Tillfälligt lösenord till kunden: {password}",
       toInstallations: "Till mina installationer",
       addAnother: "Konfigurera en till",
     },
@@ -130,6 +133,8 @@ const installerTexts = {
       statusOffline: "Offline",
       empty: "No installations yet.",
       addCharger: "Add charger",
+      addSubmitting: "Creating installation…",
+      addErrorTitle: "Installation failed",
     },
 
     profil: {
@@ -217,6 +222,7 @@ const installerTexts = {
         "The customer will automatically see {company} as their installer in the app.",
       infoContact:
         "The installer's contact details are added automatically — the customer doesn't need to enter them.",
+      infoPassword: "Temporary password for the customer: {password}",
       toInstallations: "To my installations",
       addAnother: "Configure another",
     },

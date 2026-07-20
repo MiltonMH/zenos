@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { ApiField } from "@/components/settings/ApiField";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n";
 import { getSettingsTexts } from "@/lib/settings-i18n";
@@ -17,6 +18,8 @@ interface OptimizationSlideProps {
   onV2gChange: (enabled: boolean) => void;
   onDischargeLimitChange: (value: number[]) => void;
   onOptimizationModeChange: (mode: string) => void;
+  dischargeLimitFromApi?: boolean;
+  v2hFromApi?: boolean;
 }
 
 export function OptimizationSlide({ 
@@ -27,7 +30,9 @@ export function OptimizationSlide({
   onV2hChange,
   onV2gChange,
   onDischargeLimitChange, 
-  onOptimizationModeChange 
+  onOptimizationModeChange,
+  dischargeLimitFromApi = false,
+  v2hFromApi = false,
 }: OptimizationSlideProps) {
   const { language } = useLanguage();
   const settings = getSettingsTexts(language);
@@ -40,23 +45,25 @@ export function OptimizationSlide({
       
       <div className="space-y-3">
         {/* Discharge Limit - TOP */}
-        <div className="glass-subtle rounded-2xl p-3 space-y-2">
-          <h3 className="font-medium text-foreground text-xs">{opt.maxDischarge}</h3>
-          <Slider
-            value={dischargeLimit}
-            onValueChange={onDischargeLimitChange}
-            min={20}
-            max={80}
-            step={5}
-            className="w-full"
-          />
-          <div className="flex items-center justify-between">
-            <p className="text-[11px] text-muted-foreground">
-              {opt.neverDischargeBelow}
-            </p>
-            <span className="text-lg font-bold text-primary">{dischargeLimit[0]}%</span>
+        <ApiField fromApi={dischargeLimitFromApi}>
+          <div className="glass-subtle rounded-2xl p-3 space-y-2">
+            <h3 className="font-medium text-foreground text-xs">{opt.maxDischarge}</h3>
+            <Slider
+              value={dischargeLimit}
+              onValueChange={onDischargeLimitChange}
+              min={20}
+              max={80}
+              step={5}
+              className="w-full"
+            />
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] text-muted-foreground">
+                {opt.neverDischargeBelow}
+              </p>
+              <span className="text-lg font-bold text-primary">{dischargeLimit[0]}%</span>
+            </div>
           </div>
-        </div>
+        </ApiField>
 
         {/* Optimization Mode */}
         <RadioGroup value={optimizationMode} onValueChange={onOptimizationModeChange} className="space-y-2">
@@ -128,20 +135,22 @@ export function OptimizationSlide({
         )}
 
         {/* V2H Toggle - BOTTOM */}
-        <div className="glass-subtle rounded-2xl p-3">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/20 rounded-xl shrink-0">
-                <Home className="w-4 h-4 text-primary" />
+        <ApiField fromApi={v2hFromApi}>
+          <div className="glass-subtle rounded-2xl p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/20 rounded-xl shrink-0">
+                  <Home className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground text-sm leading-tight">{opt.v2hTitle}</h3>
+                  <p className="text-[11px] text-muted-foreground">{opt.v2hSubtitle}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium text-foreground text-sm leading-tight">{opt.v2hTitle}</h3>
-                <p className="text-[11px] text-muted-foreground">{opt.v2hSubtitle}</p>
-              </div>
+              <Switch checked={v2hEnabled} onCheckedChange={onV2hChange} />
             </div>
-            <Switch checked={v2hEnabled} onCheckedChange={onV2hChange} />
           </div>
-        </div>
+        </ApiField>
 
         {/* V2G Toggle - BOTTOM */}
         <div className="glass-subtle rounded-2xl p-3">

@@ -31,6 +31,132 @@ export type DayOfWeek =
 
 export type SiteCurrency = "SEK" | "EUR";
 
+export type UserRole =
+  | "ADMIN"
+  | "INSTALLER"
+  | "SITE_OWNER"
+  | "SITE_MEMBER"
+  | "VIEWER";
+
+export type InstallerCompanyRole = "COMPANY_OWNER" | "COMPANY_MEMBER";
+
+export type InstallationStatus = "AWAITING_CUSTOMER" | "ACTIVE";
+
+export type InstallerDeviceChargingMode =
+  | "idle"
+  | "charging"
+  | "discharging"
+  | "fault"
+  | "offline"
+  | "generating";
+
+export interface InstallerCompanySummary {
+  id: string;
+  name: string;
+  phone: string | null;
+  certification: string | null;
+  companyRole: InstallerCompanyRole;
+}
+
+/** GET /users/me */
+export interface MeResponse {
+  id: string;
+  email: string;
+  displayName: string | null;
+  phoneNumber: string | null;
+  role: UserRole;
+  locale: string | null;
+  passwordConfigured: boolean;
+  installerCompany: InstallerCompanySummary | null;
+}
+
+/** GET /installer/companies/me */
+export interface InstallerCompanyMeResponse {
+  id: string;
+  name: string;
+  phone: string | null;
+  certification: string | null;
+  companyRole: InstallerCompanyRole;
+  contactName: string | null;
+  contactPhone: string | null;
+}
+
+export interface InstallationCustomerView {
+  userId: string;
+  email: string;
+  displayName: string | null;
+}
+
+export interface InstallationDeviceView {
+  id: string;
+  status: DeviceStatus;
+  online: boolean;
+  chargingMode: InstallerDeviceChargingMode | null;
+  batteryLevel: number | null;
+}
+
+export interface InstallationSummary {
+  id: string;
+  siteId: string;
+  address: string;
+  installedAt: string;
+  status: InstallationStatus;
+  customer: InstallationCustomerView;
+  device: InstallationDeviceView;
+}
+
+export interface InstallationDetail extends InstallationSummary {
+  gridCompany: string | null;
+  electricityProvider: string | null;
+  annualConsumptionKwh: number | null;
+  siteName: string | null;
+}
+
+export interface InstallationVehicleSpec {
+  vin?: string | null;
+  make?: string | null;
+  model?: string | null;
+  modelYear?: number | null;
+  label?: string | null;
+}
+
+export interface CreateInstallationRequest {
+  customerEmail: string;
+  customerDisplayName?: string | null;
+  customerPhone?: string | null;
+  siteName?: string | null;
+  address: string;
+  gridArea?: string | null;
+  currency?: SiteCurrency | null;
+  gridCompany?: string | null;
+  electricityProvider?: string | null;
+  annualConsumptionKwh?: number | null;
+  hardwareId: string;
+  gatewaySerial?: string | null;
+  deviceType?: DeviceType | null;
+  deviceName?: string | null;
+  manufacturer?: string | null;
+  model?: string | null;
+  fuseAmps?: number | null;
+  vehicle?: InstallationVehicleSpec | null;
+}
+
+export interface InstallationCreateResponse {
+  installation: InstallationDetail;
+  customerPassword: string | null;
+  deviceId: string;
+}
+
+/** GET /sites/{id}/installer — site's installing company (customer-facing). */
+export interface SiteInstallerResponse {
+  companyName: string;
+  phone: string | null;
+  certification: string | null;
+  contactName: string | null;
+  contactPhone: string | null;
+  installedAt: string;
+}
+
 export interface Site {
   id: string;
   name: string;
@@ -38,6 +164,9 @@ export interface Site {
   address: string | null;
   gridArea: string;
   currency: SiteCurrency;
+  gridCompany?: string | null;
+  electricityProvider?: string | null;
+  annualConsumptionKwh?: number | null;
   createdAt: string;
 }
 
@@ -52,6 +181,7 @@ export interface Device {
   status: DeviceStatus;
   siteId: string;
   externalRef: string | null;
+  pinCode: string | null;
   createdAt: string;
 }
 
