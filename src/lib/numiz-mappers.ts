@@ -5,12 +5,14 @@ import type {
   EntitlementView,
   ChargingSettings,
   ChargingHistoryEvent,
+  ChargingSchedule,
   MetricsPeriod,
   MetricsSummary,
   OptimizationMode,
   PricePoint,
   PricePointResponse,
   SocLimitSource,
+  UpdateChargingSchedulesRequest,
   ValueSummary,
   Vehicle,
   VehicleSession,
@@ -35,6 +37,36 @@ const DAY_TO_KEY: Record<string, DayKey> = {
   SATURDAY: "sat",
   SUNDAY: "sun",
 };
+
+const KEY_TO_DAY = {
+  mon: "MONDAY",
+  tue: "TUESDAY",
+  wed: "WEDNESDAY",
+  thu: "THURSDAY",
+  fri: "FRIDAY",
+  sat: "SATURDAY",
+  sun: "SUNDAY",
+} as const satisfies Record<DayKey, import("@/lib/numiz-types").DayOfWeek>;
+
+export interface UiChargingSchedule {
+  days: DayKey[];
+  timeRange: { start: string; end: string };
+}
+
+export const FALLBACK_UI_CHARGING_SCHEDULE: UiChargingSchedule = {
+  days: ["mon", "wed", "fri"],
+  timeRange: { start: "21:00", end: "06:00" },
+};
+
+const EMPTY_UI_CHARGING_SCHEDULE: UiChargingSchedule = {
+  days: [],
+  timeRange: { start: "22:00", end: "06:00" },
+};
+
+/** First target (window start time) — charge off / baseline. */
+const SCHEDULE_START_CHARGE = 0;
+/** Second target (window end time) — full charge target. */
+const SCHEDULE_END_CHARGE = 100;
 
 const CHARGER_DEVICE_TYPES = new Set(["v2x_charger", "ev_charger"]);
 
@@ -550,6 +582,45 @@ export function mapScheduleTimeRange(
   const end = target.length > 1 ? target[target.length - 1]?.time?.slice(0, 5) : start;
   if (!start) return null;
   return { start, end: end ?? start };
+}
+
+function toApiLocalTime(hhmm: string): string {
+  return hhmm.length === 5 ? `${hhmm}:00` : hhmm;
+}
+
+export function mapChargingSchedulesToUi(
+  schedules: ChargingSchedule[],
+  useFallbackWhenEmpty = false,
+): UiChargingSchedule {
+  const first = schedules[0];
+  if (!first) {
+    return useFallbackWhenEmpty ? FALLBACK_UI_CHARGING_SCHEDULE : EMPTY_UI_CHARGING_SCHEDULE;
+  }
+
+  const days = mapScheduleDaysToKeys(first.days);
+  const timeRange = mapScheduleTimeRange(first.target);
+
+  return {
+    days,
+    timeRange: timeRange ?? EMPTY_UI_CHARGING_SCHEDULE.timeRange,
+  };
+}
+
+export function mapUiScheduleToApi(
+  days: DayKey[],
+  timeRange: { start: string; end: string },
+): UpdateChargingSchedulesRequest {
+  return {
+    schedules: [
+      {
+        days: days.map((day) => KEY_TO_DAY[day]),
+        target: [
+          { time: toApiLocalTime(timeRange.start), charge: SCHEDULE_START_CHARGE },
+          { time: toApiLocalTime(timeRange.end), charge: SCHEDULE_END_CHARGE },
+        ],
+      },
+    ],
+  };
 }
 
 export function formatSiteDate(iso: string, locale = "sv-SE"): string {

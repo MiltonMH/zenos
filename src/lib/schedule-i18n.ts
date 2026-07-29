@@ -16,6 +16,9 @@ const scheduleTexts = {
     chargeTime: "Laddtid",
     summary: "Laddar {days} kl {start}–{end}",
     toastSaved: "Schema sparat!",
+    toastFailed: "Kunde inte spara schemat",
+    toastNoVehicle: "Ingen bil kopplad — schemat sparas inte",
+    loading: "Hämtar schema…",
   },
   en: {
     days: {
@@ -32,6 +35,9 @@ const scheduleTexts = {
     chargeTime: "Charging time",
     summary: "Charging {days} at {start}–{end}",
     toastSaved: "Schedule saved!",
+    toastFailed: "Could not save schedule",
+    toastNoVehicle: "No vehicle linked — schedule not saved",
+    loading: "Loading schedule…",
   },
 } as const;
 

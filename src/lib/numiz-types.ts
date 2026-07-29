@@ -264,6 +264,16 @@ export interface ChargingSchedule {
   target: ChargeTarget[];
 }
 
+/** PUT /vehicles/{id}/charging-schedules — replaces all schedules for the vehicle. */
+export interface ChargingScheduleWrite {
+  days: DayOfWeek[];
+  target: ChargeTarget[];
+}
+
+export interface UpdateChargingSchedulesRequest {
+  schedules: ChargingScheduleWrite[];
+}
+
 export interface Vehicle {
   id: string;
   vin: string | null;
