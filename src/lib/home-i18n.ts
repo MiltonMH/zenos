@@ -30,9 +30,15 @@ const homeTexts = {
 
     period: {
       D: "Idag",
-      V: "Denna vecka",
+      W: "Denna vecka",
       M: "Denna månad",
-      Å: "Detta år",
+      Y: "Detta år",
+    },
+    periodShort: {
+      D: "D",
+      W: "V",
+      M: "M",
+      Y: "Å",
     },
     stat: {
       charged: "Laddat",
@@ -125,9 +131,15 @@ const homeTexts = {
 
     period: {
       D: "Today",
-      V: "This week",
+      W: "This week",
       M: "This month",
-      Å: "This year",
+      Y: "This year",
+    },
+    periodShort: {
+      D: "D",
+      W: "W",
+      M: "M",
+      Y: "Y",
     },
     stat: {
       charged: "Charged",

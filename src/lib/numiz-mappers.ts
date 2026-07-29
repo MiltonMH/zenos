@@ -4,13 +4,18 @@ import type {
   Device,
   EntitlementView,
   ChargingSettings,
+  ChargingHistoryEvent,
+  MetricsPeriod,
+  MetricsSummary,
   OptimizationMode,
   PricePoint,
+  PricePointResponse,
   SocLimitSource,
   ValueSummary,
   Vehicle,
   VehicleSession,
 } from "@/lib/numiz-types";
+import type { Period } from "@/lib/statistics-data";
 import type { ArcStatus, ChargingMode, InstalledUnit } from "@/lib/installer-mock-data";
 import type {
   CreateInstallationRequest,
@@ -203,16 +208,111 @@ export function mapFuseFromAttributes(der: Der | null): string | null {
 
 export function priceKwhOf(point: PricePoint): number {
   if (typeof point.priceKwh === "number") return point.priceKwh;
-  if (typeof point.priceSekKwh === "number") return point.priceSekKwh;
+  if (typeof point.price === "number") return point.price;
   return 0;
+}
+
+export function pricePointHour(point: PricePoint): number {
+  return point.time.getHours();
+}
+
+export function sortPricePointsByTime(points: PricePoint[]): PricePoint[] {
+  return [...points].sort((a, b) => a.time.getTime() - b.time.getTime());
+}
+
+export function pricePointMinutesSinceMidnight(point: PricePoint): number {
+  return point.time.getHours() * 60 + point.time.getMinutes();
+}
+
+export function formatPricePointClock(point: PricePoint): string {
+  const h = point.time.getHours();
+  const m = point.time.getMinutes();
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+/** Keep only points whose calendar day matches referenceDate (local timezone). */
+export function filterPricePointsForLocalDay(
+  points: PricePoint[],
+  referenceDate = new Date(),
+): PricePoint[] {
+  const dayStart = new Date(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth(),
+    referenceDate.getDate(),
+  );
+  const dayEnd = new Date(dayStart);
+  dayEnd.setDate(dayEnd.getDate() + 1);
+
+  return sortPricePointsByTime(points).filter(
+    (p) => p.time >= dayStart && p.time < dayEnd,
+  );
+}
+
+const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
+
+/** Nearest slot within 15 minutes, otherwise the latest point at or before now. */
+export function findCurrentPricePoint(
+  points: PricePoint[],
+  now = new Date(),
+): PricePoint | undefined {
+  if (points.length === 0) return undefined;
+
+  const sorted = sortPricePointsByTime(points);
+  let nearest: PricePoint | undefined;
+  let nearestDiff = FIFTEEN_MINUTES_MS;
+
+  for (const point of sorted) {
+    const diff = Math.abs(point.time.getTime() - now.getTime());
+    if (diff < nearestDiff) {
+      nearestDiff = diff;
+      nearest = point;
+    }
+  }
+  if (nearest) return nearest;
+
+  let lastBefore: PricePoint | undefined;
+  for (const point of sorted) {
+    if (point.time <= now) lastBefore = point;
+    else break;
+  }
+  return lastBefore ?? sorted[0];
+}
+
+function parsePriceTime(value: string | Date | undefined): Date {
+  if (value instanceof Date) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+  return new Date();
+}
+
+type RawPricePoint = PricePointResponse & {
+  time?: string | Date;
+};
+
+/** Normalize API payload to canonical PricePoint (parses time to Date). */
+export function normalizePricePoint(raw: RawPricePoint): PricePoint {
+  return {
+    time: parsePriceTime(raw.time),
+    priceKwh:
+      typeof raw.priceKwh === "number"
+        ? raw.priceKwh
+        : raw.price ?? 0,
+    displayCurrency: raw.displayCurrency ?? raw.currency ?? "SEK",
+    priceZone: raw.priceZone ?? "",
+    price: raw.priceKwh ?? raw.price ?? 0,
+    currency: raw.currency ?? "SEK",
+    unit: raw.unit ?? "KWH",
+  };
 }
 
 export function mapPricePointsToHourly(
   points: PricePoint[],
-): { hour: number; price: number }[] {
+): { hour: number; priceKwh: number }[] {
   return points.map((p) => ({
-    hour: new Date(p.ts).getHours(),
-    price: priceKwhOf(p),
+    hour: pricePointHour(p),
+    priceKwh: priceKwhOf(p),
   }));
 }
 
@@ -229,10 +329,211 @@ export function mapValueSummaryToStats(summary: ValueSummary | null): {
 } | null {
   if (!summary) return null;
   return {
-    charged: summary.totalEnergyKwh,
-    v2h: summary.dischargeValueSek,
-    cost: summary.totalValueSek,
+    charged: summary.charge.kwh,
+    v2h: summary.discharge.kwh,
+    cost: summary.total.price,
   };
+}
+
+export function mapUiPeriodToMetricsPeriod(period: Period): MetricsPeriod {
+  switch (period) {
+    case "D":
+      return "TODAY";
+    case "W":
+      return "THIS_WEEK";
+    case "M":
+      return "THIS_MONTH";
+    case "Y":
+      return "THIS_YEAR";
+  }
+}
+
+export interface ChartRow {
+  day?: string;
+  week?: string;
+  month?: string;
+  hour?: string;
+  charged: number;
+  v2h: number;
+  cost: number;
+}
+
+const WEEKDAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+const MONTH_KEYS = [
+  "jan", "feb", "mar", "apr", "may", "jun",
+  "jul", "aug", "sep", "oct", "nov", "dec",
+] as const;
+
+type WeekdayKey = (typeof WEEKDAY_KEYS)[number];
+type MonthKey = (typeof MONTH_KEYS)[number];
+
+export function mapMetricsBreakdownToChart(
+  breakdown: ValueSummary[],
+  period: Period,
+  dayLabels?: Record<WeekdayKey, string>,
+  monthLabels?: Record<MonthKey, string>,
+): ChartRow[] {
+  return breakdown.map((bucket, index) => {
+    const charged = bucket.charge.kwh;
+    const v2h = bucket.discharge.kwh;
+    const cost = bucket.total.price;
+
+    switch (period) {
+      case "D":
+        return { hour: String(index).padStart(2, "0"), charged, v2h, cost };
+      case "W": {
+        const key = WEEKDAY_KEYS[index] ?? "mon";
+        return { day: dayLabels?.[key] ?? key, charged, v2h, cost };
+      }
+      case "M":
+        return { week: `V${index + 1}`, charged, v2h, cost };
+      case "Y": {
+        const key = MONTH_KEYS[index] ?? "jan";
+        const label = monthLabels?.[key] ?? key.charAt(0).toUpperCase() + key.slice(1);
+        return { month: label, charged, v2h, cost };
+      }
+    }
+  });
+}
+
+export interface ChargingHistoryUiRow {
+  id: string;
+  date: string;
+  time: string;
+  energy: number;
+  cost: number;
+  type: "charging" | "v2h";
+  priceAvg: number;
+}
+
+export function mapChargingHistoryToUi(
+  events: ChargingHistoryEvent[],
+  locale = "sv-SE",
+): ChargingHistoryUiRow[] {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+
+  return [...events]
+    .sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
+    .map((event) => {
+      const ts = new Date(event.ts);
+      let date: string;
+      if (ts >= todayStart) {
+        date = "Idag";
+      } else if (ts >= yesterdayStart) {
+        date = "Igår";
+      } else {
+        date = ts.toLocaleDateString(locale, { day: "numeric", month: "short" });
+      }
+
+      const time = ts.toLocaleTimeString(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      const type = event.state === "DISCHARGING" ? "v2h" : "charging";
+      const priceAvg =
+        event.energyKwh > 0 ? event.price / event.energyKwh : 0;
+
+      return {
+        id: event.id,
+        date,
+        time,
+        energy: event.energyKwh,
+        cost: event.price,
+        type,
+        priceAvg,
+      };
+    });
+}
+
+export function buildPriceDayRange(day: "today" | "tomorrow"): { from: string; to: string } {
+  const base = new Date();
+  if (day === "tomorrow") {
+    base.setDate(base.getDate() + 1);
+  }
+  const start = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  const format = (d: Date) => {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+
+  return { from: format(start), to: format(end) };
+}
+
+export const FALLBACK_HOURLY_PRICES: { hour: number; priceKwh: number }[] = [
+  { hour: 0, priceKwh: 0.32 },
+  { hour: 1, priceKwh: 0.28 },
+  { hour: 2, priceKwh: 0.25 },
+  { hour: 3, priceKwh: 0.22 },
+  { hour: 4, priceKwh: 0.20 },
+  { hour: 5, priceKwh: 0.24 },
+  { hour: 6, priceKwh: 0.45 },
+  { hour: 7, priceKwh: 0.68 },
+  { hour: 8, priceKwh: 0.82 },
+  { hour: 9, priceKwh: 0.75 },
+  { hour: 10, priceKwh: 0.62 },
+  { hour: 11, priceKwh: 0.55 },
+  { hour: 12, priceKwh: 0.58 },
+  { hour: 13, priceKwh: 0.52 },
+  { hour: 14, priceKwh: 0.48 },
+  { hour: 15, priceKwh: 0.55 },
+  { hour: 16, priceKwh: 0.72 },
+  { hour: 17, priceKwh: 0.95 },
+  { hour: 18, priceKwh: 0.88 },
+  { hour: 19, priceKwh: 0.65 },
+  { hour: 20, priceKwh: 0.52 },
+  { hour: 21, priceKwh: 0.45 },
+  { hour: 22, priceKwh: 0.38 },
+  { hour: 23, priceKwh: 0.32 },
+];
+
+export function fallbackPricePoints(referenceDate = new Date()): PricePoint[] {
+  const dayStart = new Date(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth(),
+    referenceDate.getDate(),
+  );
+
+  return FALLBACK_HOURLY_PRICES.map(({ hour, priceKwh }) => {
+    const time = new Date(dayStart);
+    time.setHours(hour, 0, 0, 0);
+    return normalizePricePoint({
+      time: time.toISOString(),
+      priceKwh,
+      displayCurrency: "SEK",
+      priceZone: "SE3",
+      price: priceKwh,
+      currency: "SEK",
+      unit: "KWH",
+    });
+  });
+}
+
+/** Full-day series for chart: filter to local calendar day, or hourly fallback when empty. */
+export function fillPricePointsDay(
+  points: PricePoint[],
+  referenceDate = new Date(),
+): PricePoint[] {
+  const filtered = filterPricePointsForLocalDay(points, referenceDate);
+  if (filtered.length === 0) {
+    return fallbackPricePoints(referenceDate);
+  }
+
+  return filtered;
+}
+
+export function statsFromMetricsSummary(summary: MetricsSummary | null): {
+  charged: number;
+  v2h: number;
+  cost: number;
+} | null {
+  if (!summary) return null;
+  return mapValueSummaryToStats(summary.summary);
 }
 
 export function mapScheduleDaysToKeys(days: string[]): DayKey[] {

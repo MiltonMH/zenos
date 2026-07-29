@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { getStatsForPeriod, type Period } from "@/lib/statistics-data";
+import { DataSourceField } from "@/components/ui/data-source-field";
+import { useMetricsData } from "@/hooks/useMetricsData";
+import type { Period } from "@/lib/statistics-data";
 import { useLanguage } from "@/lib/i18n";
 import { getHomeTexts } from "@/lib/home-i18n";
 
@@ -8,30 +10,35 @@ export function MonthStatsSlide() {
   const { language } = useLanguage();
   const home = getHomeTexts(language);
   const [period, setPeriod] = useState<Period>("M");
-  const periods: Period[] = ["D", "V", "M", "Å"];
+  const periods: Period[] = ["D", "W", "M", "Y"];
 
-  const periodStats = getStatsForPeriod(period);
+  const { stats, fromApi, setPeriod: setMetricsPeriod } = useMetricsData();
 
-  const stats = {
-    charged: { value: periodStats.charged, unit: home.unit.kWh, colorClass: "bg-chart-charged" },
-    v2h: { value: periodStats.v2h, unit: home.unit.kWh, colorClass: "bg-chart-v2h" },
-    spent: { value: periodStats.cost, unit: home.unit.kr, colorClass: "bg-chart-spent" },
+  useEffect(() => {
+    setMetricsPeriod(period);
+  }, [period, setMetricsPeriod]);
+
+  const statRows = {
+    charged: { value: Math.round(stats.charged), unit: home.unit.kWh, colorClass: "bg-chart-charged" },
+    v2h: { value: Math.round(stats.v2h), unit: home.unit.kWh, colorClass: "bg-chart-v2h" },
+    spent: { value: Math.round(stats.cost), unit: home.unit.kr, colorClass: "bg-chart-spent" },
   };
 
-  // Bar heights based on values (normalized)
-  const maxValue = Math.max(stats.charged.value, stats.v2h.value * 2, stats.spent.value);
+  const maxValue = Math.max(
+    statRows.charged.value,
+    statRows.v2h.value * 2,
+    statRows.spent.value,
+  );
   const barHeights = {
-    charged: (stats.charged.value / maxValue) * 100,
-    v2h: (stats.v2h.value * 2 / maxValue) * 100,
-    spent: (stats.spent.value / maxValue) * 100,
+    charged: maxValue > 0 ? (statRows.charged.value / maxValue) * 100 : 0,
+    v2h: maxValue > 0 ? (statRows.v2h.value * 2 / maxValue) * 100 : 0,
+    spent: maxValue > 0 ? (statRows.spent.value / maxValue) * 100 : 0,
   };
 
   return (
     <div className="h-full flex flex-col items-center px-6 pt-3 pb-3 max-h-sm:pb-2">
-      {/* Title */}
       <h2 className="text-xl font-semibold text-foreground mb-3">{home.period[period]}</h2>
 
-      {/* Period Toggle */}
       <div className="pill-toggle mb-4">
         {periods.map((p) => (
           <button
@@ -46,17 +53,16 @@ export function MonthStatsSlide() {
                 transition={{ type: "spring", stiffness: 380, damping: 34, mass: 0.8 }}
               />
             )}
-            <span className="relative z-10">{p}</span>
+            <span className="relative z-10">{home.periodShort[p]}</span>
           </button>
         ))}
       </div>
 
-      {/* Bar Chart */}
       <div className="flex-1 flex items-end justify-center gap-6 pb-8 w-full max-w-[200px]">
         {Object.entries(barHeights).map(([key, height], index) => (
           <motion.div
             key={key}
-            className={`w-10 rounded-full ${stats[key as keyof typeof stats].colorClass}`}
+            className={`w-10 rounded-full ${statRows[key as keyof typeof statRows].colorClass}`}
             initial={{ height: 0 }}
             animate={{ height: `${height}%` }}
             transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
@@ -64,27 +70,26 @@ export function MonthStatsSlide() {
         ))}
       </div>
 
-      {/* Stats Labels */}
-      <div className="w-full max-w-[280px] space-y-2 mb-4">
+      <DataSourceField fromApi={fromApi.stats} className="w-full max-w-[280px] space-y-2 mb-4">
         <StatRow
           colorClass="bg-chart-charged"
           label={home.stat.charged}
-          value={stats.charged.value}
-          unit={stats.charged.unit}
+          value={statRows.charged.value}
+          unit={statRows.charged.unit}
         />
         <StatRow
           colorClass="bg-chart-v2h"
           label={home.stat.v2h}
-          value={stats.v2h.value}
-          unit={stats.v2h.unit}
+          value={statRows.v2h.value}
+          unit={statRows.v2h.unit}
         />
         <StatRow
           colorClass="bg-chart-spent"
           label={home.stat.cost}
-          value={stats.spent.value}
-          unit={stats.spent.unit}
+          value={statRows.spent.value}
+          unit={statRows.spent.unit}
         />
-      </div>
+      </DataSourceField>
     </div>
   );
 }

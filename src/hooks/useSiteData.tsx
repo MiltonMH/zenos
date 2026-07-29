@@ -1,5 +1,4 @@
 import {
-  createContext,
   useCallback,
   useContext,
   useEffect,
@@ -7,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { SiteDataContext } from "@/hooks/site-data-context";
 import { readBasicSession } from "@/lib/auth-config";
 import {
   findChargerDer,
@@ -119,8 +119,6 @@ export interface SiteDataContextValue {
   hasApiData: boolean;
   refetch: () => void;
 }
-
-const SiteDataContext = createContext<SiteDataContextValue | null>(null);
 
 function sessionEmailFallback(): string | null {
   return readBasicSession()?.email ?? null;
@@ -323,7 +321,7 @@ export function SiteDataProvider({ children }: { children: ReactNode }) {
             fetchSessions(),
             fetchVehicles(),
             fetchEntitlements(primarySite.id),
-            fetchValueSummary(primarySite.id),
+            fetchValueSummary(primarySite.id, primarySite.currency ?? "SEK"),
             fetchSiteInstaller(primarySite.id),
           ]);
 

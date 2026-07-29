@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useNativeApp } from "@/hooks/useNativeApp";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { SiteDataProvider } from "@/hooks/useSiteData";
+import { MetricsDataProvider } from "@/hooks/useMetricsData";
 import { useAuthFlow } from "@/hooks/useAuthFlow";
 import { LanguageProvider } from "@/lib/i18n";
 import { AuthFlow } from "@/components/auth/AuthFlow";
@@ -62,7 +63,12 @@ function AppRoutes() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <Routes>
         <Route path="/auth/callback/:provider" element={<OAuthCallbackPage />} />
         {showApp ? (
@@ -71,7 +77,9 @@ function AppRoutes() {
               path="/"
               element={
                 <SiteDataProvider>
-                  <Index onLogout={handleLogout} />
+                  <MetricsDataProvider>
+                    <Index onLogout={handleLogout} />
+                  </MetricsDataProvider>
                 </SiteDataProvider>
               }
             />

@@ -10,12 +10,17 @@ import {
 import type {
   ChargingSchedule,
   ChargingSettings,
+  ChargingHistoryEvent,
   Device,
   DeviceView,
   EntitlementView,
   MeResponse,
+  MetricsPeriod,
+  MetricsSummary,
   PricePoint,
+  PricePointResponse,
   Site,
+  SiteCurrency,
   CreateInstallationRequest,
   InstallationCreateResponse,
   InstallationDetail,
@@ -28,6 +33,7 @@ import type {
   VehicleSession,
   VehicleSummary,
 } from "@/lib/numiz-types";
+import { normalizePricePoint } from "@/lib/numiz-mappers";
 
 export class NumizAuthError extends Error {
   constructor(message = "UNAUTHORIZED") {
@@ -338,7 +344,7 @@ export async function fetchCurrentPrice(siteId?: string): Promise<PricePoint | n
     throw new Error(await parseApiError(response));
   }
 
-  return response.json() as Promise<PricePoint>;
+  return normalizePricePoint(await (response.json() as Promise<PricePointResponse>));
 }
 
 export async function fetchPrices(
@@ -348,12 +354,40 @@ export async function fetchPrices(
 ): Promise<PricePoint[]> {
   const params = new URLSearchParams({ from, to });
   if (siteId) params.set("siteId", siteId);
-  return numizAuthFetch<PricePoint[]>(`/prices?${params.toString()}`);
+  const points = await numizAuthFetch<PricePointResponse[]>(`/prices?${params.toString()}`);
+  return points.map(normalizePricePoint);
 }
 
-export async function fetchValueSummary(siteId: string): Promise<ValueSummary> {
-  const params = new URLSearchParams({ siteId });
+export async function fetchValueSummary(
+  siteId: string,
+  currency: SiteCurrency,
+  start?: string,
+  end?: string,
+): Promise<ValueSummary> {
+  const params = new URLSearchParams({ siteId, currency });
+  if (start) params.set("start", start);
+  if (end) params.set("end", end);
   return numizAuthFetch<ValueSummary>(`/value/summary?${params.toString()}`);
+}
+
+export async function fetchMetrics(
+  siteId: string,
+  currency: SiteCurrency,
+  period: MetricsPeriod,
+): Promise<MetricsSummary> {
+  const params = new URLSearchParams({ siteId, currency, period });
+  return numizAuthFetch<MetricsSummary>(`/metrics?${params.toString()}`);
+}
+
+export async function fetchChargingHistory(
+  siteId: string,
+  start: string,
+  end: string,
+): Promise<ChargingHistoryEvent[]> {
+  const params = new URLSearchParams({ siteId, start, end });
+  return numizAuthFetch<ChargingHistoryEvent[]>(
+    `/charging-history?${params.toString()}`,
+  );
 }
 
 export async function fetchEntitlements(siteId: string): Promise<EntitlementView> {

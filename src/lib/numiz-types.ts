@@ -288,26 +288,63 @@ export interface VehicleSummary {
 }
 
 export interface PricePoint {
-  ts: string;
+  /** Timestamp of the price interval. */
+  time: Date;
   /** Display price per kWh in displayCurrency. */
   priceKwh: number;
   displayCurrency: string;
-  gridArea: string;
-  /** Raw stored price. */
+  /** ENTSO-E bidding zone / grid area (e.g. SE3). */
+  priceZone: string;
+  /** Raw stored price in the source quote. */
   price: number;
   /** Source currency of the stored quote. */
   currency: string;
+  /** Unit of the stored quote (e.g. KWH, MWH). */
   unit: string;
-  /** @deprecated Prefer priceKwh — kept for older payloads. */
-  priceSekKwh?: number;
+}
+
+/** JSON shape from GET /prices — converted to {@link PricePoint} on load. */
+export interface PricePointResponse {
+  time: string;
+  priceKwh: number;
+  displayCurrency: string;
+  priceZone: string;
+  price: number;
+  currency: string;
+  unit: string;
+}
+
+export interface ValueAmount {
+  kwh: number;
+  price: number;
 }
 
 export interface ValueSummary {
-  totalValueSek: number;
-  chargeValueSek: number;
-  dischargeValueSek: number;
-  totalEnergyKwh: number;
+  total: ValueAmount;
+  charge: ValueAmount;
+  discharge: ValueAmount;
   eventCount: number;
+}
+
+export type MetricsPeriod =
+  | "TODAY"
+  | "THIS_WEEK"
+  | "THIS_MONTH"
+  | "THIS_YEAR";
+
+export interface MetricsSummary {
+  summary: ValueSummary;
+  breakdown: ValueSummary[];
+}
+
+export interface ChargingHistoryEvent {
+  id: string;
+  sessionId: string | null;
+  derId: string;
+  ts: string;
+  state: SessionState;
+  energyKwh: number;
+  price: number;
 }
 
 export interface EntitlementView {

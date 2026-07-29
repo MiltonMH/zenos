@@ -5,15 +5,15 @@ const statisticsTexts = {
     title: "Statistik",
     period: {
       D: "Idag",
-      V: "Denna vecka",
+      W: "Denna vecka",
       M: "Denna månad",
-      Å: "Detta år",
+      Y: "Detta år",
     },
     periodShort: {
       D: "D",
-      V: "V",
+      W: "V",
       M: "M",
-      Å: "Å",
+      Y: "Å",
     },
     stat: {
       charged: "Laddat",
@@ -57,15 +57,15 @@ const statisticsTexts = {
     title: "Statistics",
     period: {
       D: "Today",
-      V: "This week",
+      W: "This week",
       M: "This month",
-      Å: "This year",
+      Y: "This year",
     },
     periodShort: {
       D: "D",
-      V: "W",
+      W: "W",
       M: "M",
-      Å: "Y",
+      Y: "Y",
     },
     stat: {
       charged: "Charged",

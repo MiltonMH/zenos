@@ -89,7 +89,7 @@ export const chargingHistory = [
 ];
 
 // Helper to get statistics for a period
-export type Period = "D" | "V" | "M" | "Å";
+export type Period = "D" | "W" | "M" | "Y";
 
 export function getStatsForPeriod(period: Period) {
   let data;
@@ -97,13 +97,13 @@ export function getStatsForPeriod(period: Period) {
     case "D":
       data = dailyData;
       break;
-    case "V":
+    case "W":
       data = weeklyData;
       break;
     case "M":
       data = monthlyData;
       break;
-    case "Å":
+    case "Y":
       data = yearlyData;
       break;
   }
